@@ -13,5 +13,8 @@
   "dependencies": {
     "ometa-js": "1.x",
     "lodash": "1.x"
+  },
+  "devDependencies": {
+    "chai": "latest"
   }
 }
