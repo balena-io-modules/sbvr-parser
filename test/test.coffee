@@ -27,10 +27,7 @@ module.exports = ->
 					lf[2][1]
 		type = lf[0].replace(/([A-Z])/g, ' $1').trim()
 		input = type + ': ' + text
-		if lf[0] is 'test'
-			input = 'Rule: ' + lf[1]
 
-		console.log(input)
 		describe input, ->
 			try
 				SBVRParser.reset()
