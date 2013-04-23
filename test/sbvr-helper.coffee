@@ -30,7 +30,7 @@ resolveQuantifier = (quantifier) ->
 			]
 	switch quantifier
 		when 'each'
-			'UniversalQuantification'
+			['UniversalQuantification']
 		when 'exactly'
 			[	'ExactQuantification'
 				[	'Cardinality'
@@ -43,10 +43,16 @@ resolveQuantifier = (quantifier) ->
 					cardinality
 				]
 			]
+		when 'at most'
+			[	'AtMostNQuantification'
+				[	'MaximumCardinality'
+					cardinality
+				]
+			]
 exports.rule = rule = (formulationType, quantifier, term, verb, quantifier2, term2) ->
 	[	'Rule'
 		[	formulationType + 'Formulation'
-			[	resolveQuantifier(quantifier)
+			resolveQuantifier(quantifier).concat [
 				[	'Variable'
 					[	'Number'
 						0
