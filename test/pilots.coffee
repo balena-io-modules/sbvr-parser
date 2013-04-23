@@ -1,6 +1,6 @@
 expect = require('chai').expect
 test = require('./test')
-{term, verb, factType, conceptType, referenceScheme} = require('./sbvr-helper')
+{term, verb, factType, conceptType, referenceScheme, necessity} = require('./sbvr-helper')
 
 name = term 'name'
 pilot = term 'pilot'
@@ -19,9 +19,11 @@ test referenceScheme name
 # Fact Type: pilot has name
 test factType pilot, verb('has'), name
 # 	Necessity: each pilot has exactly one name
+test necessity 'each', pilot, verb('has'), 'exactly', 'one', name
 # Fact Type: plane has name
 test factType plane, verb('has'), name
 # 	Necessity: each plane has exactly one name
+test necessity 'each', plane, verb('has'), 'exactly', 'one', name
 # Fact type: pilot can fly plane
 test factType pilot, verb('can fly'), plane
 # Fact type: pilot is experienced

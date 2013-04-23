@@ -455,6 +455,7 @@ export ometa SBVRParser <: SBVRLibs {
 		matchForAny('seq', this.branches.AttrGuidanceType),
 	AttrNecessity :currentLine =
 		(	&(toEOL):ruleText
+			{this.ruleVarsCount = 0}
 			RuleBody([], []):lf
 			EOLTerminator
 			-> ['Rule', ['NecessityFormulation', lf], ['StructuredEnglish', 'It is necessary that ' + ruleText]]

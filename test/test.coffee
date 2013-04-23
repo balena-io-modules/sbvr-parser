@@ -16,6 +16,8 @@ runExpectation = (describe, lf, expectation) ->
 			text = lf[1]
 		when 'FactType', 'ConceptType', 'ReferenceScheme'
 			text = _.map(lf[1...], (factTypePart) -> factTypePart[1]).join(' ')
+		when 'Necessity'
+			text = lf[1][2][1].replace('It is necessary that ', '')
 	type = lf[0].replace(/([A-Z])/g, ' $1').trim()
 	input = type + ': ' + text
 	describe 'Parsing ' + input, ->
