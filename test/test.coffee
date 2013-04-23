@@ -1,16 +1,6 @@
 _ = require('lodash')
-_.mixin(
-	capitalize: (string) ->
-		string.charAt(0).toUpperCase() + string[1...].toLowerCase()
-)
 
-chai = require('chai')
-expect = chai.expect
-chai.use (chai, utils) ->
-	assertionPrototype = chai.Assertion.prototype
-	utils.addMethod assertionPrototype, 'term', (termName, vocabulary = 'Default') ->
-		obj = utils.flag(@, 'object')
-		expect(obj).to.deep.equal(['Term', termName, vocabulary, ['Attributes']])
+expect = require('chai').expect
 
 require('ometa-js')
 SBVRParser = require('../sbvr-parser.ometajs').SBVRParser.createInstance()
@@ -20,9 +10,14 @@ lfSoFar = [ 'Model',
 ]
 seSoFar = ''
 
-runExpectation = (describe, input, expectation) ->
-	type = input[0...input.indexOf(':')]
-	text = input[input.indexOf(':') + 1...].trim()
+runExpectation = (describe, lf, expectation) ->
+	switch lf[0]
+		when 'Term'
+			[type, text] = lf
+		when 'FactType'
+			type = 'Fact Type'
+			text = _.map(lf[1...], (factTypePart) -> factTypePart[1]).join(' ')
+	input = type + ': ' + text
 	describe 'Parsing ' + input, ->
 		try
 			SBVRParser.reset()
@@ -35,10 +30,10 @@ runExpectation = (describe, input, expectation) ->
 				result = newLF[newLF.length - 1]
 			lfSoFar = newLF
 			seSoFar += input + '\n'
-			switch type
-				when 'Term'
-					it 'should be a term "' + text + '"', ->
-						expect(result).to.be.a.term(text)
+			switch lf[0]
+				when 'Term', 'FactType'
+					it 'should be a ' + type + ' "' + text + '"', ->
+						expect(result).to.deep.equal(lf)
 			expectation?(result)
 		catch e
 			if expectation?
