@@ -15,3 +15,4 @@ exports.factType = (factType...) ->
 		)
 	).concat([['Attributes']])
 exports.conceptType = (term) -> ['ConceptType', stripAttributes(term)]
+exports.referenceScheme = (term) -> ['ReferenceScheme', stripAttributes(term)]

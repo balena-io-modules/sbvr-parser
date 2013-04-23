@@ -14,7 +14,7 @@ runExpectation = (describe, lf, expectation) ->
 	switch lf[0]
 		when 'Term'
 			text = lf[1]
-		when 'FactType', 'ConceptType'
+		when 'FactType', 'ConceptType', 'ReferenceScheme'
 			text = _.map(lf[1...], (factTypePart) -> factTypePart[1]).join(' ')
 	type = lf[0].replace(/([A-Z])/g, ' $1').trim()
 	input = type + ': ' + text
