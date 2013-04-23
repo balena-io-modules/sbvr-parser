@@ -17,10 +17,21 @@ exports.factType = factType = (factType...) ->
 exports.conceptType = (term) -> ['ConceptType', stripAttributes(term)]
 exports.referenceScheme = (term) -> ['ReferenceScheme', stripAttributes(term)]
 
-resolveFormulationType = (formulationType) ->
-	switch formulationType
-		when 'Necessity'
-			'It is necessary that'
+toSE = (lf) ->
+	if _.isArray lf
+		switch lf[0]
+			when 'Term'
+				lf[1]
+			when 'Verb'
+				if lf[2]
+					lf[1].replace('is', 'is not')
+				else
+					lf[1]
+	else
+		switch lf
+			when 'Necessity'
+				'It is necessary that'
+
 resolveQuantifier = (quantifier) ->
 	if _.isArray(quantifier)
 		[quantifier, cardinality] = quantifier
@@ -81,9 +92,9 @@ resolveVariable = (variable) ->
 			)
 		se: 
 			if variable[0] is 'Term'
-				variable[1]
+				toSE(variable)
 			else
-				identifier[1] + ' that ' + _.map(variable[1...], (part) -> part[1]).join(' ')
+				toSE(identifier) + ' that ' + _.map(variable[1...], toSE).join(' ')
 	}
 
 exports.rule = rule = (formulationType, quantifier, variable, verb, quantifier2, term2) ->
@@ -111,12 +122,12 @@ exports.rule = rule = (formulationType, quantifier, variable, verb, quantifier2,
 			]
 		]
 		[	'StructuredEnglish'
-			[	resolveFormulationType(formulationType)
+			[	toSE(formulationType)
 				(if _.isArray(quantifier) then quantifier.join(' ') else quantifier)
 				variableSE
-				verb[1]
+				toSE(verb)
 				(if _.isArray(quantifier2) then quantifier2.join(' ') else quantifier2)
-				term2[1]
+				toSE(term2)
 			].join(' ')
 		]
 	]
