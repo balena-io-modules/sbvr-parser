@@ -13,16 +13,16 @@ seSoFar = ''
 runExpectation = (describe, lf, expectation) ->
 	switch lf[0]
 		when 'Term'
-			[type, text] = lf
-		when 'FactType'
-			type = 'Fact Type'
+			text = lf[1]
+		when 'FactType', 'ConceptType'
 			text = _.map(lf[1...], (factTypePart) -> factTypePart[1]).join(' ')
+	type = lf[0].replace(/([A-Z])/g, ' $1').trim()
 	input = type + ': ' + text
 	describe 'Parsing ' + input, ->
 		try
 			SBVRParser.reset()
 			newLF = SBVRParser.matchAll(seSoFar + input, 'Process')
-			if newLF.length == lfSoFar
+			if newLF.length == lfSoFar.length
 				last = newLF[newLF.length - 1]
 				attributes = last[last.length - 1]
 				result = attributes[attributes.length - 1]
@@ -30,16 +30,15 @@ runExpectation = (describe, lf, expectation) ->
 				result = newLF[newLF.length - 1]
 			lfSoFar = newLF
 			seSoFar += input + '\n'
-			switch lf[0]
-				when 'Term', 'FactType'
-					it 'should be a ' + type + ' "' + text + '"', ->
-						expect(result).to.deep.equal(lf)
+			it 'should be a ' + type + ' "' + text + '"', ->
+				expect(result).to.deep.equal(lf)
 			expectation?(result)
 		catch e
 			if expectation?
 				expectation(e)
 			else
-				throw e
+				console.error(e)
+				# throw e
 
 module.exports = runExpectation.bind(null, describe)
 module.exports.skip = runExpectation.bind(null, describe.skip)
