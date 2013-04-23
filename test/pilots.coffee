@@ -30,4 +30,6 @@ test factType pilot, verb('can fly'), plane
 test factType pilot, verb('is experienced')
 # Rule:       It is necessary that each pilot can fly at least 1 plane
 test rule 'Necessity', 'each', pilot, verb('can fly'), ['at least', 1], plane
+# Rule:       It is necessary that each pilot that is experienced, can fly at least 2 planes
+test rule 'Necessity', 'each', [pilot, verb('is experienced')], verb('can fly'), ['at most', 2], plane
 # Rule:       It is necessary that each pilot that is not experienced, can fly at most 2 planes

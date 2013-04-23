@@ -3,7 +3,7 @@ _ = require('lodash')
 stripAttributes = (x) -> x[...-1]
 
 exports.term = (term, vocab = 'Default') -> ['Term', term, vocab, ['Attributes']]
-exports.verb = (verb) -> ['Verb', verb, false]
+exports.verb = (verb, negated = false) -> ['Verb', verb, negated]
 exports.factType = factType = (factType...) ->
 	['FactType'].concat(
 		_.map(factType, (factTypePart) ->
@@ -49,16 +49,49 @@ resolveQuantifier = (quantifier) ->
 					cardinality
 				]
 			]
-exports.rule = rule = (formulationType, quantifier, term, verb, quantifier2, term2) ->
+resolveVariable = (variable) ->
+	identifier =
+		if variable[0] is 'Term'
+			variable
+		else
+			variable[0]
+	binding =
+		[	'RoleBinding'
+			stripAttributes(identifier)
+			0
+		]
+	return {
+		identifier
+		binding
+		lf:
+			[	'Variable'
+				[	'Number'
+					0
+				]
+				stripAttributes(identifier)
+			].concat(
+				if variable[0] is 'Term'
+					[]
+				else
+					[	[	'AtomicFormulation'
+							stripAttributes(factType.apply(null, variable))
+							binding
+						]
+					]
+			)
+		se: 
+			if variable[0] is 'Term'
+				variable[1]
+			else
+				identifier[1] + ' that ' + _.map(variable[1...], (part) -> part[1]).join(' ')
+	}
+
+exports.rule = rule = (formulationType, quantifier, variable, verb, quantifier2, term2) ->
+	{lf: variableLF, se: variableSE, binding: variableBinding, identifier} = resolveVariable(variable)
 	[	'Rule'
 		[	formulationType + 'Formulation'
 			resolveQuantifier(quantifier).concat [
-				[	'Variable'
-					[	'Number'
-						0
-					]
-					stripAttributes(term)
-				]
+				variableLF
 				resolveQuantifier(quantifier2).concat [
 					[	'Variable'
 						[	'Number'
@@ -67,11 +100,8 @@ exports.rule = rule = (formulationType, quantifier, term, verb, quantifier2, ter
 						stripAttributes(term2)
 					]
 					[	'AtomicFormulation'
-						stripAttributes(factType term, verb, term2)
-						[	'RoleBinding'
-							stripAttributes(term)
-							0
-						]
+						stripAttributes(factType identifier, verb, term2)
+						variableBinding
 						[	'RoleBinding'
 							stripAttributes(term2)
 							1
@@ -81,7 +111,13 @@ exports.rule = rule = (formulationType, quantifier, term, verb, quantifier2, ter
 			]
 		]
 		[	'StructuredEnglish'
-			[resolveFormulationType(formulationType), (if _.isArray(quantifier) then quantifier.join(' ') else quantifier), term[1], verb[1], (if _.isArray(quantifier2) then quantifier2.join(' ') else quantifier2), term2[1]].join(' ')
+			[	resolveFormulationType(formulationType)
+				(if _.isArray(quantifier) then quantifier.join(' ') else quantifier)
+				variableSE
+				verb[1]
+				(if _.isArray(quantifier2) then quantifier2.join(' ') else quantifier2)
+				term2[1]
+			].join(' ')
 		]
 	]
 exports.necessity = do ->
