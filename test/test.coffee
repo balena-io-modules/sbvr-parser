@@ -14,7 +14,9 @@ runExpectation = (describe, lf, expectation) ->
 	switch lf[0]
 		when 'Term'
 			text = lf[1]
-		when 'FactType', 'ConceptType', 'ReferenceScheme'
+		when 'FactType'
+			text = _.map(lf[1...-1], (factTypePart) -> factTypePart[1]).join(' ')
+		when 'ConceptType', 'ReferenceScheme'
 			text = _.map(lf[1...], (factTypePart) -> factTypePart[1]).join(' ')
 		when 'Necessity'
 			text = lf[1][2][1].replace('It is necessary that ', '')
