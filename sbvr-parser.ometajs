@@ -846,11 +846,19 @@ SBVRParser.reset = function() {
 };
 
 SBVRParser.AddBuiltInVocab = function(vocabulary) {
-	var origInputHead = this.inputHead;
-	vocabulary += '\n';
-	this.matchAll(vocabulary, 'Process');
-	this.inputHead = origInputHead;
-	this.builtInVocab += vocabulary;
+	try {
+		var origInputHead = this.inputHead;
+		vocabulary += '\n';
+		this.matchAll(vocabulary, 'Process');
+		this.inputHead = origInputHead;
+		this.builtInVocab += vocabulary;
+	}
+	catch(e) {
+		throw e; // OMeta doesn't allow you to omit the catch block.
+	}
+	finally {
+		this.reset();
+	}
 };
 
 SBVRParser.AddCustomAttribute = function(attributeName, attachedTo) {
