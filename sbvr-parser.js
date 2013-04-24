@@ -772,6 +772,7 @@
                 ruleText = this._lookahead(function() {
                     return this._apply("toEOL");
                 });
+                this.ruleVarsCount = 0;
                 lf = this._applyWithArgs("RuleBody", [], []);
                 this._apply("EOLTerminator");
                 return [ "Rule", [ "NecessityFormulation", lf ], [ "StructuredEnglish", "It is necessary that " + ruleText ] ];
@@ -1019,11 +1020,17 @@
         this.inputHead = origInputHead;
     };
     SBVRParser.AddBuiltInVocab = function(vocabulary) {
-        var origInputHead = this.inputHead;
-        vocabulary += "\n";
-        this.matchAll(vocabulary, "Process");
-        this.inputHead = origInputHead;
-        this.builtInVocab += vocabulary;
+        try {
+            var origInputHead = this.inputHead;
+            vocabulary += "\n";
+            this.matchAll(vocabulary, "Process");
+            this.inputHead = origInputHead;
+            this.builtInVocab += vocabulary;
+        } catch (e) {
+            throw e;
+        } finally {
+            this.reset();
+        }
     };
     SBVRParser.AddCustomAttribute = function(attributeName, attachedTo) {
         if (null == attachedTo) for (attachedTo in this.allowedAttrLists) this.allowedAttrLists.hasOwnProperty(attachedTo) && this.allowedAttrLists[attachedTo].push(attributeName); else {
