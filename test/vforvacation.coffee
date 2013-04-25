@@ -1,5 +1,5 @@
 test = require('./test')()
-{term, verb, factType, conceptType, referenceScheme, necessity, rule} = require('./sbvr-helper')
+{term, verb, factType, conceptType, termForm, referenceScheme, necessity, rule} = require('./sbvr-helper')
 has = verb 'has'
 isOf = verb 'is of'
 name = term 'name'
@@ -53,6 +53,23 @@ linkCategory = term 'link category'
 width = term 'width'
 height = term 'height'
 
+regionTranslation = term 'region translation'
+countryTranslation = term 'country translation'
+cityTranslation = term 'city translation'
+mediaTranslation = term 'media translation'
+tourTypeTranslation = term 'tour type translation'
+tourTranslation = term 'tour translation'
+applicationTranslation = term 'application translation'
+storyTranslation = term 'story translation'
+requirementTranslation = term 'requirement translation'
+recommendationTranslation = term 'recommendation translation'
+linkTranslation = term 'link translation'
+bannerTranslation = term 'banner translation'
+serviceInclusion = term 'service inclusion'
+serviceExclusion = term 'service exclusion'
+siteOption = term 'site option'
+pageTranslation = term 'page translation'
+
 describe 'vforvacation', ->
 	# Term:	   name
 	test name
@@ -83,21 +100,28 @@ describe 'vforvacation', ->
 	# Fact type: region is available in language
 	test factType region, verb('is available in'), language
 	# 	Term Form: region translation
+	test termForm regionTranslation
 	# 
 	# Fact type: region translation has name
+	test factType regionTranslation, has, name
 	#     Necessity: each region translation has exactly one name.
+	test necessity 'each', regionTranslation, has, ['exactly', 'one'], name
 	# 
 	# Term:      country
 	test country
 	# Fact type: country is available in language
 	test factType country, verb('is available in'), language
 	# 	Term Form: country translation
+	test termForm countryTranslation
 	# Fact type: country is of region
 	test factType country, isOf, region
 	# 	Necessity: each country is of exactly one region.
+	test necessity 'each', country, isOf, ['exactly', 'one'], region
 	# 
 	# Fact type: country translation has name
+	test factType countryTranslation, has, name
 	# 	Necessity: each country translation has exactly one name.
+	test necessity 'each', countryTranslation, has, ['exactly', 'one'], name
 	# 
 	# Term:      latitude
 	test latitude
@@ -120,13 +144,16 @@ describe 'vforvacation', ->
 	# Fact type: city is available in language
 	test factType city, verb('is available in'), language
 	# 	Term Form: city translation
+	test termForm cityTranslation
 	# Fact type: city is of country
 	test factType city, isOf, country
 	# 	Necessity: each city is of exactly one country.
 	test necessity 'each', city, isOf, ['exactly', 'one'], country
 	# 
 	# Fact type: city translation has name
+	test factType cityTranslation, has, name
 	# 	Necessity: each city translation has exactly one name.
+	test necessity 'each', cityTranslation, has, ['exactly', 'one'], name
 	# 
 	# Term:      media type
 	test mediaType
@@ -145,6 +172,7 @@ describe 'vforvacation', ->
 	# Fact type: media is available in language
 	test factType media, verb('is available in'), language
 	# 	Term Form: media translation
+	test termForm mediaTranslation
 	# 
 	# Term:      title
 	test title
@@ -156,18 +184,25 @@ describe 'vforvacation', ->
 	# 	Necessity: each description has a Length (Type) that is less than or equal to 2000.
 	# 
 	# Fact type: media translation has title
+	test factType mediaTranslation, has, title
 	#     Necessity: each media translation has exactly one title.
+	test necessity 'each', mediaTranslation, has, ['exactly', 'one'], title
 	# Fact type: media translation has description
+	test factType mediaTranslation, has, description
 	#     Necessity: each media translation has exactly one description.
+	test necessity 'each', mediaTranslation, has, ['exactly', 'one'], description
 	# 
 	# Term:      tour type
 	test tourType
 	# Fact type: tour type is available in language
 	test factType tourType, verb('is available in'), language
 	# 	Term Form: tour type translation
+	test termForm tourTypeTranslation
 	# 
 	# Fact type: tour type translation has name
+	test factType tourTypeTranslation, has, name
 	#     Necessity: each tour type translation has exactly one name.
+	test necessity 'each', tourTypeTranslation, has, ['exactly', 'one'], name
 	# 
 	# Term:      keyword
 	test keyword
@@ -199,6 +234,7 @@ describe 'vforvacation', ->
 	# Fact type: tour is available in language
 	test factType tour, verb('is available in'), language
 	# 	Term Form: tour translation
+	test termForm tourTranslation
 	# 
 	# Term:      comment
 	test comment
@@ -206,11 +242,17 @@ describe 'vforvacation', ->
 	# 	Necessity: each comment has a Length (Type) that is less than or equal to 1000.
 	# 
 	# Fact type: tour translation has title
+	test factType tourTranslation, has, title
 	#     Necessity: each tour translation has exactly one title.
+	test necessity 'each', tourTranslation, has, ['exactly', 'one'], title
 	# Fact type: tour translation has description
+	test factType tourTranslation, has, description
 	#     Necessity: each tour translation has exactly one description.
+	test necessity 'each', tourTranslation, has, ['exactly', 'one'], description
 	# Fact type: tour translation has comment
+	test factType tourTranslation, has, comment
 	#     Necessity: each tour translation has exactly one comment.
+	test necessity 'each', tourTranslation, has, ['exactly', 'one'], comment
 	# 
 	# Term:      duration in days
 	test durationInDays
@@ -283,9 +325,12 @@ describe 'vforvacation', ->
 	# Fact type: application is available in language
 	test factType application, verb('is available in'), language
 	# 	Term Form: application translation
+	test termForm applicationTranslation
 	# 
 	# Fact type: application translation has description
+	test factType applicationTranslation, has, description
 	# 	Necessity: each application translation has exactly one description.
+	test necessity 'each', applicationTranslation, has, ['exactly', 'one'], description
 	# 
 	# Term:      overnights
 	test overnights
@@ -335,11 +380,16 @@ describe 'vforvacation', ->
 	# Fact type: story is available in language
 	test factType story, verb('is available in'), language
 	# 	Term Form: story translation
+	test termForm storyTranslation
 	# 
 	# Fact type: story translation has location
+	test factType storyTranslation, has, location
 	#     Necessity: each story translation has exactly one location.
+	test necessity 'each', storyTranslation, has, ['exactly', 'one'], location
 	# Fact type: story translation has description
+	test factType storyTranslation, has, description
 	#     Necessity: each story translation has exactly one description.
+	test necessity 'each', storyTranslation, has, ['exactly', 'one'], description
 	# 
 	# Term:      requirement
 	test requirement
@@ -350,9 +400,12 @@ describe 'vforvacation', ->
 	# Fact type: requirement is available in language
 	test factType requirement, verb('is available in'), language
 	# 	Term Form: requirement translation
+	test termForm requirementTranslation
 	# 
 	# Fact type: requirement translation has description
+	test factType requirementTranslation, has, description
 	#     Necessity: each requirement translation has exactly one description.
+	test necessity 'each', requirementTranslation, has, ['exactly', 'one'], description
 	# 
 	# Term:      recommendation
 	test recommendation
@@ -360,12 +413,16 @@ describe 'vforvacation', ->
 	# Fact type: recommendation is of tour
 	test factType recommendation, isOf, tour
 	# 	Necessity: each recommendation is of exactly one tour.
+	test necessity 'each', recommendation, isOf, ['exactly', 'one'], tour
 	# Fact type: recommendation is available in language
 	test factType recommendation, verb('is available in'), language
 	# 	Term Form: recommendation translation
+	test termForm recommendationTranslation
 	# 
 	# Fact type: recommendation translation has description
+	test factType recommendationTranslation, has, description
 	#     Necessity: each recommendation translation has exactly one description.
+	test necessity 'each', recommendationTranslation, has, ['exactly', 'one'], description
 	# 
 	# Term:      url
 	test url
@@ -376,12 +433,14 @@ describe 'vforvacation', ->
 	# Fact type: link category has name
 	test factType linkCategory, has, name
 	# 	Necessity: each link category has exactly one name.
+	test necessity 'each', linkCategory, has, ['exactly', 'one'], name
 	# 
 	# Term:      link
 	test link
 	# Fact type: link has url
 	test factType link, has, url
 	# 	Necessity: each link has exactly one url.
+	test necessity 'each', link, has, ['exactly', 'one'], url
 	# Fact type: link has link category
 	test factType link, has, linkCategory
 	# Fact type: tour has link
@@ -389,9 +448,12 @@ describe 'vforvacation', ->
 	# Fact type: link is available in language
 	test factType link, verb('is available in'), language
 	# 	Term Form: link translation
+	test termForm linkTranslation
 	# 
 	# Fact type: link translation has title
+	test factType linkTranslation, has, title
 	#     Necessity: each link translation has exactly one title.
+	test necessity 'each', linkTranslation, has, ['exactly', 'one'], title
 	# 
 	# Term:      width
 	test width
@@ -406,25 +468,34 @@ describe 'vforvacation', ->
 	# Fact type: banner is of media
 	test factType banner, isOf, media
 	# 	Necessity: each banner is of exactly one media.
+	test necessity 'each', banner, isOf, ['exactly', 'one'], media
 	# Fact type: banner has url
 	test factType banner, has, url
 	# 	Necessity: each banner has exactly one url.
+	test necessity 'each', banner, has, ['exactly', 'one'], url
 	# Fact type: banner has width
 	test factType banner, has, width
 	# 	Necessity: each banner has exactly one width.
+	test necessity 'each', banner, has, ['exactly', 'one'], width
 	# Fact type: banner has height
 	test factType banner, has, height
 	# 	Necessity: each banner has exactly one height.
+	test necessity 'each', banner, has, ['exactly', 'one'], height
 	# Fact type: banner is enabled
 	test factType banner, verb('is enabled')
 	# Fact type: banner is available in language
 	test factType banner, verb('is available in'), language
 	# 	Term Form: banner translation
+	test termForm bannerTranslation
 	# 
 	# Fact type: banner translation has title
+	test factType bannerTranslation, has, title
 	#     Necessity: each banner translation has exactly one title.
+	test necessity 'each', bannerTranslation, has, ['exactly', 'one'], title
 	# Fact type: banner translation has description
+	test factType bannerTranslation, has, description
 	#     Necessity: each banner translation has exactly one description.
+	test necessity 'each', bannerTranslation, has, ['exactly', 'one'], description
 	# 
 	# Term:    first name
 	test firstName
@@ -445,18 +516,22 @@ describe 'vforvacation', ->
 	# Fact type: subscriber has first name
 	test factType subscriber, has, firstName
 	# 	Necessity: each subscriber has at most one first name.
+	test necessity 'each', subscriber, has, ['at most', 'one'], firstName
 	# Fact type: subscriber has last name
 	test factType subscriber, has, lastName
 	# 	Necessity: each subscriber has at most one last name.
+	test necessity 'each', subscriber, has, ['at most', 'one'], lastName
 	# Fact type: subscriber has email
 	test factType subscriber, has, email
 	# 	Necessity: each subscriber has exactly one email.
+	test necessity 'each', subscriber, has, ['exactly', 'one'], email
 	# 
 	# Term:      recipient group
 	test recipientGroup
 	# Fact type: recipient group has name
 	test factType recipientGroup, has, name
 	# 	Necessity: each recipient group has exactly one name.
+	test necessity 'each', recipientGroup, has, ['exactly', 'one'], name
 	# Fact type: recipient group has subscriber
 	test factType recipientGroup, has, subscriber
 	# 
@@ -465,53 +540,71 @@ describe 'vforvacation', ->
 	# Fact Type: service has name
 	test factType service, has, name
 	# 	Necessity: each service has exactly one name.
+	test necessity 'each', service, has, ['exactly', 'one'], name
 	# Fact Type: service has language
 	test factType service, has, language
 	# 	Necessity: each service has exactly one language.
+	test necessity 'each', service, has, ['exactly', 'one'], language
 	# 
 	# Fact type: tour includes service
 	test factType tour, verb('includes'), service
 	# 	Term form: service inclusion
+	test termForm serviceInclusion
 	# Fact type: service inclusion has order
+	test factType serviceInclusion, has, order
 	# 	Necessity: each service inclusion has exactly one order.
+	test necessity 'each', serviceInclusion, has, ['exactly', 'one'], order
 	# Fact type: service inclusion has description
+	test factType serviceInclusion, has, description
 	# 	Necessity: each service inclusion has exactly one description.
+	test necessity 'each', serviceInclusion, has, ['exactly', 'one'], description
 	# 
 	# Fact type: tour excludes service
 	test factType tour, verb('excludes'), service
 	# 	Term form: service exclusion
+	test termForm serviceExclusion
 	# Fact type: service exclusion has order
+	test factType serviceExclusion, has, order
 	# 	Necessity: each service exclusion has exactly one order.
+	test necessity 'each', serviceExclusion, has, ['exactly', 'one'], order
 	# Fact type: service exclusion has description
+	test factType serviceExclusion, has, description
 	# 	Necessity: each service exclusion has exactly one description.
+	test necessity 'each', serviceExclusion, has, ['exactly', 'one'], description
 	# 
 	# Term:       option
 	test option
 	# Fact type:  option has name
 	test factType option, has, name
 	# 	Necessity: each option has exactly one name
+	test necessity 'each', option, has, ['exactly', 'one'], name
 	# 
 	# Term:       site
 	test site
 	# Fact type:  site has name
 	test factType site, has, name
 	# 	Necessity: each site has exactly one name
+	test necessity 'each', site, has, ['exactly', 'one'], name
 	# Fact type:  site supports option in language
 	test factType site, verb('supports'), option, verb('in'), language
 	# 	Term Form: site option
+	test termForm siteOption
 	# 
 	# Term:       value
 	test value
 	# 	Concept Type: Short Text (Type)
 	# 
 	# Fact type:  site option has value
+	test factType siteOption, has, value
 	# 	Necessity: each site option has exactly one value
+	test necessity 'each', siteOption, has, ['exactly', 'one'], value
 	# 
 	# Term:       page
 	test page
 	# Fact type: page is available in language
 	test factType page, verb('is available in'), language
 	# 	Term Form: page translation
+	test termForm pageTranslation
 	# 
 	# Term:      body
 	test body
@@ -519,6 +612,10 @@ describe 'vforvacation', ->
 	# 	Necessity: each body has a Length (Type) that is less than or equal to 2000.
 	# 
 	# Fact type:  page translation has title
+	test factType pageTranslation, has, title
 	# 	Necessity: each page translation has exactly one title
+	test necessity 'each', pageTranslation, has, ['exactly', 'one'], title
 	# Fact type:  page translation has body
+	test factType pageTranslation, has, body
 	# 	Necessity: each page translation has exactly one body
+	test necessity 'each', pageTranslation, has, ['exactly', 'one'], body
