@@ -14,8 +14,9 @@ module.exports = (builtInVocab = false) ->
 	seSoFar = ''
 	lfSoFar = SBVRParser.matchAll(seSoFar, 'Process')
 
-	runExpectation = (describe, lf, expectation) ->
-		if _.isArray(lf)
+	runExpectation = (describe, input, expectation) ->
+		if _.isArray(input)
+			lf = input
 			text = toSE(lf)
 			type = lf[0].replace(/([A-Z])/g, ' $1').trim()
 			input = type + ': ' + text
@@ -31,8 +32,9 @@ module.exports = (builtInVocab = false) ->
 				result = newLF[newLF.length - 1]
 			lfSoFar = newLF
 			seSoFar += input + '\n'
-			it input, ->
-				expect(result).to.deep.equal(lf)
+			if lf
+				it input, ->
+					expect(result).to.deep.equal(lf)
 			expectation?(result)
 		catch e
 			if expectation?
