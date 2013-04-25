@@ -3,14 +3,15 @@ _ = require('lodash')
 expect = require('chai').expect
 {toSE} = require('./sbvr-helper')
 
-module.exports = ->
+module.exports = (builtInVocab = false) ->
 	require('ometa-js')
 	SBVRParser = require('../sbvr-parser.ometajs').SBVRParser.createInstance()
+	
+	if builtInVocab
+		SBVRParser.AddBuiltInVocab(builtInVocab)
 
-	lfSoFar = [ 'Model',
-		[ 'Vocabulary', 'Default', [ 'Attributes' ] ]
-	]
 	seSoFar = ''
+	lfSoFar = SBVRParser.matchAll(seSoFar, 'Process')
 
 	runExpectation = (describe, lf, expectation) ->
 		if _.isArray(lf)
