@@ -759,7 +759,7 @@
                 }, function() {
                     return this._pred(0 === values.length);
                 });
-                return [ "Enum", value.concat(values, moreValues) ];
+                return [ "Enum", value ].concat(values, moreValues);
             });
         },
         AttrGuidanceType: function(currentLine) {
@@ -875,7 +875,9 @@
             this._opt(function() {
                 return this._apply("EOLSpaces");
             });
-            this._apply("Line");
+            this._opt(function() {
+                return this._apply("Line");
+            });
             this._many(function() {
                 this._apply("EOLSpaces");
                 return this._apply("Line");
@@ -897,7 +899,7 @@
     SBVRParser._enableTokens = function() {
         SBVRLibs._enableTokens.call(this, [ "StartVocabulary", "StartTerm", "StartName", "StartFactType", "StartRule", "NewComment", "Vocabulary", "Term", "Name", "Modifier", "Verb", "Keyword", "AllowedAttrs", "AttrGuidanceType", "Number", "Value" ]);
     };
-    SBVRParser._sideEffectingRules = [ "Process", "Line", "NewIdentifier", "AddIdentifier", "NewFactType", "AddFactType", "NewAttribute", "AttrConceptType", "AttrDefinition", "AttrSynonym", "AttrSynonymousForm", "AttrTermForm" ];
+    SBVRParser._sideEffectingRules = [ "Process", "Line", "NewIdentifier", "AddIdentifier", "NewFactType", "AddFactType", "NewAttribute", "AttrConceptType", "AttrDefinition", "AttrSynonym", "AttrSynonymousForm", "AttrTermForm", "Modifier" ];
     SBVRParser._AddIdentifier = function(identifierType, identifier, baseSynonym) {
         null == baseSynonym && (baseSynonym = identifier);
         if ("Vocabulary" === identifierType) this.AddVocabulary(identifier, baseSynonym); else {
