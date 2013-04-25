@@ -1,7 +1,7 @@
 _ = require('lodash')
 
 expect = require('chai').expect
-
+{toSE} = require('./sbvr-helper')
 
 module.exports = ->
 	require('ometa-js')
@@ -13,20 +13,10 @@ module.exports = ->
 	seSoFar = ''
 
 	runExpectation = (describe, lf, expectation) ->
-		text =
-			switch lf[0]
-				when 'Term'
-					lf[1]
-				when 'FactType'
-					_.map(lf[1...-1], (factTypePart) -> factTypePart[1]).join(' ')
-				when 'ConceptType', 'ReferenceScheme'
-					_.map(lf[1...], (factTypePart) -> factTypePart[1]).join(' ')
-				when 'Necessity'
-					lf[1][2][1].replace('It is necessary that ', '')
-				when 'Rule'
-					lf[2][1]
-		type = lf[0].replace(/([A-Z])/g, ' $1').trim()
-		input = type + ': ' + text
+		if _.isArray(lf)
+			text = toSE(lf)
+			type = lf[0].replace(/([A-Z])/g, ' $1').trim()
+			input = type + ': ' + text
 
 		try
 			SBVRParser.reset()

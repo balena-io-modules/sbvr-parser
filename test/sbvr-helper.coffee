@@ -17,7 +17,7 @@ exports.factType = factType = (factType...) ->
 exports.conceptType = (term) -> ['ConceptType', stripAttributes(term)]
 exports.referenceScheme = (term) -> ['ReferenceScheme', stripAttributes(term)]
 
-toSE = (lf) ->
+exports.toSE = toSE = (lf) ->
 	if _.isArray lf
 		switch lf[0]
 			when 'Term'
@@ -27,6 +27,14 @@ toSE = (lf) ->
 					lf[1].replace('is', 'is not')
 				else
 					lf[1]
+			when 'Necessity'
+				lf[1][2][1].replace('It is necessary that ', '')
+			when 'Rule'
+				lf[2][1]
+			when 'Attributes'
+				''
+			else
+				_.map(lf[1...], toSE).join(' ').trim()
 	else
 		switch lf
 			when 'Necessity'
