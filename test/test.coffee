@@ -6,6 +6,7 @@ expect = require('chai').expect
 module.exports = (builtInVocab = false) ->
 	require('ometa-js')
 	SBVRParser = require('../sbvr-parser.ometajs').SBVRParser.createInstance()
+	SBVRParser.enableReusingMemoizations(SBVRParser._sideEffectingRules)
 	
 	if builtInVocab
 		SBVRParser.AddBuiltInVocab(builtInVocab)
