@@ -449,7 +449,7 @@ export ometa SBVRParser <: SBVRLibs {
 			|	// The or is only required if we had comma-separated values.
 				?(values.length === 0)
 			)
-			-> ['Enum', value.concat(values, moreValues)]
+			-> ['Enum', value].concat(values, moreValues)
 		),
 	AttrGuidanceType :currentLine =
 		matchForAny('seq', this.branches.AttrGuidanceType),

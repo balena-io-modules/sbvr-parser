@@ -7,7 +7,7 @@ exports.verb = (verb, negated = false) -> ['Verb', verb, negated]
 exports.factType = factType = (factType...) ->
 	['FactType'].concat(
 		_.map(factType, (factTypePart) ->
-			if _.isNumber(factTypePart)
+			if _.isNumber(factTypePart) or _.isString(factTypePart)
 				parseEmbeddedData(factTypePart)
 			else if factTypePart[0] is  'Term'
 				stripAttributes(factTypePart)
@@ -20,6 +20,7 @@ exports.referenceScheme = (term) -> ['ReferenceScheme', stripAttributes(term)]
 exports.termForm = (term) -> ['TermForm', stripAttributes(term)]
 
 exports.note = (note) -> ['Note', note]
+exports.definition = (options...) -> ['Definition', ['Enum'].concat(parseEmbeddedData(option)[3] for option in options)]
 
 exports.toSE = toSE = (lf) ->
 	if _.isArray lf
@@ -40,6 +41,12 @@ exports.toSE = toSE = (lf) ->
 				lf[2][1]
 			when 'Attributes'
 				''
+			when 'Definition'
+				_.map(lf[1][1...], toSE).join(' or ')
+			when 'Text'
+				'"' + lf[1] + '"'
+			when 'Integer'
+				lf[1]
 			else
 				_.map(lf[1...], toSE).join(' ').trim()
 	else
@@ -91,13 +98,15 @@ parseEmbeddedData = (embeddedData) ->
 			['Term', 'Integer', 'Type', ['Integer', embeddedData]]
 		else
 			['Term', 'Real', 'Type', ['Real', embeddedData]]
+	else if _.isString(embeddedData)
+		['Term', 'Text', 'Type', ['Text', embeddedData]]
 
 createVariableResolver = ->
 	num = -1
 	resolveVariable = (variable) ->
 		num++
 		identifier =
-			if _.isNumber(variable)
+			if _.isNumber(variable) or _.isString(variable)
 				parseEmbeddedData(variable)
 			else if variable[0] is 'Term'
 				variable
@@ -119,7 +128,7 @@ createVariableResolver = ->
 					]
 					strippedIdentifier
 				].concat(
-					if _.isNumber(variable) or variable[0] is 'Term'
+					if _.isNumber(variable) or _.isString(variable) or variable[0] is 'Term'
 						[]
 					else
 						[	[	'AtomicFormulation'
@@ -134,7 +143,7 @@ createVariableResolver = ->
 						]
 				)
 			se: 
-				if _.isNumber(variable) or variable[0] is 'Term'
+				if _.isNumber(variable) or _.isString(variable) or variable[0] is 'Term'
 					toSE(variable)
 				else
 					toSE(identifier) + ' that ' + _.map(variable[1...], toSE).join(' ')
