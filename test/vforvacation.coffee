@@ -1,5 +1,13 @@
-test = require('./test')()
-{term, verb, factType, conceptType, termForm, referenceScheme, necessity, rule} = require('./sbvr-helper')
+typeVocab = require('fs').readFileSync(__dirname + '/Type.sbvr')
+test = require('./test')(typeVocab)
+{term, verb, factType, conceptType, termForm, referenceScheme, necessity, rule, conceptType} = require('./sbvr-helper')
+shortTextType = term 'Short Text', 'Type'
+textType = term 'Text', 'Type'
+integerType = term 'Integer', 'Type'
+realType = term 'Real', 'Type'
+dateType = term 'Date', 'Type'
+lengthType = term 'Length', 'Type'
+
 has = verb 'has'
 isOf = verb 'is of'
 name = term 'name'
@@ -74,11 +82,14 @@ describe 'vforvacation', ->
 	# Term:	   name
 	test name
 	# 	Concept Type: Short Text (Type)
+	test conceptType shortTextType
 
 	# Term:      locale
 	test locale
 	# 	Concept Type: Short Text (Type)
+	test conceptType shortTextType
 	# 	Necessity: each locale has a Length (Type) that is equal to 2.
+	test necessity 'each', locale, has, 'a', [lengthType, verb('is equal to'), 2]
 
 	# Term:      language
 	test language
@@ -126,10 +137,12 @@ describe 'vforvacation', ->
 	# Term:      latitude
 	test latitude
 	# 	Concept Type: Real (Type)
+	test conceptType realType
 
 	# Term:      longitude
 	test longitude
 	# 	Concept Type: Real (Type)
+	test conceptType realType
 
 	# Term:      city
 	test city
@@ -158,11 +171,14 @@ describe 'vforvacation', ->
 	# Term:      media type
 	test mediaType
 	# 	Concept Type: Short Text (Type)
+	test conceptType shortTextType
 
 	# Term:      path
 	test path
 	# 	Concept Type: Short Text (Type)
+	test conceptType shortTextType
 	# 	Necessity: each path has a Length (Type) that is less than or equal to 100.
+	test necessity 'each', path, has, 'a', [lengthType, verb('is less than or equal to'), 100]
 
 	# Term:      media
 	test media
@@ -178,11 +194,14 @@ describe 'vforvacation', ->
 	# Term:      title
 	test title
 	# 	Concept Type: Short Text (Type)
+	test conceptType shortTextType
 
 	# Term:      description
 	test description
 	# 	Concept Type: Text (Type)
+	test conceptType textType
 	# 	Necessity: each description has a Length (Type) that is less than or equal to 2000.
+	test necessity 'each', description, has, 'a', [lengthType, verb('is less than or equal to'), 2000]
 
 	# Fact type: media translation has title
 	test factType mediaTranslation, has, title
@@ -208,7 +227,9 @@ describe 'vforvacation', ->
 	# Term:      keyword
 	test keyword
 	# 	Concept Type: Short Text (Type)
+	test conceptType shortTextType
 	# 	Necessity: each keyword has a Length (Type) that is less than or equal to 100.
+	test necessity 'each', keyword, has, 'a', [lengthType, verb('is less than or equal to'), 100]
 
 	# Term:	   tour
 	test tour
@@ -240,7 +261,9 @@ describe 'vforvacation', ->
 	# Term:      comment
 	test comment
 	# 	Concept Type: Text (Type)
+	test conceptType textType
 	# 	Necessity: each comment has a Length (Type) that is less than or equal to 1000.
+	test necessity 'each', comment, has, 'a', [lengthType, verb('is less than or equal to'), 1000]
 
 	# Fact type: tour translation has title
 	test factType tourTranslation, has, title
@@ -258,6 +281,7 @@ describe 'vforvacation', ->
 	# Term:      duration in days
 	test durationInDays
 	# 	Concept Type: Integer (Type)
+	test conceptType integerType
 
 	# Term:      plan
 	test plan
@@ -275,23 +299,28 @@ describe 'vforvacation', ->
 	# Term:      departure date
 	test departureDate
 	# 	Concept Type: Date (Type)
+	test conceptType dateType
 
 	# Term:      availability
 	test availability
 	# 	Concept Type: Short Text (Type)
+	test conceptType shortTextType
 	# 	Definition: "no data" or "none" or "low" or "medium" or "high"
 
 	# Term:      single price
 	test singlePrice
 	# 	Concept Type: Integer (Type)
+	test conceptType integerType
 
 	# Term:      double price
 	test doublePrice
 	# 	Concept Type: Integer (Type)
+	test conceptType integerType
 
 	# Term:      air fee
 	test airFee
 	# 	Concept Type: Integer (Type)
+	test conceptType integerType
 
 	# Term:      application
 	test application
@@ -336,10 +365,12 @@ describe 'vforvacation', ->
 	# Term:      overnights
 	test overnights
 	# 	Concept Type: Integer (Type)
+	test conceptType integerType
 
 	# Term:      order
 	test order
 	# 	Concept Type: Integer (Type)
+	test conceptType integerType
 
 	# Term:      itinerary
 	test itinerary
@@ -363,11 +394,14 @@ describe 'vforvacation', ->
 	# Term:      day number
 	test dayNumber
 	# 	Concept Type: Integer (Type)
+	test conceptType integerType
 
 	# Term:      location
 	test location
 	# 	Concept Type: Short Text (Type)
+	test conceptType shortTextType
 	# 	Necessity: each location has a Length (Type) that is less than or equal to 200.
+	test necessity 'each', location, has, 'a', [lengthType, verb('is less than or equal to'), 200]
 
 	# Term:      story
 	test story
@@ -430,6 +464,7 @@ describe 'vforvacation', ->
 	# Term:      url
 	test url
 	# 	Concept Type: Short Text (Type)
+	test conceptType shortTextType
 
 	# Term:      link category
 	test linkCategory
@@ -461,10 +496,12 @@ describe 'vforvacation', ->
 	# Term:      width
 	test width
 	# 	Concept Type: Integer (Type)
+	test conceptType integerType
 
 	# Term:      height
 	test height
 	# 	Concept Type: Integer (Type)
+	test conceptType integerType
 
 	# Term:      banner
 	test banner
@@ -503,16 +540,21 @@ describe 'vforvacation', ->
 	# Term:    first name
 	test firstName
 	# 	Concept Type: Short Text (Type)
+	test conceptType shortTextType
 	#     Necessity: each first name has a Length (Type) that is less than or equal to 100.
+	test necessity 'each', firstName, has, 'a', [lengthType, verb('is less than or equal to'), 100]
 
 	# Term:    last name
 	test lastName
 	# 	Concept Type: Short Text (Type)
+	test conceptType shortTextType
 	#     Necessity: each last name has a Length (Type) that is less than or equal to 100.
+	test necessity 'each', lastName, has, 'a', [lengthType, verb('is less than or equal to'), 100]
 
 	# Term:    email
 	test email
 	# 	Concept Type: Short Text (Type)
+	test conceptType shortTextType
 
 	# Term:      subscriber
 	test subscriber
@@ -596,6 +638,7 @@ describe 'vforvacation', ->
 	# Term:       value
 	test value
 	# 	Concept Type: Short Text (Type)
+	test conceptType shortTextType
 
 	# Fact type:  site option has value
 	test factType siteOption, has, value
@@ -612,7 +655,9 @@ describe 'vforvacation', ->
 	# Term:      body
 	test body
 	# 	Concept Type: Text (Type)
+	test conceptType textType
 	# 	Necessity: each body has a Length (Type) that is less than or equal to 2000.
+	test necessity 'each', body, has, 'a', [lengthType, verb('is less than or equal to'), 2000]
 
 	# Fact type:  page translation has title
 	test factType pageTranslation, has, title
