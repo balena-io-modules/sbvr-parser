@@ -1,6 +1,6 @@
 typeVocab = require('fs').readFileSync(__dirname + '/Type.sbvr')
 test = require('./test')(typeVocab)
-{term, verb, factType, conceptType, termForm, referenceScheme, necessity, rule, conceptType} = require('./sbvr-helper')
+{term, verb, factType, conceptType, termForm, referenceScheme, necessity, rule, conceptType, note} = require('./sbvr-helper')
 shortTextType = term 'Short Text', 'Type'
 textType = term 'Text', 'Type'
 integerType = term 'Integer', 'Type'
@@ -430,6 +430,7 @@ describe 'vforvacation', ->
 	# Term:      requirement
 	test requirement
 	# 	Note: Things a traveller must do before travelling
+	test note 'Things a traveller must do before travelling'
 	# Fact type: requirement is of tour
 	test factType requirement, isOf, tour
 	# 	Necessity: each requirement is of exactly one tour.
@@ -447,6 +448,7 @@ describe 'vforvacation', ->
 	# Term:      recommendation
 	test recommendation
 	# 	Note: e.g. Malaria treatment
+	test note 'e.g. Malaria treatment'
 	# Fact type: recommendation is of tour
 	test factType recommendation, isOf, tour
 	# 	Necessity: each recommendation is of exactly one tour.

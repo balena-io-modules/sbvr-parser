@@ -19,6 +19,8 @@ exports.conceptType = (term) -> ['ConceptType', stripAttributes(term)]
 exports.referenceScheme = (term) -> ['ReferenceScheme', stripAttributes(term)]
 exports.termForm = (term) -> ['TermForm', stripAttributes(term)]
 
+exports.note = (note) -> ['Note', note]
+
 exports.toSE = toSE = (lf) ->
 	if _.isArray lf
 		switch lf[0]
@@ -45,8 +47,10 @@ exports.toSE = toSE = (lf) ->
 			lf
 		else
 			switch lf
-				when 'Necessity'
+				when 'NecessityFormulation'
 					'It is necessary that'
+				else
+					lf
 
 resolveQuantifier = (quantifier) ->
 	if _.isArray(quantifier)
@@ -137,11 +141,12 @@ createVariableResolver = ->
 		}
 
 exports.rule = rule = (formulationType, quantifier, variable, verb, quantifier2, variable2) ->
+	formulationType += 'Formulation'
 	resolveVariable = createVariableResolver()
 	{lf: variableLF, se: variableSE, binding: variableBinding, identifier} = resolveVariable(variable)
 	{lf: variableLF2, se: variableSE2, binding: variableBinding2, identifier: identifier2} = resolveVariable(variable2)
 	[	'Rule'
-		[	formulationType + 'Formulation'
+		[	formulationType
 			resolveQuantifier(quantifier).concat [
 				variableLF
 				resolveQuantifier(quantifier2).concat [
