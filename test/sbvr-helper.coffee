@@ -60,6 +60,8 @@ resolveQuantifier = (quantifier) ->
 					cardinality
 				]
 			]
+		else
+			throw 'Unknown quantifier: ' + quantifier
 resolveVariable = (variable) ->
 	identifier =
 		if variable[0] is 'Term'
@@ -128,7 +130,7 @@ exports.rule = rule = (formulationType, quantifier, variable, verb, quantifier2,
 				toSE(verb)
 				(if _.isArray(quantifier2) then quantifier2.join(' ') else quantifier2)
 				toSE(term2)
-			].join(' ')
+			].join(' ') + '.'
 		]
 	]
 exports.necessity = do ->
