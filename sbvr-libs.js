@@ -11,14 +11,7 @@
     };
     SBVRLibs.ApplyFirstExisting = function(rules, ruleArgs) {
         null == ruleArgs && (ruleArgs = []);
-        ruleArgs.unshift("");
-        for (var i = 0; rules.length > i; i++) if (null != this[rules[i]]) {
-            if (null != ruleArgs && ruleArgs.length > 0) {
-                ruleArgs[0] = rules[i];
-                return this._applyWithArgs.apply(this, ruleArgs);
-            }
-            return this._apply(rules[i], ruleArgs);
-        }
+        for (var i = 0; rules.length > i; i++) if (null != this[rules[i]]) return ruleArgs.length > 0 ? this._applyWithArgs.apply(this, [ rules[i] ].concat(ruleArgs)) : this._apply(rules[i], ruleArgs);
     };
     SBVRLibs.IdentifiersEqual = function(a, b) {
         return a[0] === b[0] && a[1] === b[1] && a[2] === b[2];

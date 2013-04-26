@@ -189,15 +189,16 @@
             return s;
         },
         AddIdentifier: function(identifierType, baseSynonym) {
-            var $elf = this, _fromIdx = this.input.idx, identifier;
-            identifier = this._lookahead(function() {
-                return this._many1(function() {
-                    return this._apply("IdentifierPart");
-                });
+            var $elf = this, _fromIdx = this.input.idx, identifier, startInput;
+            startInput = this.input;
+            identifier = this._many1(function() {
+                return this._apply("IdentifierPart");
             });
             identifier = identifier.join(" ");
-            this._applyWithArgs("_AddIdentifier", identifierType, identifier, baseSynonym);
-            return this._applyWithArgs("apply", identifierType);
+            this._addToken(startInput, this.input, identifierType, []);
+            return function() {
+                return $elf._AddIdentifier(identifierType, identifier, baseSynonym);
+            };
         },
         InformalIdentifier: function() {
             var $elf = this, _fromIdx = this.input.idx;
@@ -616,6 +617,7 @@
             mod = this._apply("Modifier");
             ruleLF = this._applyWithArgs("RuleBody", [], []);
             this._apply("EOLTerminator");
+            mod = _.cloneDeep(mod);
             2 === mod.length ? mod[1][1] = ruleLF : mod[1] = ruleLF;
             return [ "Rule", mod, [ "StructuredEnglish", ruleText ] ];
         },
@@ -640,9 +642,10 @@
                 identifier = this._apply("Identifier");
                 return factType.push(identifier);
             });
-            this._applyWithArgs("AddFactType", factType, factType);
-            factType.push([ "Attributes" ]);
-            return [ "FactType" ].concat(factType);
+            return function() {
+                $elf.AddFactType(factType, factType);
+                return [ "FactType" ].concat(factType).concat([ [ "Attributes" ] ]);
+            };
         },
         StartVocabulary: function() {
             var $elf = this, _fromIdx = this.input.idx;
@@ -668,7 +671,7 @@
             return "Name";
         },
         NewIdentifier: function() {
-            var $elf = this, _fromIdx = this.input.idx, identifier, identifierType;
+            var $elf = this, _fromIdx = this.input.idx, func, identifierType;
             identifierType = this._or(function() {
                 return this._apply("StartVocabulary");
             }, function() {
@@ -677,51 +680,49 @@
                 return this._apply("StartName");
             });
             this._apply("ClearSuggestions");
-            identifier = this._applyWithArgs("AddIdentifier", identifierType);
-            identifier.push([ "Attributes" ]);
-            return identifier;
+            func = this._applyWithArgs("AddIdentifier", identifierType);
+            return function() {
+                return func().concat([ [ "Attributes" ] ]);
+            };
         },
         NewAttribute: function() {
-            var $elf = this, _fromIdx = this.input.idx, attrName, attrVal, currentLine;
+            var $elf = this, _fromIdx = this.input.idx, attrName, attrValOrFunc, currentLine;
             currentLine = this.lines[this.lines.length - 1];
             attrName = this._applyWithArgs("AllowedAttrs", currentLine[0]);
             attrName = attrName.replace(/ /g, "");
             this._apply("spaces");
-            attrVal = this._applyWithArgs("ApplyFirstExisting", [ "Attr" + attrName, "DefaultAttr" ], [ currentLine ]);
+            attrValOrFunc = this._applyWithArgs("ApplyFirstExisting", [ "Attr" + attrName, "DefaultAttr" ]);
             return function() {
-                var lastLine = this.lines.pop();
+                var lastLine = $elf.lines.pop(), attrVal = _.isFunction(attrValOrFunc) ? attrValOrFunc(lastLine) : attrValOrFunc;
                 lastLine[lastLine.length - 1].push([ attrName, attrVal ]);
                 return lastLine;
-            }.call(this);
+            };
         },
         AllowedAttrs: function(termOrFactType) {
             var $elf = this, _fromIdx = this.input.idx, attrName;
             attrName = this._applyWithArgs("matchForAny", "seq", this.branches.AllowedAttrs.call(this, termOrFactType));
             return attrName.replace(":", "");
         },
-        DefaultAttr: function(currentLine) {
+        DefaultAttr: function() {
             var $elf = this, _fromIdx = this.input.idx;
             return this._apply("toSBVREOL");
         },
-        AttrConceptType: function(currentLine) {
-            var $elf = this, _fromIdx = this.input.idx, identifier, identifierName, identifierVocab, term, termName, termVocab;
-            identifierName = currentLine[1];
-            identifierVocab = currentLine[2];
-            identifier = currentLine.slice(0, 3);
-            this._pred(!this.vocabularies[identifierVocab].ConceptTypes.hasOwnProperty(identifier));
+        AttrConceptType: function() {
+            var $elf = this, _fromIdx = this.input.idx, term;
             term = this._apply("Term");
-            this._or(function() {
-                return this._pred("FactType" === currentLine[0]);
-            }, function() {
-                termName = term[1];
-                termVocab = term[2];
-                this._pred(identifierName != termName || identifierVocab != termVocab);
-                this.vocabularies[identifierVocab].ConceptTypes[identifier] = term;
-                return this.vocabularies[termVocab].IdentifierChildren[termName].push([ identifierName, identifierVocab ]);
-            });
-            return term;
+            return function(currentLine) {
+                var identifier = currentLine.slice(0, 3), identifierName = identifier[1], identifierVocab = identifier[2];
+                if ($elf.vocabularies[identifierVocab].ConceptTypes.hasOwnProperty(identifier)) throw "Two concept type attributes";
+                if ("FactType" !== identifier[0]) {
+                    if ($elf.IdentifiersEqual(identifier, term)) throw "A term cannot have itself as its concept type";
+                    var termName = term[1], termVocab = term[2];
+                    $elf.vocabularies[identifierVocab].ConceptTypes[identifier] = term;
+                    $elf.vocabularies[termVocab].IdentifierChildren[termName].push(identifier.slice(1));
+                }
+                return term;
+            };
         },
-        AttrDefinition: function(currentLine) {
+        AttrDefinition: function() {
             var $elf = this, _fromIdx = this.input.idx, b, moreValues, tVar, term, thatLF, value, values;
             return this._or(function() {
                 this._opt(function() {
@@ -733,15 +734,13 @@
                 b = this._applyWithArgs("Bind", term);
                 thatLF = this._applyWithArgs("ClosedProjection", term, b);
                 tVar.push(thatLF);
-                this._opt(function() {
-                    return this._or(function() {
-                        return this._pred("FactType" === currentLine[0]);
-                    }, function() {
-                        this.vocabularies[currentLine[2]].ConceptTypes[currentLine.slice(0, 3)] = term;
-                        return this.vocabularies.IdentifierChildren[term[1]].push([ currentLine[1], currentLine[2] ]);
-                    });
-                });
-                return tVar;
+                return function(currentLine) {
+                    if ("FactType" !== currentLine[0]) {
+                        $elf.vocabularies[currentLine[2]].ConceptTypes[currentLine.slice(0, 3)] = term;
+                        $elf.vocabularies.IdentifierChildren[term[1]].push([ currentLine[1], currentLine[2] ]);
+                    }
+                    return tVar;
+                };
             }, function() {
                 value = this._apply("Value");
                 values = this._many(function() {
@@ -762,11 +761,11 @@
                 return [ "Enum", value ].concat(values, moreValues);
             });
         },
-        AttrGuidanceType: function(currentLine) {
+        AttrGuidanceType: function() {
             var $elf = this, _fromIdx = this.input.idx;
             return this._applyWithArgs("matchForAny", "seq", this.branches.AttrGuidanceType);
         },
-        AttrNecessity: function(currentLine) {
+        AttrNecessity: function() {
             var $elf = this, _fromIdx = this.input.idx, lf, ruleText;
             return this._or(function() {
                 ruleText = this._lookahead(function() {
@@ -780,7 +779,7 @@
                 return this._apply("toSBVREOL");
             });
         },
-        AttrReferenceScheme: function(currentLine) {
+        AttrReferenceScheme: function() {
             var $elf = this, _fromIdx = this.input.idx, t;
             return this._or(function() {
                 t = this._apply("Term");
@@ -790,11 +789,12 @@
                 return this._apply("toSBVREOL");
             });
         },
-        AttrSynonym: function(currentLine) {
-            var $elf = this, _fromIdx = this.input.idx;
+        AttrSynonym: function() {
+            var $elf = this, _fromIdx = this.input.idx, currentLine;
+            currentLine = this.lines[this.lines.length - 1];
             return this._applyWithArgs("AddIdentifier", currentLine[0], currentLine[1]);
         },
-        AttrSynonymousForm: function(currentLine) {
+        AttrSynonymousForm: function() {
             var $elf = this, _fromIdx = this.input.idx, factType, identifier, v;
             factType = [];
             this._many1(function() {
@@ -806,19 +806,21 @@
                 identifier = this._apply("Identifier");
                 return factType.push(identifier);
             });
-            this._applyWithArgs("AddFactType", factType, currentLine.slice(1, -1));
-            return factType;
+            return function(currentLine) {
+                $elf.AddFactType(factType, currentLine.slice(1, -1));
+                return factType;
+            };
         },
-        AttrTermForm: function(currentLine) {
-            var $elf = this, _fromIdx = this.input.idx, term;
-            term = this._applyWithArgs("AddIdentifier", "Term");
-            (function() {
-                for (var i = 0; currentLine.length > i; i++) if ("Term" === currentLine[i][0]) {
+        AttrTermForm: function() {
+            var $elf = this, _fromIdx = this.input.idx, func;
+            func = this._applyWithArgs("AddIdentifier", "Term");
+            return function(currentLine) {
+                for (var term = func(), i = 0; currentLine.length > i; i++) if ("Term" === currentLine[i][0]) {
                     var factType = [ term, [ "Verb", "has", !1 ], currentLine[i] ];
-                    this.AddFactType(factType, factType);
+                    $elf.AddFactType(factType, factType);
                 }
-            }).call(this);
-            return term;
+                return term;
+            };
         },
         StartComment: function() {
             var $elf = this, _fromIdx = this.input.idx;
@@ -851,17 +853,20 @@
             return this._applyWithArgs("Keyword", ".", !0);
         },
         Line: function() {
-            var $elf = this, _fromIdx = this.input.idx, l;
+            var $elf = this, _fromIdx = this.input.idx, func, l;
             this._apply("spaces");
             return this._or(function() {
                 l = this._or(function() {
-                    return this._apply("NewIdentifier");
-                }, function() {
-                    return this._apply("NewFactType");
+                    func = this._or(function() {
+                        return this._apply("NewIdentifier");
+                    }, function() {
+                        return this._apply("NewFactType");
+                    }, function() {
+                        return this._apply("NewAttribute");
+                    });
+                    return func();
                 }, function() {
                     return this._apply("NewRule");
-                }, function() {
-                    return this._apply("NewAttribute");
                 });
                 this._apply("ClearSuggestions");
                 this.lines.push(l);
@@ -899,7 +904,7 @@
     SBVRParser._enableTokens = function() {
         SBVRLibs._enableTokens.call(this, [ "StartVocabulary", "StartTerm", "StartName", "StartFactType", "StartRule", "NewComment", "Vocabulary", "Term", "Name", "Modifier", "Verb", "Keyword", "AllowedAttrs", "AttrGuidanceType", "Number", "Value" ]);
     };
-    SBVRParser._sideEffectingRules = [ "Process", "Line", "NewIdentifier", "AddIdentifier", "NewFactType", "AddFactType", "NewAttribute", "AttrConceptType", "AttrDefinition", "AttrSynonym", "AttrSynonymousForm", "AttrTermForm", "Modifier" ];
+    SBVRParser._sideEffectingRules = [ "Process", "Line" ];
     SBVRParser._AddIdentifier = function(identifierType, identifier, baseSynonym) {
         null == baseSynonym && (baseSynonym = identifier);
         if ("Vocabulary" === identifierType) this.AddVocabulary(identifier, baseSynonym); else {
@@ -909,6 +914,7 @@
             vocabulary[identifierType][identifier] = baseSynonym;
         }
         this.longestIdentifier[identifierType] = Math.max(identifier.length, identifier.pluralize().length, this.longestIdentifier[identifierType]);
+        return "Vocabulary" === identifierType ? [ identifierType, identifier ] : [ identifierType, identifier, this.currentVocabulary ];
     };
     SBVRParser.BaseSynonym = function(vocabulary, identifierType, identifier) {
         var identifiers = this.vocabularies[vocabulary][identifierType];
@@ -1018,6 +1024,8 @@
             this.matchAll(this.builtInVocab, "Process");
             this.builtInVocabInputHead = this.inputHead;
         }
+        this.inputHead = null;
+        this.inputHead = null;
         this.matchAll("Vocabulary: Default", "Process");
         this.inputHead = origInputHead;
     };
