@@ -842,6 +842,7 @@ SBVRParser.reset = function() {
 		this.builtInVocabInputHead = this.inputHead;
 	}
 	// And switching back to the "Default" vocabulary for normal parsing.
+	this.inputHead = null;
 	this.matchAll('Vocabulary: Default', 'Process');
 	this.inputHead = origInputHead;
 };
