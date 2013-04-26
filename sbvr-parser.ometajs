@@ -93,10 +93,13 @@ export ometa SBVRParser <: SBVRLibs {
 		-> s,
 
 	AddIdentifier :identifierType :baseSynonym =
-		&(IdentifierPart+):identifier
+		{this.input}:startInput
+		(IdentifierPart+):identifier
 		{identifier.join(' ')}:identifier
-		_AddIdentifier(identifierType, identifier, baseSynonym)
-		apply(identifierType),
+		{this._addToken(startInput, this.input, identifierType, [])}
+		-> function() {
+			return $elf._AddIdentifier(identifierType, identifier, baseSynonym)
+		},
 	
 	InformalIdentifier =
 		Identifier(undefined, true),
@@ -370,9 +373,10 @@ export ometa SBVRParser <: SBVRLibs {
 		(	Identifier:identifier
 			{factType.push(identifier)}
 		)?
-		AddFactType(factType, factType)
-		{factType.push(['Attributes'])}
-		-> ['FactType'].concat(factType),
+		-> function() {
+			$elf.AddFactType(factType, factType);
+			return ['FactType'].concat(factType).concat([['Attributes']]);
+		},
 
 	StartVocabulary =
 		"Vocabulary:"
@@ -393,39 +397,52 @@ export ometa SBVRParser <: SBVRLibs {
 		|	StartName
 		):identifierType
 		ClearSuggestions
-		AddIdentifier(identifierType):identifier
-		{identifier.push(['Attributes'])}
-		-> identifier,
+		AddIdentifier(identifierType):func
+		-> function() {
+			return func().concat([['Attributes']]);
+		},
 	NewAttribute =
 		{this.lines[this.lines.length-1]}:currentLine
 		AllowedAttrs(currentLine[0]):attrName
 		{attrName.replace(/ /g, '')}:attrName
 		spaces
-		ApplyFirstExisting(['Attr' + attrName, 'DefaultAttr'], [currentLine]):attrVal
-		-> {var lastLine = this.lines.pop(); lastLine[lastLine.length-1].push([attrName, attrVal]); lastLine},
-						
+		ApplyFirstExisting(['Attr' + attrName, 'DefaultAttr']):attrValOrFunc
+		-> function() {
+			var lastLine = $elf.lines.pop(),
+				attrVal = _.isFunction(attrValOrFunc) ? attrValOrFunc(lastLine) : attrValOrFunc;
+			lastLine[lastLine.length-1].push([attrName, attrVal]);
+			return lastLine;
+		},
+
 	AllowedAttrs :termOrFactType =
 		matchForAny('seq',this.branches.AllowedAttrs.call(this, termOrFactType)):attrName
 		-> attrName.replace(':',''),
-	DefaultAttr :currentLine =
+	DefaultAttr =
 		toSBVREOL,
-	AttrConceptType :currentLine =
-		{currentLine[1]}:identifierName
-		{currentLine[2]}:identifierVocab
-		{currentLine.slice(0, 3)}:identifier
-		?(!this.vocabularies[identifierVocab]['ConceptTypes'].hasOwnProperty(identifier)) // Only allow one instance of Concept Type: attribute.
-										 // TODO: Improve this to deal with synonyms and autocomplete/highlighting.
+	AttrConceptType =
 		// A concept type has to be a term (cannot be a name)
 		Term:term
-		(	?(currentLine[0] === 'FactType')
-		|	{term[1]}:termName
-			{term[2]}:termVocab
-			?(identifierName != termName || identifierVocab != termVocab) // Do not allow a term to have itself as its concept type.
-			{this.vocabularies[identifierVocab]['ConceptTypes'][identifier] = term}
-			{this.vocabularies[termVocab]['IdentifierChildren'][termName].push([identifierName, identifierVocab])}
-		)
-		-> term,
-	AttrDefinition :currentLine =
+		-> function(currentLine) {
+			var identifier = currentLine.slice(0, 3),
+				identifierName = identifier[1],
+				identifierVocab = identifier[2];
+			// Only allow one instance of Concept Type: attribute.
+			if($elf.vocabularies[identifierVocab]['ConceptTypes'].hasOwnProperty(identifier)) {
+				throw 'Two concept type attributes';
+			}
+			if(identifier[0] !== 'FactType') {
+				// Do not allow a term to have itself as its concept type.
+				if($elf.IdentifiersEqual(identifier, term)) {
+					throw 'A term cannot have itself as its concept type';
+				}
+				var termName = term[1],
+					termVocab = term[2];
+				$elf.vocabularies[identifierVocab]['ConceptTypes'][identifier] = term;
+				$elf.vocabularies[termVocab]['IdentifierChildren'][termName].push(identifier.slice(1));
+			}
+			return term;
+		},
+	AttrDefinition =
 		(	addThe?
 			// The following section is copied from RuleBody, should really be sorted properly.
 			{this.ruleVarsCount = 0}
@@ -434,11 +451,13 @@ export ometa SBVRParser <: SBVRLibs {
 			Bind(term):b
 			ClosedProjection(term, b):thatLF
 			{tVar.push(thatLF)}
-			(	?(currentLine[0] === 'FactType')
-			|	{this.vocabularies[currentLine[2]]['ConceptTypes'][currentLine.slice(0, 3)] = term}
-				{this.vocabularies['IdentifierChildren'][term[1]].push([currentLine[1], currentLine[2]])}
-			)?
-			-> tVar
+			-> function(currentLine) {
+				if(currentLine[0] !== 'FactType') {
+					$elf.vocabularies[currentLine[2]]['ConceptTypes'][currentLine.slice(0, 3)] = term;
+					$elf.vocabularies['IdentifierChildren'][term[1]].push([currentLine[1], currentLine[2]]);
+				}
+				return tVar;
+			}
 		|	Value:value
 			(	addComma
 				Value
@@ -452,9 +471,9 @@ export ometa SBVRParser <: SBVRLibs {
 			)
 			-> ['Enum', value].concat(values, moreValues)
 		),
-	AttrGuidanceType :currentLine =
+	AttrGuidanceType =
 		matchForAny('seq', this.branches.AttrGuidanceType),
-	AttrNecessity :currentLine =
+	AttrNecessity =
 		(	&(toEOL):ruleText
 			{this.ruleVarsCount = 0}
 			RuleBody([], []):lf
@@ -462,15 +481,16 @@ export ometa SBVRParser <: SBVRLibs {
 			-> ['Rule', ['NecessityFormulation', lf], ['StructuredEnglish', 'It is necessary that ' + ruleText]]
 		|	toSBVREOL
 		),
-	AttrReferenceScheme :currentLine =
+	AttrReferenceScheme =
 		(	Term:t
 			EOLTerminator
 			-> t
 		|	toSBVREOL
 		),
-	AttrSynonym :currentLine =
+	AttrSynonym =
+		{this.lines[this.lines.length-1]}:currentLine
 		AddIdentifier(currentLine[0], currentLine[1]),
-	AttrSynonymousForm :currentLine =
+	AttrSynonymousForm =
 		{[]}:factType
 		(	Identifier:identifier
 			addVerb:v
@@ -479,19 +499,22 @@ export ometa SBVRParser <: SBVRLibs {
 		(	Identifier:identifier
 			{factType.push(identifier)}
 		)?
-		AddFactType(factType, currentLine.slice(1,-1))
-		-> factType,
-	AttrTermForm :currentLine =
-		AddIdentifier('Term'):term
-		{
-			for(var i = 0; i < currentLine.length; i++) {
-				if(currentLine[i][0] === 'Term') {
-					var factType = [term, ['Verb', 'has', false], currentLine[i]];
-					this.AddFactType(factType, factType);
-				}
+		-> function(currentLine) {
+			$elf.AddFactType(factType, currentLine.slice(1,-1));
+			return factType;
+		},
+	AttrTermForm =
+		AddIdentifier('Term'):func
+	-> function(currentLine) {
+		var term = func();
+		for(var i = 0; i < currentLine.length; i++) {
+			if(currentLine[i][0] === 'Term') {
+				var factType = [term, ['Verb', 'has', false], currentLine[i]];
+				$elf.AddFactType(factType, factType);
 			}
 		}
-	-> term,
+		return term;
+	},
 
 	StartComment =
 		seq('--'),
@@ -511,10 +534,12 @@ export ometa SBVRParser <: SBVRLibs {
 	Line =
 		spaces
 		(
-			(	NewIdentifier
-			|	NewFactType
+			(	(	NewIdentifier
+				|	NewFactType
+				|	NewAttribute
+				):func
+				-> func()
 			|	NewRule
-			|	NewAttribute
 			):l
 			ClearSuggestions
 			{this.lines.push(l)}
@@ -548,17 +573,7 @@ SBVRParser._enableTokens = function() {
 };
 SBVRParser._sideEffectingRules = [
 	'Process',
-	'Line',
-	'NewIdentifier',
-	'AddIdentifier',
-	'NewFactType',
-	'AddFactType',
-	'NewAttribute',
-	'AttrConceptType',
-	'AttrDefinition',
-	'AttrSynonym',
-	'AttrSynonymousForm',
-	'AttrTermForm'
+	'Line'
 ];
 
 SBVRParser._AddIdentifier = function(identifierType, identifier, baseSynonym) {
@@ -584,6 +599,12 @@ SBVRParser._AddIdentifier = function(identifierType, identifier, baseSynonym) {
 	}
 	// Check for longest identifier between current and pluralised form, as the plural form may well be (and often is) longer.
 	this.longestIdentifier[identifierType] = Math.max(identifier.length, identifier.pluralize().length, this.longestIdentifier[identifierType]);
+	if(identifierType === 'Vocabulary') {
+		return [identifierType, identifier];
+	}
+	else {
+		return [identifierType, identifier, this.currentVocabulary];
+	}
 };
 
 // Returns the base synonym for this identifier.
@@ -841,6 +862,7 @@ SBVRParser.reset = function() {
 		this.matchAll(this.builtInVocab, 'Process');
 		this.builtInVocabInputHead = this.inputHead;
 	}
+	this.inputHead = null;
 	// And switching back to the "Default" vocabulary for normal parsing.
 	this.inputHead = null;
 	this.matchAll('Vocabulary: Default', 'Process');

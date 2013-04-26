@@ -12,12 +12,10 @@ SBVRLibs.ApplyFirstExisting = function(rules, ruleArgs) {
 	if(ruleArgs == null) {
 		ruleArgs = [];
 	}
-	ruleArgs.unshift('');
 	for (var i = 0; i < rules.length; i++) {
 		if(this[rules[i]] != null) {
-			if(ruleArgs != null && ruleArgs.length > 0) {
-				ruleArgs[0] = rules[i];
-				return this._applyWithArgs.apply(this, ruleArgs);
+			if(ruleArgs.length > 0) {
+				return this._applyWithArgs.apply(this, [rules[i]].concat(ruleArgs));
 			}
 			return this._apply(rules[i], ruleArgs);
 		}
