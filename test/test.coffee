@@ -21,28 +21,26 @@ module.exports = (builtInVocab = false) ->
 			type = lf[0].replace(/([A-Z])/g, ' $1').trim()
 			input = type + ': ' + text
 
-		try
-			SBVRParser.reset()
-			newLF = SBVRParser.matchAll(seSoFar + input, 'Process')
-			if newLF.length == lfSoFar.length
-				last = newLF[newLF.length - 1]
-				attributes = last[last.length - 1]
-				result = attributes[attributes.length - 1]
-			else
-				result = newLF[newLF.length - 1]
-			lfSoFar = newLF
-			seSoFar += input + '\n'
-			it input, ->
+		it input, ->
+			try
+				SBVRParser.reset()
+				newLF = SBVRParser.matchAll(seSoFar + input, 'Process')
+				if newLF.length == lfSoFar.length
+					last = newLF[newLF.length - 1]
+					attributes = last[last.length - 1]
+					result = attributes[attributes.length - 1]
+				else
+					result = newLF[newLF.length - 1]
+				lfSoFar = newLF
+				seSoFar += input + '\n'
 				if lf
 					expect(result).to.deep.equal(lf)
 				expectation?(result)
-		catch e
-			it input, ->
+			catch e
 				if expectation?
 					expectation(e)
 				else
-					expect(e).to.be.null
-				# throw e
+					throw e
 	
 	ret = runExpectation.bind(null, describe)
 	ret.skip = runExpectation.bind(null, describe.skip)
