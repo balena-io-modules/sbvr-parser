@@ -32,15 +32,15 @@ module.exports = (builtInVocab = false) ->
 				result = newLF[newLF.length - 1]
 			lfSoFar = newLF
 			seSoFar += input + '\n'
-			if lf
-				it input, ->
+			it input, ->
+				if lf
 					expect(result).to.deep.equal(lf)
-			expectation?(result)
+				expectation?(result)
 		catch e
-			if expectation?
-				expectation(e)
-			else
-				it input, ->
+			it input, ->
+				if expectation?
+					expectation(e)
+				else
 					expect(e).to.be.null
 				# throw e
 	

@@ -531,21 +531,23 @@ export ometa SBVRParser <: SBVRLibs {
 	Terminator =
 		spaces
 		Keyword('.',true),
+
+	space =
+			^space
+		|	NewComment,
+
 	Line =
 		spaces
-		(
-			(	(	NewIdentifier
-				|	NewFactType
-				|	NewAttribute
-				):func
-				-> func()
-			|	NewRule
-			):l
-			ClearSuggestions
-			{this.lines.push(l)}
-			-> l
-		|	NewComment
-		),
+		(	(	NewIdentifier
+			|	NewFactType
+			|	NewAttribute
+			):func
+			-> func()
+		|	NewRule
+		):l
+		ClearSuggestions
+		{this.lines.push(l)}
+		-> l,
 	Process =
 		EOLSpaces?
 		Line?
