@@ -592,10 +592,12 @@ SBVRParser._AddIdentifier = function(identifierType, identifier, baseSynonym) {
 			this._pred(false);
 		}
 		if(baseSynonym === identifier) {
+			// If this is the base synonym then add the initial mappings
 			vocabulary['IdentifierChildren'][baseSynonym] = [];
 		}
 		else {
-			vocabulary['IdentifierChildren'][baseSynonym].push([identifier, this.currentVocabulary]);
+			// Otherwise point to them
+			vocabulary['IdentifierChildren'][identifier] = vocabulary['IdentifierChildren'][baseSynonym];
 		}
 		vocabulary[identifierType][identifier] = baseSynonym;
 	}

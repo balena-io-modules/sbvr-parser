@@ -18,6 +18,7 @@ exports.factType = factType = (factType...) ->
 exports.conceptType = (term) -> ['ConceptType', stripAttributes(term)]
 exports.referenceScheme = (term) -> ['ReferenceScheme', stripAttributes(term)]
 exports.termForm = (term) -> ['TermForm', stripAttributes(term)]
+exports.synonym = (term) -> ['Synonym', stripAttributes(term)]
 
 exports.note = (note) -> ['Note', note]
 exports.definition = (options...) -> ['Definition', ['Enum'].concat(parseEmbeddedData(option)[3] for option in options)]
