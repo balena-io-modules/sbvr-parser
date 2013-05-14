@@ -852,28 +852,32 @@
             this._apply("spaces");
             return this._applyWithArgs("Keyword", ".", !0);
         },
-        Line: function() {
-            var $elf = this, _fromIdx = this.input.idx, func, l;
-            this._apply("spaces");
+        space: function() {
+            var $elf = this, _fromIdx = this.input.idx;
             return this._or(function() {
-                l = this._or(function() {
-                    func = this._or(function() {
-                        return this._apply("NewIdentifier");
-                    }, function() {
-                        return this._apply("NewFactType");
-                    }, function() {
-                        return this._apply("NewAttribute");
-                    });
-                    return func();
-                }, function() {
-                    return this._apply("NewRule");
-                });
-                this._apply("ClearSuggestions");
-                this.lines.push(l);
-                return l;
+                return SBVRLibs._superApplyWithArgs(this, "space");
             }, function() {
                 return this._apply("NewComment");
             });
+        },
+        Line: function() {
+            var $elf = this, _fromIdx = this.input.idx, func, l;
+            this._apply("spaces");
+            l = this._or(function() {
+                func = this._or(function() {
+                    return this._apply("NewIdentifier");
+                }, function() {
+                    return this._apply("NewFactType");
+                }, function() {
+                    return this._apply("NewAttribute");
+                });
+                return func();
+            }, function() {
+                return this._apply("NewRule");
+            });
+            this._apply("ClearSuggestions");
+            this.lines.push(l);
+            return l;
         },
         Process: function() {
             var $elf = this, _fromIdx = this.input.idx;
@@ -910,7 +914,7 @@
         if ("Vocabulary" === identifierType) this.AddVocabulary(identifier, baseSynonym); else {
             var vocabulary = this.vocabularies[this.currentVocabulary];
             vocabulary.IdentifierChildren.hasOwnProperty(identifier) && this._pred(!1);
-            baseSynonym === identifier ? vocabulary.IdentifierChildren[baseSynonym] = [] : vocabulary.IdentifierChildren[baseSynonym].push([ identifier, this.currentVocabulary ]);
+            baseSynonym === identifier ? vocabulary.IdentifierChildren[baseSynonym] = [] : vocabulary.IdentifierChildren[identifier] = vocabulary.IdentifierChildren[baseSynonym];
             vocabulary[identifierType][identifier] = baseSynonym;
         }
         this.longestIdentifier[identifierType] = Math.max(identifier.length, identifier.pluralize().length, this.longestIdentifier[identifierType]);
