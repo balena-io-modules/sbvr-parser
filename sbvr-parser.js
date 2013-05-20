@@ -1,5 +1,5 @@
 (function(root, factory) {
-    "function" == typeof define && define.amd ? define([ "require", "exports", "ometa-core" ], factory) : "object" == typeof exports ? factory(require, exports, require("ometa-js").core) : factory(function(moduleName) {
+    "function" == typeof define && define.amd ? define([ "require", "exports", "ometa-core", "./sbvr-libs", "lodash", "./inflection" ], factory) : "object" == typeof exports ? factory(require, exports, require("ometa-js").core) : factory(function(moduleName) {
         return root[moduleName];
     }, root, root.OMeta);
 })(this, function(require, exports, OMeta) {
