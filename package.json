@@ -7,12 +7,12 @@
     "test": "mocha",
     "prepublish": "node node_modules/ometa-js/bin/ometajs2js --input sbvr-parser.ometajs --output sbvr-parser.js && node node_modules/ometa-js/bin/ometajs2js --input sbvr-libs.ometajs --output sbvr-libs.js"
   },
-  "repository": "",
+  "repository": "git@bitbucket.org:rulemotion/sbvr-parser.git",
   "author": "",
   "license": "BSD",
   "dependencies": {
-    "ometa-js": "1.x",
-    "lodash": "1.x"
+    "ometa-js": "~1.0.3",
+    "lodash": "~1.2.1"
   },
   "devDependencies": {
     "chai": "latest"
