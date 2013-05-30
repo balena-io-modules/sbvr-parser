@@ -5,7 +5,7 @@
   "main": "sbvr-parser.js",
   "scripts": {
     "test": "mocha",
-    "prepublish": "node node_modules/ometa-js/bin/ometajs2js --input sbvr-parser.ometajs --output sbvr-parser.js && node node_modules/ometa-js/bin/ometajs2js --input sbvr-libs.ometajs --output sbvr-libs.js"
+    "prepublish": "node node_modules/ometa-js/bin/ometajs2js --input sbvr-parser.ometajs --output sbvr-parser.js && node node_modules/ometa-js/bin/ometajs2js --input sbvr-libs.ometajs --output sbvr-libs.js && node node_modules/ometa-js/bin/ometajs2js --input lf-optimiser.ometajs --output lf-optimiser.js && node node_modules/ometa-js/bin/ometajs2js --input lf-validator.ometajs --output lf-validator.js"
   },
   "repository": "git@bitbucket.org:rulemotion/sbvr-parser.git",
   "author": "",
