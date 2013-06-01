@@ -1071,8 +1071,5 @@
         if (wanted.toLowerCase() === this._apply("lowerCaseAnything")) return wanted;
         throw this._fail();
     };
-    SBVRParser.lowerCaseAnything = function() {
-        return this._apply("anything").toLowerCase();
-    };
     SBVRParser._disablePrependingInput();
 });
