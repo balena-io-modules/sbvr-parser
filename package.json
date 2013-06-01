@@ -11,7 +11,7 @@
   "author": "",
   "license": "BSD",
   "dependencies": {
-    "ometa-js": "~1.0.3",
+    "ometa-js": "~1.0.4",
     "lodash": "~1.2.1"
   },
   "devDependencies": {

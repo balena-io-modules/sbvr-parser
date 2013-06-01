@@ -941,11 +941,6 @@ SBVRParser.exactly = function(wanted) {
 	}
 	throw this._fail();
 };
-// This is a bit hacky, but the lack of arguments means the .toLowerCase() is memoised,
-// saving a lot of .toLowerCase() calls in "exactly" (which isn't memoised :( )
-SBVRParser.lowerCaseAnything = function() {
-	return this._apply("anything").toLowerCase();
-};
 
 // For performance we can use this.
 SBVRParser._disablePrependingInput();
