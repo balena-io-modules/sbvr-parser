@@ -12,9 +12,9 @@
   "license": "BSD",
   "dependencies": {
     "ometa-js": "~1.0.4",
-    "lodash": "~2.0.0"
+    "lodash": "~2.2.1"
   },
   "devDependencies": {
-    "chai": "latest"
+    "chai": "~1.8.1"
   }
 }
