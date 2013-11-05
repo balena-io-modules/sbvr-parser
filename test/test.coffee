@@ -4,8 +4,7 @@ expect = require('chai').expect
 {toSE} = require('./sbvr-helper')
 
 module.exports = (builtInVocab = false) ->
-	require('ometa-js')
-	SBVRParser = require('../sbvr-parser.ometajs').SBVRParser.createInstance()
+	SBVRParser = require('../sbvr-parser').SBVRParser.createInstance()
 	SBVRParser.enableReusingMemoizations(SBVRParser._sideEffectingRules)
 	
 	if builtInVocab
