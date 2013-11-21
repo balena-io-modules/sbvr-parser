@@ -1,8 +1,8 @@
-(function(root, factory) {
+!function(root, factory) {
     "function" == typeof define && define.amd ? define([ "require", "exports", "ometa-core", "lodash" ], factory) : "object" == typeof exports ? factory(require, exports, require("ometa-js").core) : factory(function(moduleName) {
         return root[moduleName];
     }, root, root.OMeta);
-})(this, function(require, exports, OMeta) {
+}(this, function(require, exports, OMeta) {
     var _ = require("lodash"), SBVRLibs = exports.SBVRLibs = OMeta._extend({});
     SBVRLibs.initialize = function() {
         this.currentVocabulary = "";
@@ -11,7 +11,7 @@
     };
     SBVRLibs.ApplyFirstExisting = function(rules, ruleArgs) {
         null == ruleArgs && (ruleArgs = []);
-        for (var i = 0; rules.length > i; i++) if (null != this[rules[i]]) return ruleArgs.length > 0 ? this._applyWithArgs.apply(this, [ rules[i] ].concat(ruleArgs)) : this._apply(rules[i], ruleArgs);
+        for (var i = 0; i < rules.length; i++) if (null != this[rules[i]]) return ruleArgs.length > 0 ? this._applyWithArgs.apply(this, [ rules[i] ].concat(ruleArgs)) : this._apply(rules[i], ruleArgs);
     };
     SBVRLibs.IdentifiersEqual = function(a, b) {
         return a[0] === b[0] && a[1] === b[1] && a[2] === b[2];
@@ -32,12 +32,12 @@
         this.vocabularies.hasOwnProperty(vocabulary) || (this.vocabularies[vocabulary] = this.vocabularies[baseSynonym]);
     };
     SBVRLibs.AddFactType = function(factType, realFactType) {
-        for (var mappedFactType = [], i = 0; realFactType.length > i; i++) {
+        for (var mappedFactType = [], i = 0; i < realFactType.length; i++) {
             var realFactTypePart = realFactType[i];
             mappedFactType[i] = realFactTypePart.slice(0, 3);
-            for (var j = 0; factType.length > j; j++) {
+            for (var j = 0; j < factType.length; j++) {
                 var factTypePart = factType[j];
-                "Verb" !== realFactTypePart[0] && this.IdentifiersEqual(realFactTypePart, factTypePart) && realFactTypePart.length === factTypePart.length && (4 > realFactTypePart.length || realFactTypePart[3][1] === factTypePart[3][1]) && (mappedFactType[i][3] = j);
+                "Verb" !== realFactTypePart[0] && this.IdentifiersEqual(realFactTypePart, factTypePart) && realFactTypePart.length === factTypePart.length && (realFactTypePart.length < 4 || realFactTypePart[3][1] === factTypePart[3][1]) && (mappedFactType[i][3] = j);
             }
         }
         this._traverseFactType(factType, mappedFactType);

@@ -1,13 +1,13 @@
-(function(root, factory) {
+!function(root, factory) {
     "function" == typeof define && define.amd ? define([ "require", "exports", "ometa-core", "./sbvr-libs" ], factory) : "object" == typeof exports ? factory(require, exports, require("ometa-js").core) : factory(function(moduleName) {
         return root[moduleName];
     }, root, root.OMeta);
-})(this, function(require, exports, OMeta) {
+}(this, function(require, exports, OMeta) {
     var SBVRLibs = require("./sbvr-libs").SBVRLibs, LFValidator = exports.LFValidator = SBVRLibs._extend({
         trans: function() {
             var $elf = this, _fromIdx = this.input.idx, a, t;
             this._form(function() {
-                t = this._apply("anything");
+                t = this.anything();
                 return a = this._applyWithArgs("apply", t);
             });
             return a;
@@ -15,7 +15,7 @@
         token: function(x) {
             var $elf = this, _fromIdx = this.input.idx, a, t;
             this._form(function() {
-                t = this._apply("anything");
+                t = this.anything();
                 this._pred(t == x);
                 return a = this._applyWithArgs("apply", x);
             });
@@ -81,7 +81,7 @@
             });
             this._opt(function() {
                 return this._lookahead(function() {
-                    attrs = this._apply("anything");
+                    attrs = this.anything();
                     return this._applyWithArgs("AddFactType", factType, factType);
                 });
             });
@@ -89,14 +89,14 @@
         },
         Vocabulary: function() {
             var $elf = this, _fromIdx = this.input.idx, vocab;
-            vocab = this._apply("anything");
+            vocab = this.anything();
             this._applyWithArgs("AddVocabulary", vocab, vocab);
             return this._applyWithArgs("addAttributes", [ "Vocabulary", vocab ]);
         },
         Term: function() {
             var $elf = this, _fromIdx = this.input.idx, data, term, vocab;
-            term = this._apply("anything");
-            vocab = this._apply("anything");
+            term = this.anything();
+            vocab = this.anything();
             return this._or(function() {
                 data = this._or(function() {
                     return this._applyWithArgs("token", "Number");
@@ -110,13 +110,13 @@
         },
         Name: function() {
             var $elf = this, _fromIdx = this.input.idx, name, vocab;
-            name = this._apply("anything");
-            vocab = this._apply("anything");
+            name = this.anything();
+            vocab = this.anything();
             return this._applyWithArgs("addAttributes", [ "Name", name, vocab ]);
         },
         Verb: function() {
             var $elf = this, _fromIdx = this.input.idx, negated, v;
-            v = this._apply("anything");
+            v = this.anything();
             negated = this._or(function() {
                 return this._apply("true");
             }, function() {
@@ -149,7 +149,7 @@
                     this._applyWithArgs("exactly", "Attributes");
                     this._many(function() {
                         return this._form(function() {
-                            attrName = this._apply("anything");
+                            attrName = this.anything();
                             attrVal = this._applyWithArgs("ApplyFirstExisting", [ "Attr" + attrName, "DefaultAttr" ], [ termOrFactType ]);
                             return this._opt(function() {
                                 this._pred(null != attrVal);
@@ -166,14 +166,14 @@
         },
         DefaultAttr: function(tableID) {
             var $elf = this, _fromIdx = this.input.idx;
-            return this._apply("anything");
+            return this.anything();
         },
         AttrConceptType: function(termOrFactType) {
             var $elf = this, _fromIdx = this.input.idx, conceptType, term, vocab;
             term = this._form(function() {
                 this._applyWithArgs("exactly", "Term");
-                conceptType = this._apply("anything");
-                return vocab = this._apply("anything");
+                conceptType = this.anything();
+                return vocab = this.anything();
             });
             this.vocabularies[this.currentVocabulary].ConceptTypes[termOrFactType] = term;
             return term;
@@ -184,7 +184,7 @@
                 return this._form(function() {
                     this._applyWithArgs("exactly", "Enum");
                     return values = this._many1(function() {
-                        return this._apply("anything");
+                        return this.anything();
                     });
                 });
             }, function() {
@@ -201,13 +201,13 @@
         },
         AttrSynonymousForm: function(factType) {
             var $elf = this, _fromIdx = this.input.idx, synForm;
-            synForm = this._apply("anything");
+            synForm = this.anything();
             this._applyWithArgs("AddFactType", synForm, factType.slice(1));
             return synForm;
         },
         StructuredEnglish: function() {
             var $elf = this, _fromIdx = this.input.idx, a;
-            a = this._apply("anything");
+            a = this.anything();
             return [ "StructuredEnglish", a ];
         },
         ObligationFormulation: function() {
@@ -354,7 +354,7 @@
         },
         Text: function() {
             var $elf = this, _fromIdx = this.input.idx, text;
-            text = this._apply("anything");
+            text = this.anything();
             return [ "Text", text ];
         },
         Value: function() {

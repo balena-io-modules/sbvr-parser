@@ -1,8 +1,8 @@
-(function(root, factory) {
+!function(root, factory) {
     "function" == typeof define && define.amd ? define([ "require", "exports", "ometa-core", "./lf-validator" ], factory) : "object" == typeof exports ? factory(require, exports, require("ometa-js").core) : factory(function(moduleName) {
         return root[moduleName];
     }, root, root.OMeta);
-})(this, function(require, exports, OMeta) {
+}(this, function(require, exports, OMeta) {
     var LFValidator = require("./lf-validator").LFValidator, LFOptimiser = exports.LFOptimiser = LFValidator._extend({
         Helped: function() {
             var $elf = this, _fromIdx = this.input.idx;
@@ -15,7 +15,7 @@
         },
         Process: function() {
             var $elf = this, _fromIdx = this.input.idx, x;
-            x = this._apply("anything");
+            x = this.anything();
             x = this._applyWithArgs("trans", x);
             this._many(function() {
                 this._applyWithArgs("Helped", "disableMemoisation");

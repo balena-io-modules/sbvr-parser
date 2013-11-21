@@ -1,15 +1,15 @@
-(function(root, factory) {
+!function(root, factory) {
     "function" == typeof define && define.amd ? define([ "require", "exports", "ometa-core", "./sbvr-libs", "lodash", "./inflection" ], factory) : "object" == typeof exports ? factory(require, exports, require("ometa-js").core) : factory(function(moduleName) {
         return root[moduleName];
     }, root, root.OMeta);
-})(this, function(require, exports, OMeta) {
+}(this, function(require, exports, OMeta) {
     var SBVRLibs = require("./sbvr-libs").SBVRLibs, _ = require("lodash");
     require("./inflection");
     var SBVRParser = exports.SBVRParser = SBVRLibs._extend({
         EOL: function() {
             var $elf = this, _fromIdx = this.input.idx;
             return function() {
-                switch (this._apply("anything")) {
+                switch (this.anything()) {
                   case "\n":
                     return "\n";
 
@@ -102,20 +102,18 @@
             text = this._consumedBy(function() {
                 return this._many1(function() {
                     return this._or(function() {
-                        return function() {
-                            switch (this._apply("anything")) {
-                              case "\\":
-                                return this._applyWithArgs("exactly", '"');
+                        switch (this.anything()) {
+                          case "\\":
+                            return this._applyWithArgs("exactly", '"');
 
-                              default:
-                                throw this._fail();
-                            }
-                        }.call(this);
+                          default:
+                            throw this._fail();
+                        }
                     }, function() {
                         this._not(function() {
                             return this._applyWithArgs("exactly", '"');
                         });
-                        return this._apply("anything");
+                        return this.anything();
                     });
                 });
             });
@@ -141,24 +139,20 @@
                     return this._or(function() {
                         return this._apply("InformalIdentifier");
                     }, function() {
-                        return function() {
-                            switch (this._apply("anything")) {
-                              case "'":
-                                return function() {
-                                    this._apply("InformalIdentifier");
-                                    return this._applyWithArgs("exactly", "'");
-                                }.call(this);
+                        switch (this.anything()) {
+                          case "'":
+                            this._apply("InformalIdentifier");
+                            return this._applyWithArgs("exactly", "'");
 
-                              default:
-                                throw this._fail();
-                            }
-                        }.call(this);
+                          default:
+                            throw this._fail();
+                        }
                     }, function() {
                         return this._many1(function() {
                             this._not(function() {
                                 return this._apply("space");
                             });
-                            return this._apply("anything");
+                            return this.anything();
                         });
                     });
                 });
@@ -171,7 +165,7 @@
                     this._not(function() {
                         return this._apply("EOL");
                     });
-                    return this._apply("anything");
+                    return this.anything();
                 });
             });
         },
@@ -296,7 +290,6 @@
                     return this.currentVocabulary;
                 });
                 factTypeIdentifier = this._applyWithArgs("IsFactTypeIdentifier", vocabulary, identifierType, factTypeSoFar, identifierSoFar);
-                this._pred(factTypeIdentifier !== !1);
                 return [ identifierType, factTypeIdentifier, vocabulary ];
             });
         },
@@ -311,15 +304,13 @@
             this._or(function() {
                 return this._pred(!bracket);
             }, function() {
-                return function() {
-                    switch (this._apply("anything")) {
-                      case ")":
-                        return ")";
+                switch (this.anything()) {
+                  case ")":
+                    return ")";
 
-                      default:
-                        throw this._fail();
-                    }
-                }.call(this);
+                  default:
+                    throw this._fail();
+                }
             });
             return vocabulary;
         },
@@ -348,15 +339,13 @@
                     return this._or(function() {
                         return this._apply("letter");
                     }, function() {
-                        return function() {
-                            switch (this._apply("anything")) {
-                              case "-":
-                                return "-";
+                        switch (this.anything()) {
+                          case "-":
+                            return "-";
 
-                              default:
-                                throw this._fail();
-                            }
-                        }.call(this);
+                          default:
+                            throw this._fail();
+                        }
                     });
                 });
             });
@@ -397,7 +386,7 @@
                 this._or(function() {
                     return this._pred(factTypeSoFar === !0);
                 }, function() {
-                    return this._pred(this.isVerb(factTypeSoFar, verbSoFar));
+                    return this._applyWithArgs("IsVerb", factTypeSoFar, verbSoFar);
                 });
                 verb = [ "Verb", this._verbForm(verbSoFar) ];
                 this._or(function() {
@@ -542,7 +531,6 @@
             }, function() {
                 data = this._apply("Value");
                 factTypeIdentifier = this._applyWithArgs("IsFactTypeIdentifier", "Type", "Term", factType, data[0]);
-                this._pred(factTypeIdentifier !== !1);
                 identifier = [ "Term", factTypeIdentifier, "Type", data ];
                 this._applyWithArgs("EmbedVar", identifier, data);
                 bind = this._applyWithArgs("Bind", identifier, bindings);
@@ -815,7 +803,7 @@
             var $elf = this, _fromIdx = this.input.idx, func;
             func = this._applyWithArgs("AddIdentifier", "Term");
             return function(currentLine) {
-                for (var term = func(), i = 0; currentLine.length > i; i++) if ("Term" === currentLine[i][0]) {
+                for (var term = func(), i = 0; i < currentLine.length; i++) if ("Term" === currentLine[i][0]) {
                     var factType = [ term, [ "Verb", "has", !1 ], currentLine[i] ];
                     $elf.AddFactType(factType, factType);
                 }
@@ -924,18 +912,22 @@
         var identifiers = this.vocabularies[vocabulary][identifierType];
         if (identifiers.hasOwnProperty(identifier)) return identifiers[identifier];
         identifier = identifier.singularize();
-        return identifiers.hasOwnProperty(identifier) ? identifiers[identifier] : !1;
+        this._pred(identifiers.hasOwnProperty(identifier));
+        return identifiers[identifier];
     };
     SBVRParser.IsFactTypeIdentifier = function(vocabulary, identifierType, factTypeSoFar, identifier) {
         identifier = this.BaseSynonym(vocabulary, identifierType, identifier);
-        if (identifier === !1) return !1;
         var identifiers = this.branches[identifierType].call(this, factTypeSoFar, vocabulary);
-        return -1 !== identifiers.indexOf(identifier) ? identifier : !1;
+        this._pred(-1 !== identifiers.indexOf(identifier));
+        return identifier;
     };
-    SBVRParser.isVerb = function(factTypeSoFar, verb) {
+    SBVRParser.IsVerb = function(factTypeSoFar, verb) {
         verb = [ "Verb", this._verbForm(verb) ];
         var currentLevel = this._traverseFactType(factTypeSoFar);
-        return currentLevel === !1 ? !1 : currentLevel.hasOwnProperty(verb) ? !0 : currentLevel.hasOwnProperty("__valid") ? this.isVerb([], verb) : !1;
+        this._pred(currentLevel !== !1);
+        if (currentLevel.hasOwnProperty(verb)) return void 0;
+        this._pred(currentLevel.hasOwnProperty("__valid"));
+        return this.IsVerb([], verb);
     };
     SBVRParser._verbForm = function(verb) {
         return "are " === verb.slice(0, 4) ? "is " + verb.slice(4) : "are" === verb ? "is" : "have" === verb ? "has" : verb;
@@ -944,7 +936,7 @@
         var currentLevel = this._traverseFactType(factType);
         return currentLevel === !1 ? !1 : currentLevel.__valid;
     };
-    var removeRegex = RegExp("^(?:" + [ "" + [ "Term", "" ], "" + [ "Name", "" ], "" + [ "Verb", "" ] ].join("|") + ")(.*?)(?:,(.*))?$"), defaultAllowedAttrLists = [ "Concept Type:", "Definition:", "Definition (Informal):", "Description:", "Dictionary Basis:", "Example:", "General Concept:", "Namespace URI:", "Necessity:", "Note:", "Possibility:", "Reference Scheme:", "See:", "Source:", "Subject Field:" ];
+    var removeRegex = new RegExp("^(?:" + [ [ "Term", "" ].toString(), [ "Name", "" ].toString(), [ "Verb", "" ].toString() ].join("|") + ")(.*?)(?:,(.*))?$"), defaultAllowedAttrLists = [ "Concept Type:", "Definition:", "Definition (Informal):", "Description:", "Dictionary Basis:", "Example:", "General Concept:", "Namespace URI:", "Necessity:", "Note:", "Possibility:", "Reference Scheme:", "See:", "Source:", "Subject Field:" ];
     defaultAllowedAttrLists = {
         Term: [ "Synonym:" ].concat(defaultAllowedAttrLists),
         Name: [ "Synonym:" ].concat(defaultAllowedAttrLists),
@@ -962,7 +954,7 @@
             vocabulary = vocabularies[vocabulary];
             var identifiers = vocabulary[identifierType];
             identifiers.hasOwnProperty(identifier) && (factTypeParts[identifiers[identifier]] = !0);
-            for (var i = 0; vocabulary.IdentifierChildren[identifier].length > i; i++) {
+            for (var i = 0; i < vocabulary.IdentifierChildren[identifier].length; i++) {
                 var child = vocabulary.IdentifierChildren[identifier][i];
                 followChildrenChain(child[1], child[0]);
             }
@@ -1053,7 +1045,7 @@
         }
     };
     SBVRParser.matchForAny = function(rule, arr) {
-        for (var $elf = this, origInput = this.input, ref = {}, result = ref, idx = 0; arr.length > idx; idx++) {
+        for (var $elf = this, origInput = this.input, ref = {}, result = ref, idx = 0; idx < arr.length; idx++) {
             try {
                 $elf.input = origInput;
                 result = $elf._applyWithArgs.call($elf, rule, arr[idx]);
@@ -1065,7 +1057,7 @@
         throw this._fail();
     };
     SBVRParser.matchForAll = function(rule, arr) {
-        for (var idx = 0; arr.length > idx; idx++) this._applyWithArgs.call(this, rule, arr[idx]);
+        for (var idx = 0; idx < arr.length; idx++) this._applyWithArgs.call(this, rule, arr[idx]);
     };
     SBVRParser.exactly = function(wanted) {
         if (wanted.toLowerCase() === this._apply("lowerCaseAnything")) return wanted;
