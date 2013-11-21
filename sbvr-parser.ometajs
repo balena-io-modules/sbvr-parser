@@ -149,7 +149,6 @@ export ometa SBVRParser <: SBVRLibs {
 			|	-> this.currentVocabulary
 			):vocabulary
 			IsFactTypeIdentifier(vocabulary, identifierType, factTypeSoFar, identifierSoFar):factTypeIdentifier
-			?(factTypeIdentifier !== false)
 			-> [identifierType, factTypeIdentifier, vocabulary]
 		),
 	
@@ -303,7 +302,6 @@ export ometa SBVRParser <: SBVRLibs {
 			Value:data
 			// Is the type of embedded data allowed here?
 			IsFactTypeIdentifier('Type', 'Term', factType, data[0]):factTypeIdentifier
-			?(factTypeIdentifier !== false)
 			{['Term', factTypeIdentifier, 'Type', data]}:identifier
 			// Create the var so we can bind to it.
 			EmbedVar(identifier, data)
@@ -618,23 +616,16 @@ SBVRParser.BaseSynonym = function(vocabulary, identifierType, identifier) {
 		return identifiers[identifier];
 	}
 	identifier = identifier.singularize();
-	if(identifiers.hasOwnProperty(identifier)) {
-		return identifiers[identifier];
-	}
-	return false;
+	this._pred(identifiers.hasOwnProperty(identifier));
+	return identifiers[identifier];
 };
 
 // Checks that the identifier is valid in this point of the fact type and returns the identifier as it is found in the fact type.
 SBVRParser.IsFactTypeIdentifier = function(vocabulary, identifierType, factTypeSoFar, identifier) {
 	identifier = this.BaseSynonym(vocabulary, identifierType, identifier);
-	if(identifier === false) {
-		return false;
-	}
 	var identifiers = this.branches[identifierType].call(this, factTypeSoFar, vocabulary);
-	if(identifiers.indexOf(identifier) !== -1) {
-		return identifier;
-	}
-	return false;
+	this._pred(identifiers.indexOf(identifier) !== -1);
+	return identifier;
 };
 
 SBVRParser.isVerb = function(factTypeSoFar, verb) {
