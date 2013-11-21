@@ -205,7 +205,7 @@ export ometa SBVRParser <: SBVRLibs {
 		)?
 		(	FindVerb(factTypeSoFar, verbSoFar, negated)
 		|	(	?(factTypeSoFar===true)
-			|	?this.isVerb(factTypeSoFar, verbSoFar)
+			|	IsVerb(factTypeSoFar, verbSoFar)
 			)
 			{['Verb', this._verbForm(verbSoFar)]}:verb
 			(	?negated
@@ -628,23 +628,19 @@ SBVRParser.IsFactTypeIdentifier = function(vocabulary, identifierType, factTypeS
 	return identifier;
 };
 
-SBVRParser.isVerb = function(factTypeSoFar, verb) {
+SBVRParser.IsVerb = function(factTypeSoFar, verb) {
 	verb = ['Verb',this._verbForm(verb)];
 	var currentLevel = this._traverseFactType(factTypeSoFar);
-	if(currentLevel===false) {
-		// We have no fact type matching this chain.
-		return false;
-	}
+	// Check we have a fact type matching this chain.
+	this._pred(currentLevel!==false);
 	if(currentLevel.hasOwnProperty(verb)) {
 		// We found the verb.
-		return true;
+		return;
 	}
-	if(currentLevel.hasOwnProperty('__valid')) {
-		// We have a valid fact type up to here, try a new one.
-		// TODO: Should this actually be looking if the verb before last term is valid?
-		return this.isVerb([], verb);
-	}
-	return false;
+	this._pred(currentLevel.hasOwnProperty('__valid'));
+	// We have a valid fact type up to here, try a new one.
+	// TODO: Should this actually be looking if the verb before last term is valid?
+	return this.IsVerb([], verb);
 };
 
 SBVRParser._verbForm = function(verb) {
