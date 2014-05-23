@@ -328,7 +328,7 @@ export ometa SBVRParser <: SBVRLibs {
 		"It" "is" 
 		(	"obligatory"
 			-> ['ObligationFormulation']
-		|	"necessary"	
+		|	"necessary"
 			-> ['NecessityFormulation']
 		|	"prohibited"
 			-> ['ObligationFormulation', ['LogicalNegation']]
