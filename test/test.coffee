@@ -19,6 +19,10 @@ module.exports = (builtInVocab = false) ->
 			text = toSE(lf)
 			type = lf[0].replace(/([A-Z])/g, ' $1').trim()
 			input = type + ': ' + text
+		else if _.isObject(input)
+			{lf, se: text} = input
+			type = lf[0].replace(/([A-Z])/g, ' $1').trim()
+			input = type + ': ' + text
 
 		it input, ->
 			try

@@ -6,13 +6,15 @@ exports.term = (term, vocab = 'Default') -> ['Term', term, vocab, ['Attributes']
 exports.verb = (verb, negated = false) -> ['Verb', verb, negated]
 exports.factType = factType = (factType...) ->
 	['FactType'].concat(
-		_.map(factType, (factTypePart) ->
+		_.filter _.map(factType, (factTypePart) ->
 			if _.isNumber(factTypePart) or _.isString(factTypePart)
 				parseEmbeddedData(factTypePart)
-			else if factTypePart[0] is  'Term'
+			else if factTypePart[0] is 'Term'
 				stripAttributes(factTypePart)
-			else
+			else if factTypePart[0] is 'Verb'
 				factTypePart
+			else
+				null
 		)
 	).concat([['Attributes']])
 exports.conceptType = (term) -> ['ConceptType', stripAttributes(term)]
@@ -21,7 +23,17 @@ exports.termForm = (term) -> ['TermForm', stripAttributes(term)]
 exports.synonym = (term) -> ['Synonym', stripAttributes(term)]
 
 exports.note = (note) -> ['Note', note]
-exports.definition = (options...) -> ['Definition', ['Enum'].concat(parseEmbeddedData(option)[3] for option in options)]
+exports.definitionEnum = (options...) -> ['Definition', ['Enum'].concat(parseEmbeddedData(option)[3] for option in options)]
+exports.definition = (variable) ->
+	resolveVariable = createVariableResolver()
+	{lf, se} = resolveVariable(variable)
+	return {
+		lf: [
+			'Definition'
+			lf
+		]
+		se: se
+	}
 
 exports.toSE = toSE = (lf) ->
 	if _.isArray lf
@@ -43,11 +55,16 @@ exports.toSE = toSE = (lf) ->
 			when 'Attributes'
 				''
 			when 'Definition'
-				_.map(lf[1][1...], toSE).join(' or ')
+				if lf[1][0] is 'Enum'
+					_.map(lf[1][1...], toSE).join(' or ')
+				else
+					lf
 			when 'Text'
 				'"' + lf[1] + '"'
 			when 'Integer'
 				lf[1]
+			when 'at least', 'at most'
+				_.map(lf, toSE).join(' ')
 			else
 				_.map(lf[1...], toSE).join(' ').trim()
 	else
@@ -119,28 +136,45 @@ createVariableResolver = ->
 				strippedIdentifier
 				strippedIdentifier[3] ? num
 			]
+		resultVar = [
+			'Variable'
+			[	'Number'
+				num
+			]
+			strippedIdentifier
+		]
 		return {
 			identifier
 			binding
+			variable: resultVar
 			lf:
-				[	'Variable'
-					[	'Number'
-						num
-					]
-					strippedIdentifier
-				].concat(
+				resultVar.concat(
 					if _.isNumber(variable) or _.isString(variable) or variable[0] is 'Term'
 						[]
 					else
-						[	[	'AtomicFormulation'
-								stripAttributes(factType.apply(null, variable))
+						if variable[3]?
+							secondVar = resolveVariable(variable[3])
+						else if variable[2]?
+							embeddedVar = resolveVariable(variable[2])
+
+						atomicFormulation = 
+							[
+								'AtomicFormulation'
+								stripAttributes(factType(variable...))
 								binding
 							].concat(
-								if variable[2]?
-									[resolveVariable(variable[2]).binding]
+								if secondVar?
+									[secondVar.binding]
+								else if embeddedVar?
+									[embeddedVar.binding]
 								else
 									[]
 							)
+						[
+							if secondVar?
+								resolveQuantifier(variable[2]).concat([secondVar.variable, atomicFormulation])
+							else
+								atomicFormulation
 						]
 				)
 			se: 

@@ -1,8 +1,9 @@
 test = require('./test')()
-{term, verb, factType, conceptType, referenceScheme, necessity, rule} = require('./sbvr-helper')
+{term, verb, factType, conceptType, referenceScheme, necessity, rule, definition} = require('./sbvr-helper')
 
 name = term 'name'
 pilot = term 'pilot'
+veteranPilot = term 'veteran pilot'
 plane = term 'plane'
 
 describe 'pilots', ->
@@ -28,6 +29,10 @@ describe 'pilots', ->
 	test factType pilot, verb('can fly'), plane
 	# Fact type: pilot is experienced
 	test factType pilot, verb('is experienced')
+	# Term: veteran pilot
+	test veteranPilot
+	# 	Definition: pilot that can fly at least 2 planes
+	test definition [pilot, verb('can fly'), ['at least', 2], plane]
 	# Rule:       It is necessary that each pilot can fly at least 1 plane
 	test rule 'Necessity', 'each', pilot, verb('can fly'), ['at least', 1], plane
 	# Rule:       It is necessary that each pilot that is experienced, can fly at least 2 planes
