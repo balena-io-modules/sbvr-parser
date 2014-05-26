@@ -784,6 +784,10 @@ SBVRParser.reset = function() {
 			return getValidFactTypeParts.call(this, vocabulary, 'Name', factTypeSoFar);
 		},
 		Verb: function(factTypeSoFar, vocabulary) {
+			if(factTypeSoFar === true) {
+				// If any verb is allowed then we have no guidance to give.
+				return [];
+			}
 			return getValidFactTypeParts.call(this, vocabulary, 'Verb', factTypeSoFar);
 		},
 		AllowedAttrs: function(termOrFactType) {
