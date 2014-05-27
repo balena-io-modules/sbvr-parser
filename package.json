@@ -12,8 +12,8 @@
   "author": "",
   "license": "BSD",
   "dependencies": {
-    "ometa-js": "~1.1.0",
-    "lodash": "~2.3.0"
+    "ometa-js": "~1.3.0",
+    "lodash": "~2.4.1"
   },
   "devDependencies": {
     "chai": "~1.8.1"
