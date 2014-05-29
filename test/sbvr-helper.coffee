@@ -152,9 +152,11 @@ createVariableResolver = ->
 					if _.isNumber(variable) or _.isString(variable) or variable[0] is 'Term'
 						[]
 					else
-						if variable[3]?
+						# If there is a 4th element then we're looking at [Term, Verb, Quantifier, Term]
+						if variable.length is 4
 							secondVar = resolveVariable(variable[3])
-						else if variable[2]?
+						# However if there's only 3 elements then we're looking at [Term, Verb, EmbeddedData]
+						else if variable.length is 3
 							embeddedVar = resolveVariable(variable[2])
 
 						atomicFormulation = 
