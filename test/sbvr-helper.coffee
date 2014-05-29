@@ -6,16 +6,23 @@ exports.term = (term, vocab = 'Default') -> ['Term', term, vocab, ['Attributes']
 exports.verb = (verb, negated = false) -> ['Verb', verb, negated]
 exports.factType = factType = (factType...) ->
 	['FactType'].concat(
-		_.filter _.map(factType, (factTypePart) ->
+		_(factType)
+		# Standardise the fact type parts
+		.map (factTypePart) ->
 			if _.isNumber(factTypePart) or _.isString(factTypePart)
+				# Parse numbers/strings to the correct term array.
 				parseEmbeddedData(factTypePart)
 			else if factTypePart[0] is 'Term'
+				# Strip attributes from terms
 				stripAttributes(factTypePart)
 			else if factTypePart[0] is 'Verb'
 				factTypePart
 			else
+				# Ignore any unknown fact type parts
 				null
-		)
+		# Remove the nulls
+		.filter()
+		.value()
 	).concat([['Attributes']])
 exports.conceptType = (term) -> ['ConceptType', stripAttributes(term)]
 exports.referenceScheme = (term) -> ['ReferenceScheme', stripAttributes(term)]
