@@ -449,10 +449,11 @@ export ometa SBVRParser <: SBVRLibs {
 			Bind(term):b
 			ClosedProjection(term, b):thatLF
 			{tVar.push(thatLF)}
+			EOLTerminator
 			-> function(currentLine) {
 				if(currentLine[0] !== 'FactType') {
 					$elf.vocabularies[currentLine[2]]['ConceptTypes'][currentLine.slice(0, 3)] = term;
-					$elf.vocabularies['IdentifierChildren'][term[1]].push([currentLine[1], currentLine[2]]);
+					$elf.vocabularies[currentLine[2]]['IdentifierChildren'][term[1]].push([currentLine[1], currentLine[2]]);
 				}
 				return tVar;
 			}

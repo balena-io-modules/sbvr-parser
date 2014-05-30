@@ -1,6 +1,6 @@
 typeVocab = require('fs').readFileSync(__dirname + '/Type.sbvr')
 test = require('./test')(typeVocab)
-{term, verb, factType, conceptType, termForm, referenceScheme, necessity, rule, conceptType, note, definition} = require('./sbvr-helper')
+{term, verb, factType, conceptType, termForm, referenceScheme, necessity, rule, conceptType, note, definitionEnum} = require('./sbvr-helper')
 shortTextType = term 'Short Text', 'Type'
 textType = term 'Text', 'Type'
 integerType = term 'Integer', 'Type'
@@ -306,7 +306,7 @@ describe 'vforvacation', ->
 	# 	Concept Type: Short Text (Type)
 	test conceptType shortTextType
 	# 	Definition: "no data" or "none" or "low" or "medium" or "high"
-	test definition 'no data', 'none', 'low', 'medium', 'high'
+	test definitionEnum 'no data', 'none', 'low', 'medium', 'high'
 
 	# Term:      single price
 	test singlePrice

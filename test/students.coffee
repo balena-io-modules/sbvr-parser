@@ -1,6 +1,6 @@
 test = require('./test')()
 expect = require('chai').expect
-{term, verb, factType, conceptType, termForm, referenceScheme, necessity, rule, conceptType, note, definition, synonym} = require('./sbvr-helper')
+{term, verb, factType, conceptType, termForm, referenceScheme, necessity, rule, conceptType, note, definitionEnum, synonym} = require('./sbvr-helper')
 
 has = verb 'has'
 
@@ -18,7 +18,7 @@ describe 'students', ->
 	# T: educational institution
 	test educationalInstitution
 	#	Definition: "UniS" or "UWE"
-	test definition 'UniS', 'UWE'
+	test definitionEnum 'UniS', 'UWE'
 	# T: age
 	test 'T: age --Ignored comment', (result) ->
 		expect(result).to.deep.equal age

@@ -3,6 +3,9 @@ _ = require('lodash')
 expect = require('chai').expect
 {toSE} = require('./sbvr-helper')
 
+# Gets the type of the line (eg Term/Rule) and adds spaces if necessary (eg "SynonymousForm" to "Synonymous Form")
+getLineType = (lf) -> lf[0].replace(/([A-Z])/g, ' $1').trim()
+
 module.exports = (builtInVocab = false) ->
 	SBVRParser = require('../sbvr-parser').SBVRParser.createInstance()
 	SBVRParser.enableReusingMemoizations(SBVRParser._sideEffectingRules)
@@ -17,7 +20,11 @@ module.exports = (builtInVocab = false) ->
 		if _.isArray(input)
 			lf = input
 			text = toSE(lf)
-			type = lf[0].replace(/([A-Z])/g, ' $1').trim()
+			type = getLineType(lf)
+			input = type + ': ' + text
+		else if _.isObject(input)
+			{lf, se: text} = input
+			type = getLineType(lf)
 			input = type + ': ' + text
 
 		it input, ->
