@@ -722,10 +722,11 @@
                 b = this._applyWithArgs("Bind", term);
                 thatLF = this._applyWithArgs("ClosedProjection", term, b);
                 tVar.push(thatLF);
+                this._apply("EOLTerminator");
                 return function(currentLine) {
                     if ("FactType" !== currentLine[0]) {
                         $elf.vocabularies[currentLine[2]].ConceptTypes[currentLine.slice(0, 3)] = term;
-                        $elf.vocabularies.IdentifierChildren[term[1]].push([ currentLine[1], currentLine[2] ]);
+                        $elf.vocabularies[currentLine[2]].IdentifierChildren[term[1]].push([ currentLine[1], currentLine[2] ]);
                     }
                     return tVar;
                 };
@@ -990,7 +991,7 @@
                 return getValidFactTypeParts.call(this, vocabulary, "Name", factTypeSoFar);
             },
             Verb: function(factTypeSoFar, vocabulary) {
-                return getValidFactTypeParts.call(this, vocabulary, "Verb", factTypeSoFar);
+                return factTypeSoFar === !0 ? [] : getValidFactTypeParts.call(this, vocabulary, "Verb", factTypeSoFar);
             },
             AllowedAttrs: function(termOrFactType) {
                 return this.allowedAttrLists.hasOwnProperty(termOrFactType) ? this.allowedAttrLists[termOrFactType] : null == termOrFactType ? this.allowedAttrLists.Term.concat(this.allowedAttrLists.Name, this.allowedAttrLists.FactType) : [];
