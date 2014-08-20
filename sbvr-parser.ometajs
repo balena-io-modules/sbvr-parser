@@ -270,11 +270,7 @@ export ometa SBVRParser <: SBVRLibs {
 
 	ClosedProjection :identifier :bind =
 		addThat
-		(	{[identifier]}:factType
-			Verb(factType):verb {factType.push(verb)}
-			(	RuleBody(factType, [bind])
-			|	IsAtomicFormulation(factType, [bind])
-			)
+		(	VerbContinuation([identifier], [bind])
 		|	RuleBody([], [], identifier, bind)
 		),
 
@@ -316,19 +312,22 @@ export ometa SBVRParser <: SBVRLibs {
 			{bind[2] = data}
 			{factType.push(identifier)}
 		)
-		(	Verb(factType):v
-			{factType.push(v)}
-			{	if(parentIdentifier != null) {
-					factType.push(parentIdentifier);
-					bindings.push(parentBind);
-				}
-			}
-			(	RuleBody(factType, bindings)
-			|	IsAtomicFormulation(factType, bindings)
-			)
+		(	VerbContinuation(factType, bindings, parentIdentifier, parentBind)
 		|	IsAtomicFormulation(factType, bindings)
 		):lf
 		-> (quant == null ? lf : quant.concat([termEntity.lf, lf])),
+
+	VerbContinuation :factType :bindings :parentIdentifier :parentBind =
+		Verb(factType):v
+		{factType.push(v)}
+		{	if(parentIdentifier != null) {
+				factType.push(parentIdentifier);
+				bindings.push(parentBind);
+			}
+		}
+		(	RuleBody(factType, bindings)
+		|	IsAtomicFormulation(factType, bindings)
+		),
 
 	Modifier =
 		"It" "is" 
