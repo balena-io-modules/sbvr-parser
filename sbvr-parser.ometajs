@@ -367,7 +367,7 @@ export ometa SBVRParser <: SBVRLibs {
 		&(toEOL):ruleText
 		{this.ruleVarsCount = 0}
 		Modifier:mod
-		RuleBody([], []):ruleLF
+		Disjunction('RuleBody', [[], []]):ruleLF
 		EOLTerminator
 		{_.cloneDeep(mod)}:mod
 		{mod.length === 2 ? (mod[1][1] = ruleLF) : (mod[1] = ruleLF)}

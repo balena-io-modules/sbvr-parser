@@ -1,6 +1,6 @@
 Rule ::=
 	Modifier
-	RuleBody
+	RuleBody DisjunctionRepeat*
 	'.'?
 RuleBody ::=
 	(	Quantifier

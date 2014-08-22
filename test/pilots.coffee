@@ -93,3 +93,9 @@ describe 'pilots', ->
 				[['exactly', 'one'], plane]
 			)
 		], verb('is experienced')
+
+	# Rule:       It is necessary that each pilot can fly at least one plane or a pilot can fly at least 10 planes
+	test rule 'Necessity', _or(
+		['each', pilot, verb('can fly'), ['at least', 'one'], plane]
+		['a', pilot, verb('can fly'), ['at least', 10], plane]
+	)

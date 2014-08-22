@@ -283,13 +283,15 @@ createParser = ->
 				}
 
 	return {
+		disjunction
 		resolveTerm
 		ruleBody
 	}
 
 exports.rule = rule = (formulationType, args...) ->
 	formulationType += 'Formulation'
-	{lf, se} = createParser().ruleBody(args)
+	parser = createParser()
+	{lf, se} = parser.disjunction(parser.ruleBody, args)
 	return [
 		'Rule'
 		[	formulationType
