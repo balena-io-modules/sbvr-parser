@@ -78,6 +78,15 @@ describe 'pilots', ->
 				[verb('can fly'), ['at most', 2], plane]
 			)
 		], verb('has'), 'a', [yearsOfExperience, verb('is greater than'), 5]
+	# Rule:       It is necessary that each pilot that is experienced or can fly at least 3 planes or can fly exactly one plane, has a years of experience that is greater than 5
+	test rule 'Necessity', 'each',
+		[pilot,
+			_or(
+				[verb('is experienced')]
+				[verb('can fly'), ['at most', 3], plane]
+				[verb('can fly'), ['exactly', 'one'], plane]
+			)
+		], verb('has'), 'a', [yearsOfExperience, verb('is greater than'), 5]
 
 	# Rule:       It is necessary that each pilot that is experienced, can fly at least 3 planes or exactly one plane
 	test rule 'Necessity', 'each', [pilot, verb('is experienced')], verb('can fly'), 
