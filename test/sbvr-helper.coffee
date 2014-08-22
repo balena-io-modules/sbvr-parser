@@ -226,7 +226,7 @@ createParser = ->
 		try
 			verb = resolveVerb(args[0])
 			factTypeSoFar.push(verb)
-			{lf, se} = ruleBody(args[1...], factTypeSoFar, bindings)
+			{lf, se} = disjunction(ruleBody, args[1...], factTypeSoFar, bindings)
 			return {
 				lf
 				se: [

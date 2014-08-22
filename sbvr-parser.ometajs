@@ -325,7 +325,7 @@ export ometa SBVRParser <: SBVRLibs {
 				bindings.push(parentBind);
 			}
 		}
-		(	RuleBody(factType, bindings)
+		(	Disjunction('RuleBody', [factType, bindings])
 		|	IsAtomicFormulation(factType, bindings)
 		),
 

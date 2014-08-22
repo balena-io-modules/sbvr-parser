@@ -19,7 +19,7 @@ RuleBody ::=
 VerbContinuation ::=
 	verb
 	(	is-atomic-formulation
-	|	RuleBody
+	|	RuleBody DisjunctionRepeat*
 	)
 
 TermEntity ::=
