@@ -14,7 +14,7 @@ RuleBody ::=
 	|	'"' Text '"'
 	)
 	(	is-atomic-formulation
-	|	VerbContinuation
+	|	VerbContinuation DisjunctionRepeat*
 	)
 VerbContinuation ::=
 	verb
@@ -27,6 +27,10 @@ TermEntity ::=
 	(	ClosedProjection
 		','?
 	)?
+
+DisjunctionRepeat ::=
+	'or'
+	repeat-previous-rule
 
 Modifier ::=
 	(	'It is obligatory that'
@@ -53,9 +57,12 @@ Quantifier ::=
 		Number
 ClosedProjection ::=
 	'that'
-	(	VerbContinuation
+	(	VerbContinuation DisjunctionRepeat
 	|	RuleBody
 	)
+
+Disjunction ::=
+	'or'
 
 Number ::=
 		'one'

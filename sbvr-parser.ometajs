@@ -270,7 +270,7 @@ export ometa SBVRParser <: SBVRLibs {
 
 	ClosedProjection :identifier :bind =
 		addThat
-		(	VerbContinuation([identifier], [bind])
+		(	Disjunction('VerbContinuation', [[identifier], [bind]])
 		|	RuleBody([], [], identifier, bind)
 		),
 
@@ -312,7 +312,7 @@ export ometa SBVRParser <: SBVRLibs {
 			{bind[2] = data}
 			{factType.push(identifier)}
 		)
-		(	VerbContinuation(factType, bindings, parentIdentifier, parentBind)
+		(	Disjunction('VerbContinuation', [factType, bindings, parentIdentifier, parentBind])
 		|	IsAtomicFormulation(factType, bindings)
 		):lf
 		-> (quant == null ? lf : quant.concat([termEntity.lf, lf])),
@@ -348,6 +348,15 @@ export ometa SBVRParser <: SBVRLibs {
 		):r
 		"that"
 		-> r,
+
+	Disjunction :ruleName :args =
+		{this._applyWithArgs.apply(this, [ruleName].concat(_.cloneDeep(args)))}:result
+		(	(	"or"
+				{this._applyWithArgs.apply(this, [ruleName].concat(_.cloneDeep(args)))}
+			)+:rest
+			-> ['Disjunction', result].concat(rest)
+		|	-> result
+		),
 
 	StartRule =
 			"R:"

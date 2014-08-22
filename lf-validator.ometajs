@@ -73,6 +73,10 @@ export ometa LFValidator <: SBVRLibs {
 		|	false
 		):negated
 		-> ['Verb', v, negated],
+	Disjunction
+		trans*:xs
+		-> ['Disjunction'].concat(xs),
+
 	Rule
 		(	"ObligationFormulation"
 		|	"NecessityFormulation"
@@ -141,7 +145,8 @@ export ometa LFValidator <: SBVRLibs {
 		-> ['LogicalNegation'].concat([xs]),
 
 	quant =
-		(	"UniversalQuantification"
+		(	"Disjunction"
+		|	"UniversalQuantification"
 		|	"ExistentialQuantification"
 		|	"ExactQuantification"
 		|	"AtMostNQuantification"
