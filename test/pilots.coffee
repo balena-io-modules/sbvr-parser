@@ -99,3 +99,9 @@ describe 'pilots', ->
 		['each', pilot, verb('can fly'), ['at least', 'one'], plane]
 		['a', pilot, verb('can fly'), ['at least', 10], plane]
 	)
+	# Rule:       It is necessary that each plane that at least 3 pilots can fly or exactly one pilot can fly, has a name
+	test rule 'Necessity', 'each', [plane, 
+		_or(
+			[['at least', 3], pilot, verb('can fly')]
+			[['exactly', 'one'], pilot, verb('can fly')]
+		)], verb('has'), 'a', name

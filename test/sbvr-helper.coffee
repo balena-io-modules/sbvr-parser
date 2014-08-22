@@ -144,7 +144,7 @@ createParser = ->
 	num = -1
 	closedProjection = (args, identifier, binding) ->
 		try
-			{lf, se} = ruleBody(args, [], [], identifier, binding)
+			{lf, se} = disjunction(ruleBody, args, [], [], identifier, binding)
 		catch
 			{lf, se} = disjunction(verbContinuation, args, [identifier], [binding])
 		return {

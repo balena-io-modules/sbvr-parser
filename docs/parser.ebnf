@@ -58,7 +58,7 @@ Quantifier ::=
 ClosedProjection ::=
 	'that'
 	(	VerbContinuation DisjunctionRepeat
-	|	RuleBody
+	|	RuleBody DisjunctionRepeat*
 	)
 
 Disjunction ::=

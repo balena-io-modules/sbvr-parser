@@ -271,7 +271,7 @@ export ometa SBVRParser <: SBVRLibs {
 	ClosedProjection :identifier :bind =
 		addThat
 		(	Disjunction('VerbContinuation', [[identifier], [bind]])
-		|	RuleBody([], [], identifier, bind)
+		|	Disjunction('RuleBody', [[], [], identifier, bind])
 		),
 
 	TermEntity :factType :bindings =
