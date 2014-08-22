@@ -142,8 +142,11 @@ parseEmbeddedData = (embeddedData) ->
 
 createParser = ->
 	num = -1
-	closedProjection = (args, factTypeSoFar, bindings) ->
-		{lf, se} = verbContinuation(args, factTypeSoFar, bindings)
+	closedProjection = (args, identifier, binding) ->
+		try
+			{lf, se} = ruleBody(args, [], [], identifier, binding)
+		catch
+			{lf, se} = verbContinuation(args, [identifier], [binding])
 		return {
 			lf
 			se: 'that ' + se
@@ -179,7 +182,7 @@ createParser = ->
 				throw new Error('Not a term: ' + arr)
 		{identifier, se, binding, lf} = resolveIdentifier(identifier)
 		if _.isArray(arr[0])
-			projection = closedProjection(arr[1...], [identifier], [binding])
+			projection = closedProjection(arr[1...], identifier, binding)
 			se += ' ' + projection.se
 			lf.push(projection.lf)
 		return {
@@ -204,7 +207,7 @@ createParser = ->
 			return verb
 		throw new Error('Not a verb: ' + verb)
 
-	verbContinuation = (args, factTypeSoFar, bindings) ->
+	verbContinuation = (args, factTypeSoFar, bindings, postfixIdentifier, postfixBinding) ->
 		try
 			verb = resolveVerb(args[0])
 			factTypeSoFar.push(verb)
@@ -216,6 +219,10 @@ createParser = ->
 					se
 				].join(' ')
 			}
+		if postfixIdentifier?
+			factTypeSoFar.push(postfixIdentifier)
+		if postfixBinding?
+			bindings.push(postfixBinding)
 		lf = [
 			'AtomicFormulation'
 			stripAttributes(factType(factTypeSoFar...))
@@ -225,13 +232,13 @@ createParser = ->
 			se: toSE(verb) ? ''
 		}
 
-	ruleBody = (args, factTypeSoFar = [], bindings = []) ->
+	ruleBody = (args, factTypeSoFar = [], bindings = [], postfixIdentifier, postfixBinding) ->
 		try
 			{lf: quantifierLF, se: quantifierSE} = resolveQuantifier(args[0])
 			{identifier, se: identifierSE, lf: identifierLF, binding, hasClosedProjection} = resolveTerm(args[1])
 			factTypeSoFar.push(identifier)
 			bindings.push(binding)
-			{lf, se} = verbContinuation(args[2...], factTypeSoFar, bindings)
+			{lf, se} = verbContinuation(args[2...], factTypeSoFar, bindings, postfixIdentifier, postfixBinding)
 			if hasClosedProjection and se != ''
 				identifierSE += ','
 			return {
@@ -250,7 +257,7 @@ createParser = ->
 				{identifier, se: identifierSE, lf: identifierLF, binding} = resolveEmbeddedData(args[0])
 				factTypeSoFar.push(identifier)
 				bindings.push(binding)
-				{lf, se} = verbContinuation(args[1...], factTypeSoFar, bindings)
+				{lf, se} = verbContinuation(args[1...], factTypeSoFar, bindings, postfixIdentifier, postfixBinding)
 				return {
 					se: [
 						identifierSE
