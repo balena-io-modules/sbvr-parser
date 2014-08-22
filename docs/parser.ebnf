@@ -4,10 +4,7 @@ Rule ::=
 	'.'?
 RuleBody ::=
 	(	Quantifier
-		term ('(' vocabulary ')')?
-		(	ClosedProjection
-			','?
-		)?
+		TermEntity
 	|	'the'
 		(	referenced-term
 		|	name
@@ -22,6 +19,13 @@ RuleBody ::=
 		|	RuleBody
 		)
 	)
+
+TermEntity ::=
+	term ('(' vocabulary ')')?
+	(	ClosedProjection
+		','?
+	)?
+
 Modifier ::=
 	(	'It is obligatory that'
 	|	'It is necessary that'
@@ -65,8 +69,7 @@ Attribute ::=
 
 Definition ::=
 		'the'?
-		term ('(' vocabulary ')')?
-		ClosedProjection
+		TermEntity
 		'.'?
 	|	value
 		(	','

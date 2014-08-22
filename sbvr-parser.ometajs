@@ -278,16 +278,22 @@ export ometa SBVRParser <: SBVRLibs {
 		|	RuleBody([], [], identifier, bind)
 		),
 
+	TermEntity :factType :bindings =
+		Term(factType):term
+		CreateVar(term):varLF
+		Bind(term, bindings):bind
+		(	ClosedProjection(term, bind):thatLF
+			{varLF.push(thatLF)}
+			(	?factType
+				addComma
+			)?
+		)?
+		-> {term: term, lf: varLF},
+
 	RuleBody :factType :bindings :parentIdentifier :parentBind =
 		(	Quantifier:quant
-			Term(factType):t
-			CreateVar(t):tVar
-			Bind(t, bindings):bind
-			{factType.push(t)}
-			(	ClosedProjection(t, bind):thatLF
-				{tVar.push(thatLF)}
-				addComma?
-			)?
+			TermEntity(factType, bindings):termEntity
+			{factType.push(termEntity.term)}
 		|	addThe
 			// TODO: Should be a "ReferencedTerm" or Name, rather than Identifier (which is Term or Name)
 			Identifier(factType):identifier
@@ -322,7 +328,7 @@ export ometa SBVRParser <: SBVRLibs {
 			)
 		|	IsAtomicFormulation(factType, bindings)
 		):lf
-		-> (quant == null ? lf : quant.concat([tVar, lf])),
+		-> (quant == null ? lf : quant.concat([termEntity.lf, lf])),
 
 	Modifier =
 		"It" "is" 
@@ -444,18 +450,14 @@ export ometa SBVRParser <: SBVRLibs {
 		(	addThe?
 			// The following section is copied from RuleBody, should really be sorted properly.
 			{this.ruleVarsCount = 0}
-			Term:term
-			CreateVar(term):tVar
-			Bind(term):b
-			ClosedProjection(term, b):thatLF
-			{tVar.push(thatLF)}
+			TermEntity:termEntity
 			EOLTerminator
 			-> function(currentLine) {
 				if(currentLine[0] !== 'FactType') {
-					$elf.vocabularies[currentLine[2]]['ConceptTypes'][currentLine.slice(0, 3)] = term;
-					$elf.vocabularies[currentLine[2]]['IdentifierChildren'][term[1]].push([currentLine[1], currentLine[2]]);
+					$elf.vocabularies[currentLine[2]]['ConceptTypes'][currentLine.slice(0, 3)] = termEntity.term;
+					$elf.vocabularies[currentLine[2]]['IdentifierChildren'][termEntity.term[1]].push([currentLine[1], currentLine[2]]);
 				}
-				return tVar;
+				return termEntity.lf;
 			}
 		|	Value:value
 			(	addComma
