@@ -187,6 +187,7 @@ createParser = ->
 			se
 			binding
 			lf
+			hasClosedProjection: projection?
 		}
 
 	resolveEmbeddedData = (embeddedData) ->
@@ -227,17 +228,19 @@ createParser = ->
 	ruleBody = (args, factTypeSoFar = [], bindings = []) ->
 		try
 			{lf: quantifierLF, se: quantifierSE} = resolveQuantifier(args[0])
-			{identifier, se: identifierSE, lf: identifierLF, binding} = resolveTerm(args[1])
+			{identifier, se: identifierSE, lf: identifierLF, binding, hasClosedProjection} = resolveTerm(args[1])
 			factTypeSoFar.push(identifier)
 			bindings.push(binding)
 			{lf, se} = verbContinuation(args[2...], factTypeSoFar, bindings)
+			if hasClosedProjection and se != ''
+				identifierSE += ','
 			return {
 				lf: quantifierLF.concat([identifierLF, lf])
 				se: [
 					quantifierSE
 					identifierSE
 					se
-				].join(' ')
+				].join(' ').trim()
 			}
 		catch e
 			if args[0] is 'the'
