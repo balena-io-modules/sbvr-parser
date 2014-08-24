@@ -270,8 +270,8 @@ export ometa SBVRParser <: SBVRLibs {
 
 	ClosedProjection :identifier :bind =
 		addThat
-		(	Disjunction('VerbContinuation', [[identifier], [bind]])
-		|	Disjunction('RuleBody', [[], [], identifier, bind])
+		(	Junction('VerbContinuation', [[identifier], [bind]])
+		|	Junction('RuleBody', [[], [], identifier, bind])
 		),
 
 	TermEntity :factType :bindings =
@@ -312,7 +312,7 @@ export ometa SBVRParser <: SBVRLibs {
 			{bind[2] = data}
 			{factType.push(identifier)}
 		)
-		(	Disjunction('VerbContinuation', [factType, bindings, parentIdentifier, parentBind])
+		(	Junction('VerbContinuation', [factType, bindings, parentIdentifier, parentBind])
 		|	IsAtomicFormulation(factType, bindings)
 		):lf
 		-> (quant == null ? lf : quant.concat([termEntity.lf, lf])),
@@ -325,7 +325,7 @@ export ometa SBVRParser <: SBVRLibs {
 				bindings.push(parentBind);
 			}
 		}
-		(	Disjunction('RuleBody', [factType, bindings])
+		(	Junction('RuleBody', [factType, bindings])
 		|	IsAtomicFormulation(factType, bindings)
 		),
 
@@ -349,12 +349,24 @@ export ometa SBVRParser <: SBVRLibs {
 		"that"
 		-> r,
 
-	Disjunction :ruleName :args =
+	Disjunction =
+		"or"
+		-> 'Disjunction',
+
+	Conjunction =
+		"and"
+		-> 'Conjunction',
+
+	Junction :ruleName :args =
 		{this._applyWithArgs.apply(this, [ruleName].concat(_.cloneDeep(args)))}:result
-		(	(	"or"
-				{this._applyWithArgs.apply(this, [ruleName].concat(_.cloneDeep(args)))}
-			)+:rest
-			-> ['Disjunction', result].concat(rest)
+		(	(	(	Disjunction:type
+					{this._applyWithArgs.apply(this, [ruleName].concat(_.cloneDeep(args)))}
+				)+
+			|	(	Conjunction:type
+					{this._applyWithArgs.apply(this, [ruleName].concat(_.cloneDeep(args)))}
+				)+
+			):rest
+			-> [type, result].concat(rest)
 		|	-> result
 		),
 
@@ -367,7 +379,7 @@ export ometa SBVRParser <: SBVRLibs {
 		&(toEOL):ruleText
 		{this.ruleVarsCount = 0}
 		Modifier:mod
-		Disjunction('RuleBody', [[], []]):ruleLF
+		Junction('RuleBody', [[], []]):ruleLF
 		EOLTerminator
 		{_.cloneDeep(mod)}:mod
 		{mod.length === 2 ? (mod[1][1] = ruleLF) : (mod[1] = ruleLF)}

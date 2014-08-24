@@ -1,6 +1,6 @@
 Rule ::=
 	Modifier
-	RuleBody DisjunctionRepeat*
+	RuleBody JunctionRepeat*
 	'.'?
 RuleBody ::=
 	(	Quantifier
@@ -14,12 +14,12 @@ RuleBody ::=
 	|	'"' Text '"'
 	)
 	(	is-atomic-formulation
-	|	VerbContinuation DisjunctionRepeat*
+	|	VerbContinuation JunctionRepeat*
 	)
 VerbContinuation ::=
 	verb
 	(	is-atomic-formulation
-	|	RuleBody DisjunctionRepeat*
+	|	RuleBody JunctionRepeat*
 	)
 
 TermEntity ::=
@@ -28,8 +28,8 @@ TermEntity ::=
 		','?
 	)?
 
-DisjunctionRepeat ::=
-	'or'
+JunctionRepeat ::=
+	(Disjunction | Conjunction)
 	repeat-previous-rule
 
 Modifier ::=
@@ -57,12 +57,15 @@ Quantifier ::=
 		Number
 ClosedProjection ::=
 	'that'
-	(	VerbContinuation DisjunctionRepeat
-	|	RuleBody DisjunctionRepeat*
+	(	VerbContinuation JunctionRepeat
+	|	RuleBody JunctionRepeat*
 	)
 
 Disjunction ::=
 	'or'
+
+Conjunction ::=
+	'and'
 
 Number ::=
 		'one'

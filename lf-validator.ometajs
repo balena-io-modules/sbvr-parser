@@ -76,6 +76,9 @@ export ometa LFValidator <: SBVRLibs {
 	Disjunction
 		trans*:xs
 		-> ['Disjunction'].concat(xs),
+	Conjunction
+		trans*:xs
+		-> ['Conjunction'].concat(xs),
 
 	Rule
 		(	"ObligationFormulation"
@@ -146,6 +149,7 @@ export ometa LFValidator <: SBVRLibs {
 
 	quant =
 		(	"Disjunction"
+		|	"Conjunction"
 		|	"UniversalQuantification"
 		|	"ExistentialQuantification"
 		|	"ExactQuantification"

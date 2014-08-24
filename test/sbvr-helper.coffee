@@ -144,9 +144,9 @@ createParser = ->
 	num = -1
 	closedProjection = (args, identifier, binding) ->
 		try
-			{lf, se} = disjunction(ruleBody, args, [], [], identifier, binding)
+			{lf, se} = junction(ruleBody, args, [], [], identifier, binding)
 		catch
-			{lf, se} = disjunction(verbContinuation, args, [identifier], [binding])
+			{lf, se} = junction(verbContinuation, args, [identifier], [binding])
 		return {
 			lf
 			se: 'that ' + se
@@ -207,26 +207,30 @@ createParser = ->
 			return verb
 		throw new Error('Not a verb: ' + verb)
 
-	disjunction = (fn, disjunction, fnArgs...) ->
-		if disjunction?[0]?[0] is 'Disjunction'
-			lf = ['Disjunction']
+	junctionTypes =
+		Disjunction: ' or '
+		Conjunction: ' and '
+	junction = (fn, junction, fnArgs...) ->
+		maybeJunction = junction?[0]?[0]
+		if junctionTypes.hasOwnProperty(maybeJunction)
+			lf = [maybeJunction]
 			se = []
-			for args in disjunction[0][1...]
+			for args in junction[0][1...]
 				{lf: fnLF, se: fnSE} = fn(args, _.cloneDeep(fnArgs)...)
 				lf.push(fnLF)
 				se.push(fnSE)
 			return {
 				lf
-				se: se.join(' or ')
+				se: se.join(junctionTypes[maybeJunction])
 			}
 		else
-			fn(disjunction, fnArgs...)
+			fn(junction, fnArgs...)
 
 	verbContinuation = (args, factTypeSoFar, bindings, postfixIdentifier, postfixBinding) ->
 		try
 			verb = resolveVerb(args[0])
 			factTypeSoFar.push(verb)
-			{lf, se} = disjunction(ruleBody, args[1...], factTypeSoFar, bindings)
+			{lf, se} = junction(ruleBody, args[1...], factTypeSoFar, bindings)
 			return {
 				lf
 				se: [
@@ -253,7 +257,7 @@ createParser = ->
 			{identifier, se: identifierSE, lf: identifierLF, binding, hasClosedProjection} = resolveTerm(args[1])
 			factTypeSoFar.push(identifier)
 			bindings.push(binding)
-			{lf, se} = disjunction(verbContinuation, args[2...], factTypeSoFar, bindings, postfixIdentifier, postfixBinding)
+			{lf, se} = junction(verbContinuation, args[2...], factTypeSoFar, bindings, postfixIdentifier, postfixBinding)
 			if hasClosedProjection and se != ''
 				identifierSE += ','
 			return {
@@ -272,7 +276,7 @@ createParser = ->
 				{identifier, se: identifierSE, lf: identifierLF, binding} = resolveEmbeddedData(args[0])
 				factTypeSoFar.push(identifier)
 				bindings.push(binding)
-				{lf, se} = disjunction(verbContinuation, args[1...], factTypeSoFar, bindings, postfixIdentifier, postfixBinding)
+				{lf, se} = junction(verbContinuation, args[1...], factTypeSoFar, bindings, postfixIdentifier, postfixBinding)
 				return {
 					se: [
 						identifierSE
@@ -283,7 +287,7 @@ createParser = ->
 				}
 
 	return {
-		disjunction
+		junction
 		resolveTerm
 		ruleBody
 	}
@@ -291,7 +295,7 @@ createParser = ->
 exports.rule = rule = (formulationType, args...) ->
 	formulationType += 'Formulation'
 	parser = createParser()
-	{lf, se} = parser.disjunction(parser.ruleBody, args)
+	{lf, se} = parser.junction(parser.ruleBody, args)
 	return [
 		'Rule'
 		[	formulationType
@@ -311,3 +315,5 @@ exports.necessity = do ->
 		]
 exports._or = (ruleParts...) ->
 	['Disjunction', ruleParts...]
+exports._and = (ruleParts...) ->
+	['Conjunction', ruleParts...]
