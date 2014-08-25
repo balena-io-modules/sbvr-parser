@@ -359,14 +359,11 @@ export ometa SBVRParser <: SBVRLibs {
 
 	Junction :ruleName :args =
 		{this._applyWithArgs.apply(this, [ruleName].concat(_.cloneDeep(args)))}:result
-		(	(	(	Disjunction:type
-					{this._applyWithArgs.apply(this, [ruleName].concat(_.cloneDeep(args)))}
-				)+
-			|	(	Conjunction:type
-					{this._applyWithArgs.apply(this, [ruleName].concat(_.cloneDeep(args)))}
-				)+
-			):rest
-			-> [type, result].concat(rest)
+		(	(	Disjunction
+			|	Conjunction
+			):type
+			Junction(ruleName, args):junctioned
+			-> [type, result, junctioned]
 		|	-> result
 		),
 

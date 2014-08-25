@@ -210,21 +210,23 @@ createParser = ->
 	junctionTypes =
 		Disjunction: ' or '
 		Conjunction: ' and '
-	junction = (fn, junction, fnArgs...) ->
-		maybeJunction = junction?[0]?[0]
-		if junctionTypes.hasOwnProperty(maybeJunction)
-			lf = [maybeJunction]
+	junction = (fn, junctionStruct, fnArgs...) ->
+		maybeJunction = junctionStruct
+		while maybeJunction.length is 1 and _.isArray(maybeJunction[0])
+			maybeJunction = maybeJunction[0]
+		if junctionTypes.hasOwnProperty(maybeJunction[0])
+			lf = [maybeJunction[0]]
 			se = []
-			for args in junction[0][1...]
-				{lf: fnLF, se: fnSE} = fn(args, _.cloneDeep(fnArgs)...)
+			for args in maybeJunction[1...]
+				{lf: fnLF, se: fnSE} = junction(fn, args, _.cloneDeep(fnArgs)...)
 				lf.push(fnLF)
 				se.push(fnSE)
 			return {
 				lf
-				se: se.join(junctionTypes[maybeJunction])
+				se: se.join(junctionTypes[maybeJunction[0]])
 			}
 		else
-			fn(junction, fnArgs...)
+			fn(junctionStruct, fnArgs...)
 
 	verbContinuation = (args, factTypeSoFar, bindings, postfixIdentifier, postfixBinding) ->
 		try
@@ -313,7 +315,9 @@ exports.necessity = do ->
 		[	'Necessity'
 			necessityRule.apply(null, args)
 		]
-exports._or = (ruleParts...) ->
-	['Disjunction', ruleParts...]
-exports._and = (ruleParts...) ->
-	['Conjunction', ruleParts...]
+nestedPairs = (type, pairs) ->
+	if pairs.length is 1
+		return pairs[0]
+	return [type, pairs[0], nestedPairs(type, pairs[1...])]
+exports._or = (ruleParts...) -> nestedPairs('Disjunction', ruleParts)
+exports._and = (ruleParts...) -> nestedPairs('Conjunction', ruleParts)
