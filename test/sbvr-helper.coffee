@@ -32,8 +32,7 @@ exports.synonym = (term) -> ['Synonym', stripAttributes(term)]
 exports.note = (note) -> ['Note', note]
 exports.definitionEnum = (options...) -> ['Definition', ['Enum'].concat(parseEmbeddedData(option)[3] for option in options)]
 exports.definition = (variable) ->
-	resolveVariable = createVariableResolver()
-	{lf, se} = resolveVariable(variable)
+	{lf, se} = createParser().resolveTerm(variable)
 	return {
 		lf: [
 			'Definition'
@@ -46,7 +45,9 @@ exports.toSE = toSE = (lf) ->
 	if _.isArray lf
 		switch lf[0]
 			when 'Term'
-				if lf[2] != 'Default'
+				if lf[3]? and lf[3][0] isnt 'Attributes'
+					toSE(lf[3])
+				else if lf[2] != 'Default'
 					lf[1] + ' (' + lf[2] + ')'
 				else
 					lf[1]
@@ -85,37 +86,48 @@ exports.toSE = toSE = (lf) ->
 					lf
 
 resolveQuantifier = (quantifier) ->
+	se =
+		if _.isArray(quantifier)
+			quantifier.join(' ')
+		else
+			quantifier
+
 	if _.isArray(quantifier)
 		[quantifier, cardinality] = quantifier
 		cardinality = 
 			[	'Number'
 				if cardinality is 'one' then 1 else cardinality
 			]
-	switch quantifier
-		when 'each'
-			['UniversalQuantification']
-		when 'a', 'an', 'some'
-			['ExistentialQuantification']
-		when 'exactly'
-			[	'ExactQuantification'
-				[	'Cardinality'
-					cardinality
+	lf =
+		switch quantifier
+			when 'each'
+				['UniversalQuantification']
+			when 'a', 'an', 'some'
+				['ExistentialQuantification']
+			when 'exactly'
+				[	'ExactQuantification'
+					[	'Cardinality'
+						cardinality
+					]
 				]
-			]
-		when 'at least'
-			[	'AtLeastNQuantification'
-				[	'MinimumCardinality'
-					cardinality
+			when 'at least'
+				[	'AtLeastNQuantification'
+					[	'MinimumCardinality'
+						cardinality
+					]
 				]
-			]
-		when 'at most'
-			[	'AtMostNQuantification'
-				[	'MaximumCardinality'
-					cardinality
+			when 'at most'
+				[	'AtMostNQuantification'
+					[	'MaximumCardinality'
+						cardinality
+					]
 				]
-			]
-		else
-			throw 'Unknown quantifier: ' + quantifier
+			else
+				throw new Error('Unknown quantifier: ' + quantifier)
+	return {
+		lf
+		se
+	}
 
 parseEmbeddedData = (embeddedData) ->
 	if _.isNumber(embeddedData)
@@ -125,100 +137,152 @@ parseEmbeddedData = (embeddedData) ->
 			['Term', 'Real', 'Type', ['Real', embeddedData]]
 	else if _.isString(embeddedData)
 		['Term', 'Text', 'Type', ['Text', embeddedData]]
+	else
+		throw new Error('Not embedded data: ' + embeddedData)
 
-createVariableResolver = ->
+createParser = ->
 	num = -1
-	resolveVariable = (variable) ->
+	closedProjection = (args, identifier, binding) ->
+		try
+			{lf, se} = ruleBody(args, [], [], identifier, binding)
+		catch
+			{lf, se} = verbContinuation(args, [identifier], [binding])
+		return {
+			lf
+			se: 'that ' + se
+		}
+
+	resolveIdentifier = (identifier) ->
 		num++
-		identifier =
-			if _.isNumber(variable) or _.isString(variable)
-				parseEmbeddedData(variable)
-			else if variable[0] is 'Term'
-				variable
-			else
-				variable[0]
 		strippedIdentifier = stripAttributes(identifier)
-		binding =
-			[	'RoleBinding'
+		return {
+			identifier
+			se: toSE(identifier)
+			binding: [
+				'RoleBinding'
 				strippedIdentifier
 				strippedIdentifier[3] ? num
 			]
-		resultVar = [
-			'Variable'
-			[	'Number'
-				num
+			lf: [
+				'Variable'
+				[	'Number'
+					num
+				]
+				strippedIdentifier
 			]
-			strippedIdentifier
-		]
-		return {
-			identifier
-			binding
-			variable: resultVar
-			lf:
-				resultVar.concat(
-					if _.isNumber(variable) or _.isString(variable) or variable[0] is 'Term'
-						[]
-					else
-						# If there is a 4th element then we're looking at [Term, Verb, Quantifier, Term]
-						if variable.length is 4
-							secondVar = resolveVariable(variable[3])
-						# However if there's only 3 elements then we're looking at [Term, Verb, EmbeddedData]
-						else if variable.length is 3
-							embeddedVar = resolveVariable(variable[2])
-
-						atomicFormulation = 
-							[
-								'AtomicFormulation'
-								stripAttributes(factType(variable...))
-								binding
-							].concat(
-								if secondVar?
-									[secondVar.binding]
-								else if embeddedVar?
-									[embeddedVar.binding]
-								else
-									[]
-							)
-						[
-							if secondVar?
-								resolveQuantifier(variable[2]).concat([secondVar.variable, atomicFormulation])
-							else
-								atomicFormulation
-						]
-				)
-			se: 
-				if _.isNumber(variable) or _.isString(variable) or variable[0] is 'Term'
-					toSE(variable)
-				else
-					toSE(identifier) + ' that ' + _.map(variable[1...], toSE).join(' ')
 		}
 
-exports.rule = rule = (formulationType, quantifier, variable, verb, quantifier2, variable2) ->
+	resolveTerm = (arr) ->
+		identifier =
+			if arr[0] is 'Term'
+				arr
+			else if _.isArray(arr[0]) and arr[0][0] is 'Term'
+				arr[0]
+			else
+				throw new Error('Not a term: ' + arr)
+		{identifier, se, binding, lf} = resolveIdentifier(identifier)
+		if _.isArray(arr[0])
+			projection = closedProjection(arr[1...], identifier, binding)
+			se += ' ' + projection.se
+			lf.push(projection.lf)
+		return {
+			identifier
+			se
+			binding
+			lf
+			hasClosedProjection: projection?
+		}
+
+	resolveEmbeddedData = (embeddedData) ->
+		identifier = parseEmbeddedData(embeddedData)
+		return resolveIdentifier(identifier)
+
+	resolveName = (name) -> 
+		# TODO: Actually do something and match the return of resolveTerm and resolveEmbeddedData
+		return name
+
+	resolveVerb = (verb) -> 
+		# TODO: Actually do some proper checks
+		if verb?
+			return verb
+		throw new Error('Not a verb: ' + verb)
+
+	verbContinuation = (args, factTypeSoFar, bindings, postfixIdentifier, postfixBinding) ->
+		try
+			verb = resolveVerb(args[0])
+			factTypeSoFar.push(verb)
+			{lf, se} = ruleBody(args[1...], factTypeSoFar, bindings)
+			return {
+				lf
+				se: [
+					toSE(verb)
+					se
+				].join(' ')
+			}
+		if postfixIdentifier?
+			factTypeSoFar.push(postfixIdentifier)
+		if postfixBinding?
+			bindings.push(postfixBinding)
+		lf = [
+			'AtomicFormulation'
+			stripAttributes(factType(factTypeSoFar...))
+		].concat(bindings)
+		return {
+			lf
+			se: toSE(verb) ? ''
+		}
+
+	ruleBody = (args, factTypeSoFar = [], bindings = [], postfixIdentifier, postfixBinding) ->
+		try
+			{lf: quantifierLF, se: quantifierSE} = resolveQuantifier(args[0])
+			{identifier, se: identifierSE, lf: identifierLF, binding, hasClosedProjection} = resolveTerm(args[1])
+			factTypeSoFar.push(identifier)
+			bindings.push(binding)
+			{lf, se} = verbContinuation(args[2...], factTypeSoFar, bindings, postfixIdentifier, postfixBinding)
+			if hasClosedProjection and se != ''
+				identifierSE += ','
+			return {
+				lf: quantifierLF.concat([identifierLF, lf])
+				se: [
+					quantifierSE
+					identifierSE
+					se
+				].join(' ').trim()
+			}
+		catch e
+			if args[0] is 'the'
+				console.log('Named references are not implemented yet', args, e, e.stack)
+				process.exit()
+			else
+				{identifier, se: identifierSE, lf: identifierLF, binding} = resolveEmbeddedData(args[0])
+				factTypeSoFar.push(identifier)
+				bindings.push(binding)
+				{lf, se} = verbContinuation(args[1...], factTypeSoFar, bindings, postfixIdentifier, postfixBinding)
+				return {
+					se: [
+						identifierSE
+						se
+					].join(' ')
+					# We ignore the identifierLF for embedded data.
+					lf
+				}
+
+	return {
+		resolveTerm
+		ruleBody
+	}
+
+exports.rule = rule = (formulationType, args...) ->
 	formulationType += 'Formulation'
-	resolveVariable = createVariableResolver()
-	{lf: variableLF, se: variableSE, binding: variableBinding, identifier} = resolveVariable(variable)
-	{lf: variableLF2, se: variableSE2, binding: variableBinding2, identifier: identifier2} = resolveVariable(variable2)
-	[	'Rule'
+	{lf, se} = createParser().ruleBody(args)
+	return [
+		'Rule'
 		[	formulationType
-			resolveQuantifier(quantifier).concat [
-				variableLF
-				resolveQuantifier(quantifier2).concat [
-					variableLF2
-					[	'AtomicFormulation'
-						stripAttributes(factType identifier, verb, identifier2)
-						variableBinding
-						variableBinding2
-					]
-				]
-			]
+			lf
 		]
 		[	'StructuredEnglish'
 			[	toSE(formulationType)
-				(if _.isArray(quantifier) then quantifier.join(' ') else quantifier)
-				variableSE
-				toSE(verb)
-				(if _.isArray(quantifier2) then quantifier2.join(' ') else quantifier2)
-				variableSE2
+				se
 			].join(' ') + '.'
 		]
 	]
