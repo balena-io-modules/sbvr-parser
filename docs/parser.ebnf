@@ -14,10 +14,12 @@ RuleBody ::=
 	|	'"' Text '"'
 	)
 	(	is-atomic-formulation
-	|	verb
-		(	is-atomic-formulation
-		|	RuleBody
-		)
+	|	VerbContinuation
+	)
+VerbContinuation ::=
+	verb
+	(	is-atomic-formulation
+	|	RuleBody
 	)
 
 TermEntity ::=
@@ -51,10 +53,7 @@ Quantifier ::=
 		Number
 ClosedProjection ::=
 	'that'
-	(	verb
-		(	is-atomic-formulation
-		|	RuleBody
-		)
+	(	VerbContinuation
 	|	RuleBody
 	)
 
