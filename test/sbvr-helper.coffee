@@ -153,8 +153,17 @@ createParser = ->
 		}
 
 	resolveIdentifier = (identifier) ->
-		num++
 		strippedIdentifier = stripAttributes(identifier)
+		# Only increment the num and generate LF if there is no embedded data.
+		if !strippedIdentifier[3]?
+			num++
+			lf = [
+				'Variable'
+				[	'Number'
+					num
+				]
+				strippedIdentifier
+			]
 		return {
 			identifier
 			se: toSE(identifier)
@@ -163,13 +172,7 @@ createParser = ->
 				strippedIdentifier
 				strippedIdentifier[3] ? num
 			]
-			lf: [
-				'Variable'
-				[	'Number'
-					num
-				]
-				strippedIdentifier
-			]
+			lf
 		}
 
 	resolveTerm = (arr) ->
@@ -208,8 +211,8 @@ createParser = ->
 		throw new Error('Not a verb: ' + verb)
 
 	junctionTypes =
-		Disjunction: ' or '
-		Conjunction: ' and '
+		Disjunction: 'or'
+		Conjunction: 'and'
 	junction = (fn, junctionStruct, fnArgs...) ->
 		maybeJunction = junctionStruct
 		while maybeJunction.length is 1 and _.isArray(maybeJunction[0])
@@ -221,9 +224,16 @@ createParser = ->
 				{lf: fnLF, se: fnSE} = junction(fn, args, _.cloneDeep(fnArgs)...)
 				lf.push(fnLF)
 				se.push(fnSE)
+			lastSE = se.pop()
+			if se.length > 1
+				se.push('')
 			return {
 				lf
-				se: se.join(junctionTypes[maybeJunction[0]])
+				se: [
+					se.join(', ').trim()
+					junctionTypes[maybeJunction[0]]
+					lastSE
+				].join(' ')
 			}
 		else
 			fn(junctionStruct, fnArgs...)
@@ -275,7 +285,7 @@ createParser = ->
 				console.log('Named references are not implemented yet', args, e, e.stack)
 				process.exit()
 			else
-				{identifier, se: identifierSE, lf: identifierLF, binding} = resolveEmbeddedData(args[0])
+				{identifier, se: identifierSE, binding} = resolveEmbeddedData(args[0])
 				factTypeSoFar.push(identifier)
 				bindings.push(binding)
 				{lf, se} = junction(verbContinuation, args[1...], factTypeSoFar, bindings, postfixIdentifier, postfixBinding)
@@ -284,7 +294,6 @@ createParser = ->
 						identifierSE
 						se
 					].join(' ')
-					# We ignore the identifierLF for embedded data.
 					lf
 				}
 
@@ -315,9 +324,13 @@ exports.necessity = do ->
 		[	'Necessity'
 			necessityRule.apply(null, args)
 		]
+
 nestedPairs = (type, pairs) ->
 	if pairs.length is 1
 		return pairs[0]
 	return [type, pairs[0], nestedPairs(type, pairs[1...])]
-exports._or = (ruleParts...) -> nestedPairs('Disjunction', ruleParts)
-exports._and = (ruleParts...) -> nestedPairs('Conjunction', ruleParts)
+exports._nestedOr = (ruleParts...) -> nestedPairs('Disjunction', ruleParts)
+exports._nestedAnd = (ruleParts...) -> nestedPairs('Conjunction', ruleParts)
+
+exports._or = (ruleParts...) -> ['Disjunction'].concat(ruleParts)
+exports._and = (ruleParts...) -> ['Conjunction'].concat(ruleParts)

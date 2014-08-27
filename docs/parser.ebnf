@@ -1,6 +1,6 @@
 Rule ::=
 	Modifier
-	RuleBody JunctionRepeat*
+	RuleBody JunctionRepeat?
 	'.'?
 RuleBody ::=
 	(	Quantifier
@@ -14,12 +14,12 @@ RuleBody ::=
 	|	'"' Text '"'
 	)
 	(	is-atomic-formulation
-	|	VerbContinuation JunctionRepeat*
+	|	VerbContinuation JunctionRepeat?
 	)
 VerbContinuation ::=
 	verb
 	(	is-atomic-formulation
-	|	RuleBody JunctionRepeat*
+	|	RuleBody JunctionRepeat?
 	)
 
 TermEntity ::=
@@ -29,8 +29,16 @@ TermEntity ::=
 	)?
 
 JunctionRepeat ::=
-	(Disjunction | Conjunction)
-	repeat-previous-rule
+	(	(	','
+			repeat-previous-rule
+		)*
+		','
+		JunctionType
+		repeat-previous-rule
+	|	(	JunctionType
+			repeat-previous-rule
+		)+
+	)
 
 Modifier ::=
 	(	'It is obligatory that'
@@ -57,8 +65,13 @@ Quantifier ::=
 		Number
 ClosedProjection ::=
 	'that'
-	(	VerbContinuation JunctionRepeat
-	|	RuleBody JunctionRepeat*
+	(	VerbContinuation JunctionRepeat?
+	|	RuleBody JunctionRepeat?
+	)
+
+JunctionType ::=
+	(	Disjunction
+	|	Conjunction
 	)
 
 Disjunction ::=
