@@ -220,20 +220,26 @@ createParser = ->
 		if junctionTypes.hasOwnProperty(maybeJunction[0])
 			lf = [maybeJunction[0]]
 			se = []
-			for args in maybeJunction[1...]
-				{lf: fnLF, se: fnSE} = junction(fn, args, _.cloneDeep(fnArgs)...)
+			junctionType = junctionTypes[maybeJunction[0]]
+			junctionArgs = maybeJunction[1...]
+			for args, i in junctionArgs
+				prevJunctioned = junctioned
+				{lf: fnLF, se: fnSE, junctioned} = junction(fn, args, _.cloneDeep(fnArgs)...)
+				if prevJunctioned and i + 1 < junctionArgs.length
+					fnSE = junctionType + ' ' + fnSE
 				lf.push(fnLF)
 				se.push(fnSE)
 			lastSE = se.pop()
-			if se.length > 1
+			if se.length > 1 or prevJunctioned
 				se.push('')
 			return {
 				lf
 				se: [
 					se.join(', ').trim()
-					junctionTypes[maybeJunction[0]]
+					junctionType
 					lastSE
 				].join(' ')
+				junctioned: true
 			}
 		else
 			fn(junctionStruct, fnArgs...)

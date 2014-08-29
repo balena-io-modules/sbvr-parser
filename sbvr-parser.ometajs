@@ -253,7 +253,11 @@ export ometa SBVRParser <: SBVRLibs {
 		Keyword("that"),
 	addThe =
 		Keyword("the"),
-	addComma =
+	DisableCommas :bool =
+		{this.disableCommas = bool},
+	// We must pass in an argument to add comma, otherwise we may use a memoised version where commas were disabled.
+	addComma :force =
+		?(force || !this.disableCommas)
 		Keyword(","),
 	addOr =
 		Keyword("or"),
@@ -281,7 +285,7 @@ export ometa SBVRParser <: SBVRLibs {
 		(	ClosedProjection(term, bind):thatLF
 			{varLF.push(thatLF)}
 			(	?factType
-				addComma
+				addComma(false)
 			)?
 		)?
 		-> {term: term, lf: varLF},
@@ -362,6 +366,20 @@ export ometa SBVRParser <: SBVRLibs {
 		|	Conjunction
 		),
 
+	// This checks if there's an upcoming comma junction by looking for an Oxford/serial comma.
+	UpcomingCommaJunction =
+		&(	(	~EOL
+				~(	','
+					JunctionType
+				)
+				anything
+			)*
+			','
+			JunctionType
+			-> true
+		|	-> false
+		),
+
 	SimpleJunction :ruleName :args =
 		{this._applyWithArgs.apply(this, [ruleName].concat(_.cloneDeep(args)))}:result
 		(	JunctionType:type
@@ -371,20 +389,33 @@ export ometa SBVRParser <: SBVRLibs {
 		),
 
 	Junction :ruleName :args =
-		SimpleJunction(ruleName, args):result
-		{this.ruleVarsCount}:origRuleVarsCount
-		(	(	addComma
-				SimpleJunction(ruleName, args)
-			)+:commaSeparated
-			// If there are comma-separated junctions, then they must have comma before the junction keyword
-			// aka. they must have an Oxford/serial comma.
-			addComma
-			JunctionType:type
-			Junction(ruleName, args):junctioned
-			-> [type, result].concat(commaSeparated).concat([junctioned])
-		|	{this.ruleVarsCount = origRuleVarsCount}
-			-> result
-		),
+		UpcomingCommaJunction:upcoming
+		DisableCommas(upcoming || this.disableCommas)
+
+		(	SimpleJunction(ruleName, args):result
+			{this.ruleVarsCount}:origRuleVarsCount
+			(	// We only need to check for a comma branch if we have an upcoming comma junction
+				?upcoming
+				(	addComma(true)
+					SimpleJunction(ruleName, args)
+				)*:commaSeparated
+				// If there are comma-separated junctions, then they must have comma before the junction keyword
+				// aka. they must have an Oxford/serial comma.
+				addComma(true)
+				JunctionType:type
+				Junction(ruleName, args, true):junctioned
+				-> [type, result].concat(commaSeparated).concat([junctioned])
+			|	{this.ruleVarsCount = origRuleVarsCount}
+				-> result
+			)
+		)?:result
+
+		// Check if there are any more comma junctions on their way, enabling commas again if there aren't
+		UpcomingCommaJunction:upcoming
+		DisableCommas(upcoming)
+
+		?result
+		-> result,
 
 	StartRule =
 			"R:"
@@ -886,6 +917,7 @@ SBVRParser.reset = function() {
 	this.ruleVars = {};
 	this.ruleVarsCount = 0;
 	this.lines = ['Model'];
+	this.disableCommas = false;
 	
 	// Process the built-in vocabulary,
 	// making use of reusing memoisations,
