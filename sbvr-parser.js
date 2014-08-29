@@ -464,8 +464,13 @@
             var $elf = this, _fromIdx = this.input.idx;
             return this._applyWithArgs("Keyword", "the");
         },
-        addComma: function() {
+        DisableCommas: function(bool) {
             var $elf = this, _fromIdx = this.input.idx;
+            return this.disableCommas = bool;
+        },
+        addComma: function(force) {
+            var $elf = this, _fromIdx = this.input.idx;
+            this._pred(force || !this.disableCommas);
             return this._applyWithArgs("Keyword", ",");
         },
         addOr: function() {
@@ -488,36 +493,38 @@
             return [ "AtomicFormulation" ].concat([ [ "FactType" ].concat(factType) ], bindings);
         },
         ClosedProjection: function(identifier, bind) {
-            var $elf = this, _fromIdx = this.input.idx, factType, verb;
+            var $elf = this, _fromIdx = this.input.idx;
             this._apply("addThat");
             return this._or(function() {
-                factType = [ identifier ];
-                verb = this._applyWithArgs("Verb", factType);
-                factType.push(verb);
-                return this._or(function() {
-                    return this._applyWithArgs("RuleBody", factType, [ bind ]);
-                }, function() {
-                    return this._applyWithArgs("IsAtomicFormulation", factType, [ bind ]);
-                });
+                return this._applyWithArgs("Junction", "VerbContinuation", [ [ identifier ], [ bind ] ]);
             }, function() {
-                return this._applyWithArgs("RuleBody", [], [], identifier, bind);
+                return this._applyWithArgs("Junction", "RuleBody", [ [], [], identifier, bind ]);
             });
         },
+        TermEntity: function(factType, bindings) {
+            var $elf = this, _fromIdx = this.input.idx, bind, term, thatLF, varLF;
+            term = this._applyWithArgs("Term", factType);
+            varLF = this._applyWithArgs("CreateVar", term);
+            bind = this._applyWithArgs("Bind", term, bindings);
+            this._opt(function() {
+                thatLF = this._applyWithArgs("ClosedProjection", term, bind);
+                varLF.push(thatLF);
+                return this._opt(function() {
+                    this._pred(factType);
+                    return this._applyWithArgs("addComma", !1);
+                });
+            });
+            return {
+                term: term,
+                lf: varLF
+            };
+        },
         RuleBody: function(factType, bindings, parentIdentifier, parentBind) {
-            var $elf = this, _fromIdx = this.input.idx, bind, data, factTypeIdentifier, identifier, lf, quant, t, tVar, thatLF, v;
+            var $elf = this, _fromIdx = this.input.idx, bind, data, factTypeIdentifier, identifier, lf, quant, termEntity;
             this._or(function() {
                 quant = this._apply("Quantifier");
-                t = this._applyWithArgs("Term", factType);
-                tVar = this._applyWithArgs("CreateVar", t);
-                bind = this._applyWithArgs("Bind", t, bindings);
-                factType.push(t);
-                return this._opt(function() {
-                    thatLF = this._applyWithArgs("ClosedProjection", t, bind);
-                    tVar.push(thatLF);
-                    return this._opt(function() {
-                        return this._apply("addComma");
-                    });
-                });
+                termEntity = this._applyWithArgs("TermEntity", factType, bindings);
+                return factType.push(termEntity.term);
             }, function() {
                 this._apply("addThe");
                 identifier = this._applyWithArgs("Identifier", factType);
@@ -538,23 +545,27 @@
                 return factType.push(identifier);
             });
             lf = this._or(function() {
-                v = this._applyWithArgs("Verb", factType);
-                factType.push(v);
-                (function() {
-                    if (null != parentIdentifier) {
-                        factType.push(parentIdentifier);
-                        bindings.push(parentBind);
-                    }
-                }).call(this);
-                return this._or(function() {
-                    return this._applyWithArgs("RuleBody", factType, bindings);
-                }, function() {
-                    return this._applyWithArgs("IsAtomicFormulation", factType, bindings);
-                });
+                return this._applyWithArgs("Junction", "VerbContinuation", [ factType, bindings, parentIdentifier, parentBind ]);
             }, function() {
                 return this._applyWithArgs("IsAtomicFormulation", factType, bindings);
             });
-            return null == quant ? lf : quant.concat([ tVar, lf ]);
+            return null == quant ? lf : quant.concat([ termEntity.lf, lf ]);
+        },
+        VerbContinuation: function(factType, bindings, parentIdentifier, parentBind) {
+            var $elf = this, _fromIdx = this.input.idx, v;
+            v = this._applyWithArgs("Verb", factType);
+            factType.push(v);
+            (function() {
+                if (null != parentIdentifier) {
+                    factType.push(parentIdentifier);
+                    bindings.push(parentBind);
+                }
+            }).call(this);
+            return this._or(function() {
+                return this._applyWithArgs("Junction", "RuleBody", [ factType, bindings ]);
+            }, function() {
+                return this._applyWithArgs("IsAtomicFormulation", factType, bindings);
+            });
         },
         Modifier: function() {
             var $elf = this, _fromIdx = this.input.idx, r;
@@ -586,6 +597,84 @@
             this._applyWithArgs("token", "that");
             return r;
         },
+        Disjunction: function() {
+            var $elf = this, _fromIdx = this.input.idx;
+            this._applyWithArgs("token", "or");
+            return "Disjunction";
+        },
+        Conjunction: function() {
+            var $elf = this, _fromIdx = this.input.idx;
+            this._applyWithArgs("token", "and");
+            return "Conjunction";
+        },
+        JunctionType: function() {
+            var $elf = this, _fromIdx = this.input.idx;
+            return this._or(function() {
+                return this._apply("Disjunction");
+            }, function() {
+                return this._apply("Conjunction");
+            });
+        },
+        UpcomingCommaJunction: function() {
+            var $elf = this, _fromIdx = this.input.idx;
+            return this._lookahead(function() {
+                return this._or(function() {
+                    this._many(function() {
+                        this._not(function() {
+                            return this._apply("EOL");
+                        });
+                        this._not(function() {
+                            this._applyWithArgs("exactly", ",");
+                            return this._apply("JunctionType");
+                        });
+                        return this.anything();
+                    });
+                    this._applyWithArgs("exactly", ",");
+                    this._apply("JunctionType");
+                    return !0;
+                }, function() {
+                    return !1;
+                });
+            });
+        },
+        SimpleJunction: function(ruleName, args) {
+            var $elf = this, _fromIdx = this.input.idx, junctioned, result, type;
+            result = this._applyWithArgs.apply(this, [ ruleName ].concat(_.cloneDeep(args)));
+            return this._or(function() {
+                type = this._apply("JunctionType");
+                junctioned = this._applyWithArgs("SimpleJunction", ruleName, args);
+                return [ type, result, junctioned ];
+            }, function() {
+                return result;
+            });
+        },
+        Junction: function(ruleName, args) {
+            var $elf = this, _fromIdx = this.input.idx, commaSeparated, junctioned, origRuleVarsCount, result, type, upcoming;
+            upcoming = this._apply("UpcomingCommaJunction");
+            this._applyWithArgs("DisableCommas", upcoming || this.disableCommas);
+            result = this._opt(function() {
+                result = this._applyWithArgs("SimpleJunction", ruleName, args);
+                origRuleVarsCount = this.ruleVarsCount;
+                return this._or(function() {
+                    this._pred(upcoming);
+                    commaSeparated = this._many(function() {
+                        this._applyWithArgs("addComma", !0);
+                        return this._applyWithArgs("SimpleJunction", ruleName, args);
+                    });
+                    this._applyWithArgs("addComma", !0);
+                    type = this._apply("JunctionType");
+                    junctioned = this._applyWithArgs("Junction", ruleName, args, !0);
+                    return [ type, result ].concat(commaSeparated).concat([ junctioned ]);
+                }, function() {
+                    this.ruleVarsCount = origRuleVarsCount;
+                    return result;
+                });
+            });
+            upcoming = this._apply("UpcomingCommaJunction");
+            this._applyWithArgs("DisableCommas", upcoming);
+            this._pred(result);
+            return result;
+        },
         StartRule: function() {
             var $elf = this, _fromIdx = this.input.idx;
             return this._or(function() {
@@ -603,7 +692,7 @@
             });
             this.ruleVarsCount = 0;
             mod = this._apply("Modifier");
-            ruleLF = this._applyWithArgs("RuleBody", [], []);
+            ruleLF = this._applyWithArgs("Junction", "RuleBody", [ [], [] ]);
             this._apply("EOLTerminator");
             mod = _.cloneDeep(mod);
             2 === mod.length ? mod[1][1] = ruleLF : mod[1] = ruleLF;
@@ -711,24 +800,20 @@
             };
         },
         AttrDefinition: function() {
-            var $elf = this, _fromIdx = this.input.idx, b, moreValues, tVar, term, thatLF, value, values;
+            var $elf = this, _fromIdx = this.input.idx, moreValues, termEntity, value, values;
             return this._or(function() {
                 this._opt(function() {
                     return this._apply("addThe");
                 });
                 this.ruleVarsCount = 0;
-                term = this._apply("Term");
-                tVar = this._applyWithArgs("CreateVar", term);
-                b = this._applyWithArgs("Bind", term);
-                thatLF = this._applyWithArgs("ClosedProjection", term, b);
-                tVar.push(thatLF);
+                termEntity = this._apply("TermEntity");
                 this._apply("EOLTerminator");
                 return function(currentLine) {
                     if ("FactType" !== currentLine[0]) {
-                        $elf.vocabularies[currentLine[2]].ConceptTypes[currentLine.slice(0, 3)] = term;
-                        $elf.vocabularies[currentLine[2]].IdentifierChildren[term[1]].push([ currentLine[1], currentLine[2] ]);
+                        $elf.vocabularies[currentLine[2]].ConceptTypes[currentLine.slice(0, 3)] = termEntity.term;
+                        $elf.vocabularies[currentLine[2]].IdentifierChildren[termEntity.term[1]].push([ currentLine[1], currentLine[2] ]);
                     }
-                    return tVar;
+                    return termEntity.lf;
                 };
             }, function() {
                 value = this._apply("Value");
@@ -1015,6 +1100,7 @@
         this.ruleVars = {};
         this.ruleVarsCount = 0;
         this.lines = [ "Model" ];
+        this.disableCommas = !1;
         var origInputHead = this.inputHead;
         if ("" !== this.builtInVocab) {
             this.inputHead = this.builtInVocabInputHead;

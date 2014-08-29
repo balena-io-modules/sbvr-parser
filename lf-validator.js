@@ -124,6 +124,20 @@
             });
             return [ "Verb", v, negated ];
         },
+        Disjunction: function() {
+            var $elf = this, _fromIdx = this.input.idx, xs;
+            xs = this._many(function() {
+                return this._apply("trans");
+            });
+            return [ "Disjunction" ].concat(xs);
+        },
+        Conjunction: function() {
+            var $elf = this, _fromIdx = this.input.idx, xs;
+            xs = this._many(function() {
+                return this._apply("trans");
+            });
+            return [ "Conjunction" ].concat(xs);
+        },
         Rule: function() {
             var $elf = this, _fromIdx = this.input.idx, t, x;
             x = this._or(function() {
@@ -246,6 +260,10 @@
         quant: function() {
             var $elf = this, _fromIdx = this.input.idx;
             return this._or(function() {
+                return this._applyWithArgs("token", "Disjunction");
+            }, function() {
+                return this._applyWithArgs("token", "Conjunction");
+            }, function() {
                 return this._applyWithArgs("token", "UniversalQuantification");
             }, function() {
                 return this._applyWithArgs("token", "ExistentialQuantification");

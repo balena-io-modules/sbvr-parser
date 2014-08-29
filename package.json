@@ -1,6 +1,6 @@
 {
   "name": "sbvr-parser",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "SBVR to LF parser.",
   "main": "sbvr-parser.js",
   "scripts": {
