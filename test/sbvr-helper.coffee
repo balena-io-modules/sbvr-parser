@@ -144,17 +144,26 @@ createParser = ->
 	num = -1
 	closedProjection = (args, identifier, binding) ->
 		try
-			{lf, se} = ruleBody(args, [], [], identifier, binding)
+			{lf, se} = junction(ruleBody, args, [], [], identifier, binding)
 		catch
-			{lf, se} = verbContinuation(args, [identifier], [binding])
+			{lf, se} = junction(verbContinuation, args, [identifier], [binding])
 		return {
 			lf
 			se: 'that ' + se
 		}
 
 	resolveIdentifier = (identifier) ->
-		num++
 		strippedIdentifier = stripAttributes(identifier)
+		# Only increment the num and generate LF if there is no embedded data.
+		if !strippedIdentifier[3]?
+			num++
+			lf = [
+				'Variable'
+				[	'Number'
+					num
+				]
+				strippedIdentifier
+			]
 		return {
 			identifier
 			se: toSE(identifier)
@@ -163,13 +172,7 @@ createParser = ->
 				strippedIdentifier
 				strippedIdentifier[3] ? num
 			]
-			lf: [
-				'Variable'
-				[	'Number'
-					num
-				]
-				strippedIdentifier
-			]
+			lf
 		}
 
 	resolveTerm = (arr) ->
@@ -207,11 +210,45 @@ createParser = ->
 			return verb
 		throw new Error('Not a verb: ' + verb)
 
+	junctionTypes =
+		Disjunction: 'or'
+		Conjunction: 'and'
+	junction = (fn, junctionStruct, fnArgs...) ->
+		maybeJunction = junctionStruct
+		while maybeJunction.length is 1 and _.isArray(maybeJunction[0])
+			maybeJunction = maybeJunction[0]
+		if junctionTypes.hasOwnProperty(maybeJunction[0])
+			lf = [maybeJunction[0]]
+			se = []
+			junctionType = junctionTypes[maybeJunction[0]]
+			junctionArgs = maybeJunction[1...]
+			for args, i in junctionArgs
+				prevJunctioned = junctioned
+				{lf: fnLF, se: fnSE, junctioned} = junction(fn, args, _.cloneDeep(fnArgs)...)
+				if prevJunctioned and i + 1 < junctionArgs.length
+					fnSE = junctionType + ' ' + fnSE
+				lf.push(fnLF)
+				se.push(fnSE)
+			lastSE = se.pop()
+			if se.length > 1 or prevJunctioned
+				se.push('')
+			return {
+				lf
+				se: [
+					se.join(', ').trim()
+					junctionType
+					lastSE
+				].join(' ')
+				junctioned: true
+			}
+		else
+			fn(junctionStruct, fnArgs...)
+
 	verbContinuation = (args, factTypeSoFar, bindings, postfixIdentifier, postfixBinding) ->
 		try
 			verb = resolveVerb(args[0])
 			factTypeSoFar.push(verb)
-			{lf, se} = ruleBody(args[1...], factTypeSoFar, bindings)
+			{lf, se} = junction(ruleBody, args[1...], factTypeSoFar, bindings)
 			return {
 				lf
 				se: [
@@ -238,7 +275,7 @@ createParser = ->
 			{identifier, se: identifierSE, lf: identifierLF, binding, hasClosedProjection} = resolveTerm(args[1])
 			factTypeSoFar.push(identifier)
 			bindings.push(binding)
-			{lf, se} = verbContinuation(args[2...], factTypeSoFar, bindings, postfixIdentifier, postfixBinding)
+			{lf, se} = junction(verbContinuation, args[2...], factTypeSoFar, bindings, postfixIdentifier, postfixBinding)
 			if hasClosedProjection and se != ''
 				identifierSE += ','
 			return {
@@ -254,27 +291,28 @@ createParser = ->
 				console.log('Named references are not implemented yet', args, e, e.stack)
 				process.exit()
 			else
-				{identifier, se: identifierSE, lf: identifierLF, binding} = resolveEmbeddedData(args[0])
+				{identifier, se: identifierSE, binding} = resolveEmbeddedData(args[0])
 				factTypeSoFar.push(identifier)
 				bindings.push(binding)
-				{lf, se} = verbContinuation(args[1...], factTypeSoFar, bindings, postfixIdentifier, postfixBinding)
+				{lf, se} = junction(verbContinuation, args[1...], factTypeSoFar, bindings, postfixIdentifier, postfixBinding)
 				return {
 					se: [
 						identifierSE
 						se
 					].join(' ')
-					# We ignore the identifierLF for embedded data.
 					lf
 				}
 
 	return {
+		junction
 		resolveTerm
 		ruleBody
 	}
 
 exports.rule = rule = (formulationType, args...) ->
 	formulationType += 'Formulation'
-	{lf, se} = createParser().ruleBody(args)
+	parser = createParser()
+	{lf, se} = parser.junction(parser.ruleBody, args)
 	return [
 		'Rule'
 		[	formulationType
@@ -292,3 +330,13 @@ exports.necessity = do ->
 		[	'Necessity'
 			necessityRule.apply(null, args)
 		]
+
+nestedPairs = (type, pairs) ->
+	if pairs.length is 1
+		return pairs[0]
+	return [type, pairs[0], nestedPairs(type, pairs[1...])]
+exports._nestedOr = (ruleParts...) -> nestedPairs('Disjunction', ruleParts)
+exports._nestedAnd = (ruleParts...) -> nestedPairs('Conjunction', ruleParts)
+
+exports._or = (ruleParts...) -> ['Disjunction'].concat(ruleParts)
+exports._and = (ruleParts...) -> ['Conjunction'].concat(ruleParts)

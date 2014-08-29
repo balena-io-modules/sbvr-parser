@@ -2,6 +2,7 @@ _ = require('lodash')
 
 expect = require('chai').expect
 {toSE} = require('./sbvr-helper')
+{LFOptimiser} = require('../lf-optimiser')
 
 # Gets the type of the line (eg Term/Rule) and adds spaces if necessary (eg "SynonymousForm" to "Synonymous Form")
 getLineType = (lf) -> lf[0].replace(/([A-Z])/g, ' $1').trim()
@@ -41,6 +42,7 @@ module.exports = (builtInVocab = false) ->
 				seSoFar += input + '\n'
 				if lf
 					expect(result).to.deep.equal(lf)
+					expect(-> LFOptimiser.match(newLF, 'Process')).to.not.throw()
 				expectation?(result)
 			catch e
 				if expectation?
