@@ -473,10 +473,6 @@
             this._pred(force || !this.disableCommas);
             return this._applyWithArgs("Keyword", ",");
         },
-        addOr: function() {
-            var $elf = this, _fromIdx = this.input.idx;
-            return this._applyWithArgs("Keyword", "or");
-        },
         CreateVar: function(identifier) {
             var $elf = this, _fromIdx = this.input.idx, varNumber;
             varNumber = this.ruleVars[identifier] = this.ruleVarsCount++;
@@ -599,12 +595,12 @@
         },
         Disjunction: function() {
             var $elf = this, _fromIdx = this.input.idx;
-            this._applyWithArgs("token", "or");
+            this._applyWithArgs("Keyword", "or");
             return "Disjunction";
         },
         Conjunction: function() {
             var $elf = this, _fromIdx = this.input.idx;
-            this._applyWithArgs("token", "and");
+            this._applyWithArgs("Keyword", "and");
             return "Conjunction";
         },
         JunctionType: function() {
@@ -613,6 +609,15 @@
                 return this._apply("Disjunction");
             }, function() {
                 return this._apply("Conjunction");
+            });
+        },
+        SerialCommaCheck: function() {
+            var $elf = this, _fromIdx = this.input.idx;
+            this._applyWithArgs("exactly", ",");
+            return this._or(function() {
+                return this._applyWithArgs("token", "and");
+            }, function() {
+                return this._applyWithArgs("token", "or");
             });
         },
         UpcomingCommaJunction: function() {
@@ -624,13 +629,11 @@
                             return this._apply("EOL");
                         });
                         this._not(function() {
-                            this._applyWithArgs("exactly", ",");
-                            return this._apply("JunctionType");
+                            return this._apply("SerialCommaCheck");
                         });
                         return this.anything();
                     });
-                    this._applyWithArgs("exactly", ",");
-                    this._apply("JunctionType");
+                    this._apply("SerialCommaCheck");
                     return !0;
                 }, function() {
                     return !1;
@@ -826,7 +829,7 @@
                         this._opt(function() {
                             return this._apply("addComma");
                         });
-                        this._apply("addOr");
+                        this._apply("Disjunction");
                         return this._apply("Value");
                     });
                 }, function() {
@@ -1089,7 +1092,8 @@
             addThat: [ "that", "that the" ],
             addThe: [ "the" ],
             addComma: [ "," ],
-            addOr: [ "or" ],
+            Disjunction: [ "or" ],
+            Conjunction: [ "and" ],
             Terminator: [ "." ]
         };
         this.longestIdentifier = {
