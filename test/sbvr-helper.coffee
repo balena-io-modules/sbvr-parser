@@ -41,6 +41,9 @@ exports.definition = (variable) ->
 		se: se
 	}
 
+# Gets the type of the line (eg Term/Rule) and adds spaces if necessary (eg "SynonymousForm" to "Synonymous Form")
+exports.getLineType = (lf) -> lf[0].replace(/([A-Z])/g, ' $1').trim()
+
 exports.toSE = toSE = (lf) ->
 	if _.isArray lf
 		switch lf[0]
