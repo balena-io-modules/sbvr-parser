@@ -259,8 +259,6 @@ export ometa SBVRParser <: SBVRLibs {
 	addComma :force =
 		?(force || !this.disableCommas)
 		Keyword(","),
-	addOr =
-		Keyword("or"),
 	CreateVar :identifier =
 		{this.ruleVars[identifier] = this.ruleVarsCount++}:varNumber
 		-> ['Variable', ['Number', varNumber], identifier],
@@ -354,11 +352,11 @@ export ometa SBVRParser <: SBVRLibs {
 		-> r,
 
 	Disjunction =
-		"or"
+		Keyword('or')
 		-> 'Disjunction',
 
 	Conjunction =
-		"and"
+		Keyword('and')
 		-> 'Conjunction',
 
 	JunctionType =
@@ -366,16 +364,21 @@ export ometa SBVRParser <: SBVRLibs {
 		|	Conjunction
 		),
 
+	// This is used as the check in the UpcomingCommaJunction.
+	SerialCommaCheck =
+		','
+		// We can't use JunctionType here as it will be memoised and then not highlighted properly
+		// due to memoisations not adding nested token (being in a lookahead avoids adding tokens)
+		(	"and"
+		|	"or"
+		),
 	// This checks if there's an upcoming comma junction by looking for an Oxford/serial comma.
 	UpcomingCommaJunction =
 		&(	(	~EOL
-				~(	','
-					JunctionType
-				)
+				~SerialCommaCheck
 				anything
 			)*
-			','
-			JunctionType
+			SerialCommaCheck
 			-> true
 		|	-> false
 		),
@@ -531,7 +534,7 @@ export ometa SBVRParser <: SBVRLibs {
 				Value
 			)*:values
 			(	(	addComma?
-					addOr
+					Disjunction
 					Value
 				)+:moreValues
 			|	// The or is only required if we had comma-separated values.
@@ -906,7 +909,8 @@ SBVRParser.reset = function() {
 		addThat: ['that', 'that the'],
 		addThe: ['the'],
 		addComma: [','],
-		addOr: ['or'],
+		Disjunction: ['or'],
+		Conjunction: ['and'],
 		Terminator: ['.']
 	};
 	this.longestIdentifier = {
