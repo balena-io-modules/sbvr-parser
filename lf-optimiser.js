@@ -19,7 +19,12 @@
             x = this._applyWithArgs("trans", x);
             this._many(function() {
                 this._applyWithArgs("Helped", "disableMemoisation");
-                return x = this._applyWithArgs("trans", x);
+                return this._or(function() {
+                    return x = this._applyWithArgs("trans", x);
+                }, function() {
+                    console.error("Failed to reprocess?!");
+                    return this._pred(!1);
+                });
             });
             return x;
         },

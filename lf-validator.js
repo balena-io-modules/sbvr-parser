@@ -258,7 +258,7 @@
             return [ "LogicalNegation" ].concat([ xs ]);
         },
         quant: function() {
-            var $elf = this, _fromIdx = this.input.idx;
+            var $elf = this, _fromIdx = this.input.idx, x;
             return this._or(function() {
                 return this._applyWithArgs("token", "Disjunction");
             }, function() {
@@ -275,6 +275,12 @@
                 return this._applyWithArgs("token", "AtLeastNQuantification");
             }, function() {
                 return this._applyWithArgs("token", "NumericalRangeQuantification");
+            }, function() {
+                this._form(function() {
+                    this._applyWithArgs("exactly", "LogicalNegation");
+                    return x = this._apply("quant");
+                });
+                return [ "LogicalNegation", x ];
             });
         },
         UniversalQuantification: function() {
