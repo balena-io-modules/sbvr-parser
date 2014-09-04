@@ -10,7 +10,12 @@ export ometa LFOptimiser <: LFValidator {
 	Process =
 		:x
 		trans(x):x
-		(Helped('disableMemoisation') trans(x):x)*
+		(	Helped('disableMemoisation')
+			(	trans(x):x
+			|	{console.error('Failed to reprocess?!')}
+				?false
+			)
+		)*
 		-> x,
 
 	AtLeastNQuantification
