@@ -156,6 +156,10 @@ export ometa LFValidator <: SBVRLibs {
 		|	"AtMostNQuantification"
 		|	"AtLeastNQuantification"
 		|	"NumericalRangeQuantification"
+		|	[	'LogicalNegation'
+				quant:x
+			]
+			-> ['LogicalNegation', x]
 		),
 	UniversalQuantification
 		"Variable":v trans*:xs
