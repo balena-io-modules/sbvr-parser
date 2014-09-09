@@ -1,4 +1,4 @@
-typeVocab = require('fs').readFileSync(__dirname + '/Type.sbvr')
+typeVocab = require('fs').readFileSync(require.resolve('sbvr-types/Type.sbvr'))
 test = require('./test')(typeVocab)
 {term, verb, factType, conceptType, referenceScheme, necessity, rule, definition, _or, _and, _nestedOr, _nestedAnd} = require('./sbvr-helper')
 
@@ -52,7 +52,7 @@ describe 'pilots', ->
 	# Rule:       It is necessary that each pilot can fly at least 1 plane
 	test rule 'Necessity', 'each', pilot, verb('can fly'), ['at least', 1], plane
 	# Rule:       It is necessary that each pilot that is experienced, can fly at least 2 planes
-	test rule 'Necessity', 'each', [pilot, verb('is experienced')], verb('can fly'), ['at most', 2], plane
+	test rule 'Necessity', 'each', [pilot, verb('is experienced')], verb('can fly'), ['at least', 2], plane
 	# Rule:       It is necessary that each pilot that is not experienced, can fly at most 2 planes
 	test rule 'Necessity', 'each', [pilot, verb('is experienced', true)], verb('can fly'), ['at most', 2], plane
 	# Rule:       It is necessary that each pilot that can fly at most 2 planes, is not experienced
