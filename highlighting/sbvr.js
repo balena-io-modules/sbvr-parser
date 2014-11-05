@@ -14,4 +14,4 @@
 	}
 }(this, function (codeMirrorOmetaHighlighter, SBVRParser) {
 	codeMirrorOmetaHighlighter(SBVRParser, 'sbvr', 'text/sbvr', {enableLineByLineParsing: true});
-});
+}));
