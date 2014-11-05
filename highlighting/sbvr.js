@@ -10,8 +10,8 @@
 		);
 	} else {
 		// Browser globals
-		factory(root.codeMirrorOmetaHighlighter, root.SBVRParser);
+		factory(root.codeMirrorOmetaHighlighter, root);
 	}
 }(this, function (codeMirrorOmetaHighlighter, SBVRParser) {
-	codeMirrorOmetaHighlighter(SBVRParser, 'sbvr', 'text/sbvr', {enableLineByLineParsing: true});
+	codeMirrorOmetaHighlighter(SBVRParser.SBVRParser, 'sbvr', 'text/sbvr', {enableLineByLineParsing: true});
 }));
