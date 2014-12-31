@@ -337,11 +337,13 @@ export ometa SBVRParser <: SBVRLibs {
 			-> ['ObligationFormulation']
 		|	"necessary"
 			-> ['NecessityFormulation']
-		|	"prohibited"
+		|	(	"prohibited"
+			|	"forbidden"
+			)
 			-> ['ObligationFormulation', ['LogicalNegation']]
-		|	"impossible"
-			-> ['NecessityFormulation', ['LogicalNegation']]
-		|	"not" "possible"
+		|	(	"impossible"
+			|	"not" "possible"
+			)
 			-> ['NecessityFormulation', ['LogicalNegation']]
 		|	"possible"
 			-> ['PossibilityFormulation']
@@ -884,6 +886,7 @@ SBVRParser.reset = function() {
 			'It is obligatory that',
 			'It is necessary that',
 			'It is prohibited that',
+			'It is forbidden that',
 			'It is impossible that',
 			'It is not possible that',
 			'It is possible that',
