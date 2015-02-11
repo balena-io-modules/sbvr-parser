@@ -2,3 +2,4 @@
 --recursive
 --compilers coffee:coffee-script/register
 --bail
+--timeout 5000
