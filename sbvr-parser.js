@@ -574,14 +574,19 @@
                 this._applyWithArgs("token", "necessary");
                 return [ "NecessityFormulation" ];
             }, function() {
-                this._applyWithArgs("token", "prohibited");
+                this._or(function() {
+                    return this._applyWithArgs("token", "prohibited");
+                }, function() {
+                    return this._applyWithArgs("token", "forbidden");
+                });
                 return [ "ObligationFormulation", [ "LogicalNegation" ] ];
             }, function() {
-                this._applyWithArgs("token", "impossible");
-                return [ "NecessityFormulation", [ "LogicalNegation" ] ];
-            }, function() {
-                this._applyWithArgs("token", "not");
-                this._applyWithArgs("token", "possible");
+                this._or(function() {
+                    return this._applyWithArgs("token", "impossible");
+                }, function() {
+                    this._applyWithArgs("token", "not");
+                    return this._applyWithArgs("token", "possible");
+                });
                 return [ "NecessityFormulation", [ "LogicalNegation" ] ];
             }, function() {
                 this._applyWithArgs("token", "possible");
@@ -1085,7 +1090,7 @@
                 return this.allowedAttrLists.hasOwnProperty(termOrFactType) ? this.allowedAttrLists[termOrFactType] : null == termOrFactType ? this.allowedAttrLists.Term.concat(this.allowedAttrLists.Name, this.allowedAttrLists.FactType) : [];
             },
             AttrGuidanceType: [ "operative business rule", "structural business rule", "advice of permission", "advice of possibility", "advice of optionality", "advice of contingency" ],
-            Modifier: [ "It is obligatory that", "It is necessary that", "It is prohibited that", "It is impossible that", "It is not possible that", "It is possible that", "It is permitted that" ],
+            Modifier: [ "It is obligatory that", "It is necessary that", "It is prohibited that", "It is forbidden that", "It is impossible that", "It is not possible that", "It is possible that", "It is permitted that" ],
             Quantifier: [ "each", "a", "an", "some", "at most", "at least", "more than", "exactly", "no" ],
             JoiningQuantifier: [ "and at most" ],
             Number: [ "1", "2", "3", "4", "5", "6", "7", "8", "9", "one" ],
