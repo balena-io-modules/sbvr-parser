@@ -7,7 +7,7 @@ expect = require('chai').expect
 module.exports = (builtInVocab = false) ->
 	SBVRParser = require('../sbvr-parser').SBVRParser.createInstance()
 	SBVRParser.enableReusingMemoizations(SBVRParser._sideEffectingRules)
-	
+
 	if builtInVocab
 		SBVRParser.AddBuiltInVocab(builtInVocab)
 
@@ -46,7 +46,7 @@ module.exports = (builtInVocab = false) ->
 					expectation(e)
 				else
 					throw e
-	
+
 	ret = runExpectation.bind(null, describe)
 	ret.skip = runExpectation.bind(null, describe.skip)
 	ret.only = runExpectation.bind(null, describe.only)

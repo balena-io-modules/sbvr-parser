@@ -1,4 +1,4 @@
-typeVocab = require('fs').readFileSync(require.resolve('sbvr-types/Type.sbvr'))
+typeVocab = require('fs').readFileSync(require.resolve('@resin/sbvr-types/Type.sbvr'))
 test = require('./test')(typeVocab)
 {term, verb, factType, conceptType, referenceScheme, necessity, rule, definition, _or, _and, _nestedOr, _nestedAnd} = require('./sbvr-helper')
 
