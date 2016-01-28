@@ -1019,9 +1019,10 @@
         verb = [ "Verb", this._verbForm(verb) ];
         var currentLevel = this._traverseFactType(factTypeSoFar);
         this._pred(currentLevel !== !1);
-        if (currentLevel.hasOwnProperty(verb)) return void 0;
-        this._pred(currentLevel.hasOwnProperty("__valid"));
-        return this.IsVerb([], verb);
+        if (!currentLevel.hasOwnProperty(verb)) {
+            this._pred(currentLevel.hasOwnProperty("__valid"));
+            return this.IsVerb([], verb);
+        }
     };
     SBVRParser._verbForm = function(verb) {
         return "are " === verb.slice(0, 4) ? "is " + verb.slice(4) : "are" === verb ? "is" : "have" === verb ? "has" : verb;
@@ -1037,7 +1038,7 @@
         FactType: [ "Synonymous Form:", "Term Form:" ].concat(defaultAllowedAttrLists),
         Rule: [ "Rule Name:", "Guidance Type:", "Source:", "Synonymous Statement:", "Note:", "Example:", "Enforcement Level:" ]
     };
-    var getValidFactTypeParts = function(vocabulary, identifierType, factTypeSoFar) {
+    var getValidFactTypeParts = function getValidFactTypeParts(vocabulary, identifierType, factTypeSoFar) {
         var vocabularies = this.vocabularies;
         if (null == factTypeSoFar || 0 === factTypeSoFar.length) {
             var identifiers;
