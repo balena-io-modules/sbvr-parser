@@ -799,7 +799,7 @@ function getValidFactTypeParts(vocabulary, identifierType, factTypeSoFar) {
 			// identifiers = {};
 			// for(vocabulary in vocabularies) {
 				// if(vocabularies.hasOwnProperty(vocabulary)) {
-					// _.extend(identifiers, vocabularies[vocabulary][identifierType]);
+					// _.assign(identifiers, vocabularies[vocabulary][identifierType]);
 				// }
 			// }
 		}
