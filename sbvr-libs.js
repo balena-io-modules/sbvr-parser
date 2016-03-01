@@ -42,7 +42,7 @@
         }
         this._traverseFactType(factType, mappedFactType);
         if (3 === factType.length && ("has" === factType[1][1] || "is of" === factType[1][1])) {
-            mappedFactType = _.extend([], mappedFactType);
+            mappedFactType = _.clone(mappedFactType);
             mappedFactType[0] = mappedFactType[0].slice(0, 3).concat(2);
             mappedFactType[2] = mappedFactType[2].slice(0, 3).concat(0);
             "has" === factType[1][1] ? this._traverseFactType([ factType[2], [ "Verb", "is of", factType[1][2] ], factType[0] ], mappedFactType) : "is of" === factType[1][1] && this._traverseFactType([ factType[2], [ "Verb", "has", factType[1][2] ], factType[0] ], mappedFactType);
@@ -65,11 +65,11 @@
             }
             if (currentLevel.hasOwnProperty(currentFactTypePart) || create && (currentLevel[currentFactTypePart] = {})) {
                 finalLevel = traverseRecurse(remainingFactType[0], remainingFactType.slice(1), currentLevel[currentFactTypePart]);
-                finalLevel !== !1 && _.extend(finalLevels, finalLevel);
+                finalLevel !== !1 && _.assign(finalLevels, finalLevel);
             }
             if (!create && ("Term" === currentFactTypePart[0] || "Name" === currentFactTypePart[0])) for (;(currentFactTypePart = $elf.FollowConceptType(currentFactTypePart)) !== !1; ) if (currentLevel.hasOwnProperty(currentFactTypePart)) {
                 finalLevel = traverseRecurse(remainingFactType[0], remainingFactType.slice(1), currentLevel[currentFactTypePart]);
-                finalLevel !== !1 && _.extend(finalLevels, finalLevel);
+                finalLevel !== !1 && _.assign(finalLevels, finalLevel);
             }
             return _.isEmpty(finalLevels) === !0 ? !1 : finalLevels;
         };
