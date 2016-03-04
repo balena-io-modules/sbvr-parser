@@ -1,6 +1,6 @@
 typeVocab = require('fs').readFileSync(require.resolve('@resin/sbvr-types/Type.sbvr'))
 test = require('./test')(typeVocab)
-{term, verb, factType, conceptType, referenceScheme, necessity, rule, definition, _or, _and, _nestedOr, _nestedAnd} = require('./sbvr-helper')
+{ term, verb, factType, conceptType, referenceScheme, necessity, rule, customRule, definition, _or, _and, _nestedOr, _nestedAnd } = require('./sbvr-helper')
 
 shortTextType = term 'Short Text', 'Type'
 integerType = term 'Integer', 'Type'
@@ -61,7 +61,11 @@ describe 'pilots', ->
 	# Rule:       It is necessary that each plane that at least 3 pilots can fly, has a name
 	test rule 'Necessity', 'each', [plane, ['at least', 3], pilot, verb('can fly')], verb('has'), 'a', name
 	# Rule:       It is necessary that each plane that at least 3 pilots that are experienced can fly, has a name
-	test rule 'Necessity', 'each', [plane, ['at least', 3], [pilot, verb('is experienced')], verb('can fly')], verb('has'), 'a', name
+	test customRule 'It is necessary that each plane that at least 3 pilots that are experienced can fly, has a name', 'Necessity', 'each', [plane, ['at least', 3], [pilot, verb('is experienced')], verb('can fly')], verb('has'), 'a', name
+	# Rule:       It is necessary that each plane that at least 3 pilots that are not experienced can fly, has a name
+	test customRule 'It is necessary that each plane that at least 3 pilots that are not experienced can fly, has a name', 'Necessity', 'each', [plane, ['at least', 3], [pilot, verb('is experienced', true)], verb('can fly')], verb('has'), 'a', name
+	# Rule:       It is necessary that each plane that at least 3 pilots that aren't experienced can fly, has a name
+	test customRule 'It is necessary that each plane that at least 3 pilots that aren\'t experienced can fly, has a name', 'Necessity', 'each', [plane, ['at least', 3], [pilot, verb('is experienced', true)], verb('can fly')], verb('has'), 'a', name
 	# Rule:       It is necessary that each plane that at least 3 pilots that a name is of can fly, has a name
 	test rule 'Necessity', 'each', [plane, ['at least', 3], [pilot, verb('is experienced')], verb('can fly')], verb('has'), 'a', name
 

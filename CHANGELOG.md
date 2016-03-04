@@ -1,3 +1,5 @@
+* Added support for `are not` and `aren't`.
+
 v0.0.20
 
 * Updated to lodash ^4.0.0
