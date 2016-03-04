@@ -189,14 +189,16 @@ export ometa SBVRParser <: SBVRLibs {
 		FindVerb(factTypeSoFar),
 	FindVerb :factTypeSoFar :verbSoFar :negated =
 		(	?(factTypeSoFar && !verbSoFar)
-			Keyword("isn't")
+			(	Keyword("isn't")
+			|	Keyword("aren't")
+			)
 			{'is'}:verbSoFar
 			{true}:negated
 		)?
 		VerbPart:part
 		(	?verbSoFar
 			-> (verbSoFar + ' ' + part)
-		|	-> part
+		|	-> this._verbForm(part)
 		):verbSoFar
 		(	?(factTypeSoFar && verbSoFar === 'is')
 			spaces
@@ -207,7 +209,7 @@ export ometa SBVRParser <: SBVRLibs {
 		|	(	?(factTypeSoFar===true)
 			|	IsVerb(factTypeSoFar, verbSoFar)
 			)
-			{['Verb', this._verbForm(verbSoFar)]}:verb
+			{['Verb', verbSoFar]}:verb
 			(	?negated
 				{verb.push(true)}
 			|	{verb.push(false)}
@@ -704,7 +706,7 @@ SBVRParser.IsFactTypeIdentifier = function(vocabulary, identifierType, factTypeS
 };
 
 SBVRParser.IsVerb = function(factTypeSoFar, verb) {
-	verb = ['Verb',this._verbForm(verb)];
+	verb = ['Verb', verb];
 	var currentLevel = this._traverseFactType(factTypeSoFar);
 	// Check we have a fact type matching this chain.
 	this._pred(currentLevel!==false);
@@ -719,13 +721,6 @@ SBVRParser.IsVerb = function(factTypeSoFar, verb) {
 };
 
 SBVRParser._verbForm = function(verb) {
-	// People are eating.. Person is eating
-	// Not: Police arest people.. Police isst people
-	// I used a mispelling here because I could not find a case with a correct word, however in case I just missed one I'd rather check for the space.
-	// People aren't animals.. Person isn't animal. Should probably be allowed, however what are our thoughts on contractions?
-	if(verb.slice(0,4) === 'are ') {
-		return 'is ' + verb.slice(4);
-	}
 	// Students are people.. Student is person
 	if(verb === 'are') {
 		return 'is';
@@ -733,6 +728,13 @@ SBVRParser._verbForm = function(verb) {
 	// People have eyes.. Person has eyes
 	if(verb === 'have') {
 		return 'has';
+	}
+	// People are eating.. Person is eating
+	// Not: Police arest people.. Police isst people
+	// I used a mispelling here because I could not find a case with a correct word, however in case I just missed one I'd rather check for the space.
+	// People aren't animals.. Person isn't animal. Should probably be allowed, however what are our thoughts on contractions?
+	if(verb.slice(0,4) === 'are ') {
+		return 'is ' + verb.slice(4);
 	}
 	return verb;
 };

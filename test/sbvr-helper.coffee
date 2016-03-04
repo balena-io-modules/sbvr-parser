@@ -312,6 +312,11 @@ createParser = ->
 		ruleBody
 	}
 
+exports.customRule = (structuredEnglish, formulationType, args...) ->
+	lf = rule(formulationType, args...)
+	lf[2][1] = structuredEnglish
+	return lf
+
 exports.rule = rule = (formulationType, args...) ->
 	formulationType += 'Formulation'
 	parser = createParser()

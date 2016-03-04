@@ -40,12 +40,13 @@ module.exports = (builtInVocab = false) ->
 				if lf
 					expect(result).to.deep.equal(lf)
 					expect(-> LFOptimiser.match(newLF, 'Process')).to.not.throw()
-				expectation?(result)
 			catch e
 				if expectation?
-					expectation(e)
+					return expectation(e)
 				else
 					throw e
+
+			expectation?(result)
 
 	ret = runExpectation.bind(null, describe)
 	ret.skip = runExpectation.bind(null, describe.skip)
