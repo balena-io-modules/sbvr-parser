@@ -363,7 +363,11 @@
             var $elf = this, _fromIdx = this.input.idx, negated, part, verb, verbSoFar;
             this._opt(function() {
                 this._pred(factTypeSoFar && !verbSoFar);
-                this._applyWithArgs("Keyword", "isn't");
+                this._or(function() {
+                    return this._applyWithArgs("Keyword", "isn't");
+                }, function() {
+                    return this._applyWithArgs("Keyword", "aren't");
+                });
                 verbSoFar = "is";
                 return negated = !0;
             });
@@ -372,7 +376,7 @@
                 this._pred(verbSoFar);
                 return verbSoFar + " " + part;
             }, function() {
-                return part;
+                return this._verbForm(part);
             });
             this._opt(function() {
                 this._pred(factTypeSoFar && "is" === verbSoFar);
@@ -388,7 +392,7 @@
                 }, function() {
                     return this._applyWithArgs("IsVerb", factTypeSoFar, verbSoFar);
                 });
-                verb = [ "Verb", this._verbForm(verbSoFar) ];
+                verb = [ "Verb", verbSoFar ];
                 this._or(function() {
                     this._pred(negated);
                     return verb.push(!0);
@@ -1016,7 +1020,7 @@
         return identifier;
     };
     SBVRParser.IsVerb = function(factTypeSoFar, verb) {
-        verb = [ "Verb", this._verbForm(verb) ];
+        verb = [ "Verb", verb ];
         var currentLevel = this._traverseFactType(factTypeSoFar);
         this._pred(currentLevel !== !1);
         if (!currentLevel.hasOwnProperty(verb)) {
@@ -1025,7 +1029,7 @@
         }
     };
     SBVRParser._verbForm = function(verb) {
-        return "are " === verb.slice(0, 4) ? "is " + verb.slice(4) : "are" === verb ? "is" : "have" === verb ? "has" : verb;
+        return "are" === verb ? "is" : "have" === verb ? "has" : "are " === verb.slice(0, 4) ? "is " + verb.slice(4) : verb;
     };
     SBVRParser.IsFactType = function(factType) {
         var currentLevel = this._traverseFactType(factType);
