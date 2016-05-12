@@ -13,17 +13,21 @@ module.exports = (builtInVocab = false) ->
 
 	seSoFar = ''
 	lfSoFar = SBVRParser.matchAll(seSoFar, 'Process')
+	currentVocab = 'Default'
 
 	runExpectation = (describe, input, expectation) ->
 		if _.isArray(input)
 			lf = input
-			text = toSE(lf)
+			text = toSE(lf, currentVocab)
 			type = getLineType(lf)
 			input = type + ': ' + text
 		else if _.isObject(input)
 			{ lf, se: text } = input
 			type = getLineType(lf)
 			input = type + ': ' + text
+
+		if type is 'Vocabulary'
+			currentVocab = lf[1]
 
 		it input, ->
 			try
