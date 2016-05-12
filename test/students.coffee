@@ -1,6 +1,6 @@
 test = require('./test')()
 expect = require('chai').expect
-{term, verb, factType, conceptType, termForm, referenceScheme, necessity, rule, conceptType, note, definitionEnum, synonym} = require('./sbvr-helper')
+{ term, verb, factType, conceptType, termForm, referenceScheme, necessity, rule, conceptType, note, definitionEnum, synonym } = require './sbvr-helper'
 
 has = verb 'has'
 
