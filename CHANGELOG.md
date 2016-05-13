@@ -1,3 +1,7 @@
+v0.0.22
+
+* Test improvements
+
 v0.0.21
 
 * Added support for `are not` and `aren't`.
