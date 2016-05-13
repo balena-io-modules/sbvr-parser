@@ -1,6 +1,6 @@
-_ = require('lodash')
+_ = require 'lodash'
 
-stripAttributes = (x) -> _.reject(x, (part) -> part[0] is 'Attributes')
+stripAttributes = (x) -> _.reject(x, 0: 'Attributes')
 
 exports.term = (term, vocab = 'Default') -> ['Term', term, vocab, ['Attributes']]
 exports.verb = (verb, negated = false) -> ['Verb', verb, negated]
@@ -32,7 +32,7 @@ exports.synonym = (term) -> ['Synonym', stripAttributes(term)]
 exports.note = (note) -> ['Note', note]
 exports.definitionEnum = (options...) -> ['Definition', ['Enum'].concat(parseEmbeddedData(option)[3] for option in options)]
 exports.definition = (variable) ->
-	{lf, se} = createParser().resolveTerm(variable)
+	{ lf, se } = createParser().resolveTerm(variable)
 	return {
 		lf: [
 			'Definition'
@@ -97,7 +97,7 @@ resolveQuantifier = (quantifier) ->
 
 	if _.isArray(quantifier)
 		[quantifier, cardinality] = quantifier
-		cardinality = 
+		cardinality =
 			[	'Number'
 				if cardinality is 'one' then 1 else cardinality
 			]
@@ -147,9 +147,9 @@ createParser = ->
 	num = -1
 	closedProjection = (args, identifier, binding) ->
 		try
-			{lf, se} = junction(ruleBody, args, [], [], identifier, binding)
+			{ lf, se } = junction(ruleBody, args, [], [], identifier, binding)
 		catch
-			{lf, se} = junction(verbContinuation, args, [identifier], [binding])
+			{ lf, se } = junction(verbContinuation, args, [identifier], [binding])
 		return {
 			lf
 			se: 'that ' + se
@@ -186,7 +186,7 @@ createParser = ->
 				arr[0]
 			else
 				throw new Error('Not a term: ' + arr)
-		{identifier, se, binding, lf} = resolveIdentifier(identifier)
+		{ identifier, se, binding, lf } = resolveIdentifier(identifier)
 		if _.isArray(arr[0])
 			projection = closedProjection(arr[1...], identifier, binding)
 			se += ' ' + projection.se
@@ -203,11 +203,11 @@ createParser = ->
 		identifier = parseEmbeddedData(embeddedData)
 		return resolveIdentifier(identifier)
 
-	resolveName = (name) -> 
+	resolveName = (name) ->
 		# TODO: Actually do something and match the return of resolveTerm and resolveEmbeddedData
 		return name
 
-	resolveVerb = (verb) -> 
+	resolveVerb = (verb) ->
 		# TODO: Actually do some proper checks
 		if verb?
 			return verb
@@ -227,7 +227,7 @@ createParser = ->
 			junctionArgs = maybeJunction[1...]
 			for args, i in junctionArgs
 				prevJunctioned = junctioned
-				{lf: fnLF, se: fnSE, junctioned} = junction(fn, args, _.cloneDeep(fnArgs)...)
+				{ lf: fnLF, se: fnSE, junctioned } = junction(fn, args, _.cloneDeep(fnArgs)...)
 				if prevJunctioned and i + 1 < junctionArgs.length
 					fnSE = junctionType + ' ' + fnSE
 				lf.push(fnLF)
@@ -251,7 +251,7 @@ createParser = ->
 		try
 			verb = resolveVerb(args[0])
 			factTypeSoFar.push(verb)
-			{lf, se} = junction(ruleBody, args[1...], factTypeSoFar, bindings)
+			{ lf, se } = junction(ruleBody, args[1...], factTypeSoFar, bindings)
 			return {
 				lf
 				se: [
@@ -274,11 +274,11 @@ createParser = ->
 
 	ruleBody = (args, factTypeSoFar = [], bindings = [], postfixIdentifier, postfixBinding) ->
 		try
-			{lf: quantifierLF, se: quantifierSE} = resolveQuantifier(args[0])
-			{identifier, se: identifierSE, lf: identifierLF, binding, hasClosedProjection} = resolveTerm(args[1])
+			{ lf: quantifierLF, se: quantifierSE } = resolveQuantifier(args[0])
+			{ identifier, se: identifierSE, lf: identifierLF, binding, hasClosedProjection } = resolveTerm(args[1])
 			factTypeSoFar.push(identifier)
 			bindings.push(binding)
-			{lf, se} = junction(verbContinuation, args[2...], factTypeSoFar, bindings, postfixIdentifier, postfixBinding)
+			{ lf, se } = junction(verbContinuation, args[2...], factTypeSoFar, bindings, postfixIdentifier, postfixBinding)
 			if hasClosedProjection and se != ''
 				identifierSE += ','
 			return {
@@ -294,10 +294,10 @@ createParser = ->
 				console.log('Named references are not implemented yet', args, e, e.stack)
 				process.exit()
 			else
-				{identifier, se: identifierSE, binding} = resolveEmbeddedData(args[0])
+				{ identifier, se: identifierSE, binding } = resolveEmbeddedData(args[0])
 				factTypeSoFar.push(identifier)
 				bindings.push(binding)
-				{lf, se} = junction(verbContinuation, args[1...], factTypeSoFar, bindings, postfixIdentifier, postfixBinding)
+				{ lf, se } = junction(verbContinuation, args[1...], factTypeSoFar, bindings, postfixIdentifier, postfixBinding)
 				return {
 					se: [
 						identifierSE
@@ -320,7 +320,7 @@ exports.customRule = (structuredEnglish, formulationType, args...) ->
 exports.rule = rule = (formulationType, args...) ->
 	formulationType += 'Formulation'
 	parser = createParser()
-	{lf, se} = parser.junction(parser.ruleBody, args)
+	{ lf, se } = parser.junction(parser.ruleBody, args)
 	return [
 		'Rule'
 		[	formulationType

@@ -1,8 +1,8 @@
 _ = require('lodash')
 
 expect = require('chai').expect
-{toSE, getLineType} = require('./sbvr-helper')
-{LFOptimiser} = require('../lf-optimiser')
+{ toSE, getLineType } = require('./sbvr-helper')
+{ LFOptimiser } = require('../lf-optimiser')
 
 module.exports = (builtInVocab = false) ->
 	SBVRParser = require('../sbvr-parser').SBVRParser.createInstance()
@@ -21,7 +21,7 @@ module.exports = (builtInVocab = false) ->
 			type = getLineType(lf)
 			input = type + ': ' + text
 		else if _.isObject(input)
-			{lf, se: text} = input
+			{ lf, se: text } = input
 			type = getLineType(lf)
 			input = type + ': ' + text
 

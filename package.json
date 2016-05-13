@@ -4,9 +4,10 @@
   "description": "SBVR to LF parser.",
   "main": "sbvr-parser.js",
   "scripts": {
-    "pretest": "npm run-script prepublish",
-    "test": "node node_modules/mocha/bin/mocha",
-    "prepublish": "node node_modules/ometa-js/bin/ometajs2js --input sbvr-parser.ometajs --output sbvr-parser.js && node node_modules/ometa-js/bin/ometajs2js --input sbvr-libs.ometajs --output sbvr-libs.js && node node_modules/ometa-js/bin/ometajs2js --input lf-optimiser.ometajs --output lf-optimiser.js && node node_modules/ometa-js/bin/ometajs2js --input lf-validator.ometajs --output lf-validator.js"
+    "lint": "resin-lint test/",
+    "pretest": "npm run prepublish",
+    "test": "mocha",
+    "prepublish": "ometajs2js --input sbvr-parser.ometajs --output sbvr-parser.js && node node_modules/ometa-js/bin/ometajs2js --input sbvr-libs.ometajs --output sbvr-libs.js && node node_modules/ometa-js/bin/ometajs2js --input lf-optimiser.ometajs --output lf-optimiser.js && node node_modules/ometa-js/bin/ometajs2js --input lf-validator.ometajs --output lf-validator.js"
   },
   "repository": "git@bitbucket.org:rulemotion/sbvr-parser.git",
   "author": "",
@@ -16,9 +17,10 @@
     "lodash": "^4.0.0"
   },
   "devDependencies": {
+    "@resin/sbvr-types": "^1.0.0",
     "chai": "^3.0.0",
     "coffee-script": "~1.10.0",
     "mocha": "^2.1.0",
-    "@resin/sbvr-types": "^1.0.0"
+    "resin-lint": "^1.2.2"
   }
 }
