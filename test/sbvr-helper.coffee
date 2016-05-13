@@ -2,6 +2,7 @@ _ = require 'lodash'
 
 stripAttributes = (x) -> _.reject(x, 0: 'Attributes')
 
+exports.vocabulary = (vocab) -> ['Vocabulary', vocab, ['Attributes']]
 exports.term = (term, vocab = 'Default') -> ['Term', term, vocab, ['Attributes']]
 exports.verb = (verb, negated = false) -> ['Verb', verb, negated]
 exports.factType = factType = (factType...) ->
@@ -44,13 +45,18 @@ exports.definition = (variable) ->
 # Gets the type of the line (eg Term/Rule) and adds spaces if necessary (eg "SynonymousForm" to "Synonymous Form")
 exports.getLineType = (lf) -> lf[0].replace(/([A-Z])/g, ' $1').trim()
 
-exports.toSE = toSE = (lf) ->
+exports.toSE = toSE = (lf, currentVocab) ->
+	if currentVocab is 0
+		throw new Error()
+	recursiveSE = _.partial(toSE, _, currentVocab)
 	if _.isArray lf
 		switch lf[0]
+			when 'Vocabulary'
+				lf[1]
 			when 'Term'
 				if lf[3]? and lf[3][0] isnt 'Attributes'
-					toSE(lf[3])
-				else if lf[2] != 'Default'
+					recursiveSE(lf[3])
+				else if lf[2] != currentVocab
 					lf[1] + ' (' + lf[2] + ')'
 				else
 					lf[1]
@@ -67,7 +73,7 @@ exports.toSE = toSE = (lf) ->
 				''
 			when 'Definition'
 				if lf[1][0] is 'Enum'
-					_.map(lf[1][1...], toSE).join(' or ')
+					_.map(lf[1][1...], recursiveSE).join(' or ')
 				else
 					lf
 			when 'Text'
@@ -75,9 +81,9 @@ exports.toSE = toSE = (lf) ->
 			when 'Integer'
 				lf[1]
 			when 'at least', 'at most'
-				_.map(lf, toSE).join(' ')
+				_.map(lf, recursiveSE).join(' ')
 			else
-				_.map(lf[1...], toSE).join(' ').trim()
+				_.map(lf[1...], recursiveSE).join(' ').trim()
 	else
 		if _.isNumber(lf)
 			lf
@@ -143,7 +149,8 @@ parseEmbeddedData = (embeddedData) ->
 	else
 		throw new Error('Not embedded data: ' + embeddedData)
 
-createParser = ->
+createParser = (currentVocab = 'Default') ->
+	currentVocabSE = _.partialRight(toSE, currentVocab)
 	num = -1
 	closedProjection = (args, identifier, binding) ->
 		try
@@ -169,7 +176,7 @@ createParser = ->
 			]
 		return {
 			identifier
-			se: toSE(identifier)
+			se: currentVocabSE(identifier)
 			binding: [
 				'RoleBinding'
 				strippedIdentifier
@@ -255,7 +262,7 @@ createParser = ->
 			return {
 				lf
 				se: [
-					toSE(verb)
+					currentVocabSE(verb)
 					se
 				].join(' ')
 			}
@@ -269,7 +276,7 @@ createParser = ->
 		].concat(bindings)
 		return {
 			lf
-			se: toSE(verb) ? ''
+			se: currentVocabSE(verb) ? ''
 		}
 
 	ruleBody = (args, factTypeSoFar = [], bindings = [], postfixIdentifier, postfixBinding) ->
@@ -317,9 +324,9 @@ exports.customRule = (structuredEnglish, formulationType, args...) ->
 	lf[2][1] = structuredEnglish
 	return lf
 
-exports.rule = rule = (formulationType, args...) ->
+exports.vocabRule = vocabRule = (vocab, formulationType, args...) ->
 	formulationType += 'Formulation'
-	parser = createParser()
+	parser = createParser(vocab)
 	{ lf, se } = parser.junction(parser.ruleBody, args)
 	return [
 		'Rule'
@@ -327,17 +334,17 @@ exports.rule = rule = (formulationType, args...) ->
 			lf
 		]
 		[	'StructuredEnglish'
-			[	toSE(formulationType)
+			[	toSE(formulationType, vocab)
 				se
 			].join(' ') + '.'
 		]
 	]
-exports.necessity = do ->
-	necessityRule = rule.bind(null, 'Necessity')
-	(args...) ->
-		[	'Necessity'
-			necessityRule.apply(null, args)
-		]
+exports.vocabNecessity = vocabNecessity = (vocab, args...) ->
+	[	'Necessity'
+		vocabRule(vocab, 'Necessity', args...)
+	]
+exports.rule = rule = _.partial(vocabRule, 'Default')
+exports.necessity = _.partial(vocabNecessity, 'Default')
 
 nestedPairs = (type, pairs) ->
 	if pairs.length is 1
