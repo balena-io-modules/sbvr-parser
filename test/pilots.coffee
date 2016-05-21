@@ -8,6 +8,7 @@ lengthType = term 'Length', 'Type'
 
 name = term 'name'
 yearsOfExperience = term 'years of experience'
+person = term 'person'
 pilot = term 'pilot'
 veteranPilot = term 'veteran pilot'
 plane = term 'plane'
@@ -21,8 +22,12 @@ describe 'pilots', ->
 	test yearsOfExperience
 	# 	Concept Type: Integer (Type)
 	test conceptType integerType
+	# Term:      person
+	test person
 	# Term:      pilot
 	test pilot
+	# 	Concept Type: person
+	test conceptType person
 	# 	Reference Scheme: name
 	test referenceScheme name
 	# Term:      plane

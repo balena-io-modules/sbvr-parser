@@ -1,3 +1,5 @@
+* Added a test for a non-primitive concept type to the pilots model.
+
 v0.0.22
 
 * Test improvements
