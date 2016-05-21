@@ -1,3 +1,4 @@
+* Added a test for a synonymous form attribute.
 * Added a test for a non-primitive concept type to the pilots model.
 
 v0.0.22

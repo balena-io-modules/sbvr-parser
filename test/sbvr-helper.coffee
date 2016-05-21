@@ -2,33 +2,41 @@ _ = require 'lodash'
 
 stripAttributes = (x) -> _.reject(x, 0: 'Attributes')
 
+factTypeBody = (factType) ->
+	_(factType)
+	# Standardise the fact type parts
+	.map (factTypePart) ->
+		if _.isNumber(factTypePart) or _.isString(factTypePart)
+			# Parse numbers/strings to the correct term array.
+			parseEmbeddedData(factTypePart)
+		else if factTypePart[0] is 'Term'
+			# Strip attributes from terms
+			stripAttributes(factTypePart)
+		else if factTypePart[0] is 'Verb'
+			factTypePart
+		else
+			# Ignore any unknown fact type parts
+			null
+	# Remove the nulls
+	.filter()
+	.value()
+
 exports.vocabulary = (vocab) -> ['Vocabulary', vocab, ['Attributes']]
 exports.term = (term, vocab = 'Default') -> ['Term', term, vocab, ['Attributes']]
 exports.verb = (verb, negated = false) -> ['Verb', verb, negated]
 exports.factType = factType = (factType...) ->
-	['FactType'].concat(
-		_(factType)
-		# Standardise the fact type parts
-		.map (factTypePart) ->
-			if _.isNumber(factTypePart) or _.isString(factTypePart)
-				# Parse numbers/strings to the correct term array.
-				parseEmbeddedData(factTypePart)
-			else if factTypePart[0] is 'Term'
-				# Strip attributes from terms
-				stripAttributes(factTypePart)
-			else if factTypePart[0] is 'Verb'
-				factTypePart
-			else
-				# Ignore any unknown fact type parts
-				null
-		# Remove the nulls
-		.filter()
-		.value()
-	).concat([['Attributes']])
+	[	'FactType'
+		factTypeBody(factType)...
+		['Attributes']
+	]
 exports.conceptType = (term) -> ['ConceptType', stripAttributes(term)]
 exports.referenceScheme = (term) -> ['ReferenceScheme', stripAttributes(term)]
 exports.termForm = (term) -> ['TermForm', stripAttributes(term)]
 exports.synonym = (term) -> ['Synonym', stripAttributes(term)]
+exports.synonymousForm = (factType...) ->
+	[	'SynonymousForm'
+		factTypeBody(factType)
+	]
 
 exports.note = (note) -> ['Note', note]
 exports.definitionEnum = (options...) -> ['Definition', ['Enum'].concat(parseEmbeddedData(option)[3] for option in options)]
@@ -46,8 +54,6 @@ exports.definition = (variable) ->
 exports.getLineType = (lf) -> lf[0].replace(/([A-Z])/g, ' $1').trim()
 
 exports.toSE = toSE = (lf, currentVocab) ->
-	if currentVocab is 0
-		throw new Error()
 	recursiveSE = _.partial(toSE, _, currentVocab)
 	if _.isArray lf
 		switch lf[0]
@@ -76,6 +82,8 @@ exports.toSE = toSE = (lf, currentVocab) ->
 					_.map(lf[1][1...], recursiveSE).join(' or ')
 				else
 					lf
+			when 'SynonymousForm'
+				_.map(lf[1], recursiveSE).join(' ').trim()
 			when 'Text'
 				'"' + lf[1] + '"'
 			when 'Integer'
