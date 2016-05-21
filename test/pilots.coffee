@@ -236,7 +236,7 @@ describe 'pilots', ->
 			)
 		], verb('has'), 'a', [yearsOfExperience, verb('is greater than'), 5]
 
-	# # Rule:       It is necessary that each pilot that is experienced, can fly at least 3 planes, and can fly at most 10 planes or has a name that has a length (Type) that is greater than 10, has a years of experience that is greater than 5
+	# Rule:       It is necessary that each pilot that is experienced, can fly at least 3 planes, and can fly at most 10 planes or has a name that has a length (Type) that is greater than 20, has a years of experience that is greater than 5
 	test rule 'Necessity', 'each',
 		[pilot,
 			_and(
@@ -288,7 +288,7 @@ describe 'pilots', ->
 			)
 		], verb('has'), 'a', [yearsOfExperience, verb('is greater than'), 5]
 
-	# Rule:       It is necessary that each pilot that is experienced, can fly at most 10 planes or has a name that has a length (Type) that is greater than 10, and can fly at least 3 planes, has a years of experience that is greater than 5
+	# Rule:       It is necessary that each pilot that is experienced, can fly at most 10 planes or has a name that has a length (Type) that is greater than 20, and can fly at least 3 planes, has a years of experience that is greater than 5
 	test rule 'Necessity', 'each',
 		[pilot,
 			_and(
