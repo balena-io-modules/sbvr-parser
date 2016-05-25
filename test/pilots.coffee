@@ -339,3 +339,15 @@ describe 'pilots', ->
 				[verb('can fly'), ['at least', 3], plane]
 			)
 		], verb('has'), 'a', [yearsOfExperience, verb('is greater than'), 5]
+
+	pilots = numberedTerms(pilot, 2)
+	planes = numberedTerms(plane, 2)
+	# Rule:       It is necessary that each pilot0 that can fly a plane0, can fly a plane1 that can be flown by a pilot1 that can fly a plane0
+	test rule 'Necessity', 'each',
+		[pilots[0], verb('can fly'), 'a', planes[0]]
+		verb('can fly'), 'a', [
+			planes[1]
+			verb('can be flown by'), 'a', [
+				pilots[1], verb('can fly'), 'a', planes[0]
+			]
+		]

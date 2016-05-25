@@ -19,9 +19,18 @@ export ometa SBVRParser <: SBVRLibs {
 		|	space
 		)*
 		?eol,
+	IdentifierKey :identifier =
+		(	?_.isArray(identifier[3])
+			?(identifier[3][0] == 'Number')
+			-> identifier[3][1]
+		|	-> ''
+		):index
+		-> (identifier[1] + '|' + identifier[2] + '|' + index)
+	,
 	Bind :identifier :bindings =
 		// Check a var exists to bind to.
-		{this.ruleVars[identifier]}:varNumber
+		IdentifierKey(identifier):identifierKey
+		{this.ruleVars[identifierKey]}:varNumber
 		?(varNumber != null)
 		{['RoleBinding', identifier, varNumber]}:binding
 		(	?bindings
@@ -148,8 +157,7 @@ export ometa SBVRParser <: SBVRLibs {
 		|	(	FindVocabulary(identifierSoFar)
 			|	-> this.currentVocabulary
 			):vocabulary
-			IsFactTypeIdentifier(vocabulary, identifierType, factTypeSoFar, identifierSoFar):factTypeIdentifier
-			-> [identifierType, factTypeIdentifier, vocabulary]
+			IsFactTypeIdentifier([identifierType, identifierSoFar, vocabulary], factTypeSoFar)
 		),
 	
 	FindVocabulary :identifier =
@@ -262,10 +270,17 @@ export ometa SBVRParser <: SBVRLibs {
 		?(force || !this.disableCommas)
 		Keyword(","),
 	CreateVar :identifier =
-		{this.ruleVars[identifier] = this.ruleVarsCount++}:varNumber
+		IdentifierKey(identifier):identifierKey
+		(	// If the identifierKey ends with a | (ie it has no index), then we always want to create a new var.
+			?(identifierKey.slice(-1) !== '|')
+			?this.ruleVars[identifierKey]
+			-> this.ruleVars[identifierKey]
+		|	{this.ruleVars[identifierKey] = this.ruleVarsCount++}
+		):varNumber
 		-> ['Variable', ['Number', varNumber], identifier],
 	EmbedVar :identifier :data =
-		{this.ruleVars[identifier] = data},
+		IdentifierKey(identifier):identifierKey
+		{this.ruleVars[identifierKey] = data},
 
 	IsAtomicFormulation :factType :bindings =
 		IsFactType(factType):realFactType
@@ -307,8 +322,8 @@ export ometa SBVRParser <: SBVRLibs {
 		|	// Embedded data
 			Value:data
 			// Is the type of embedded data allowed here?
-			IsFactTypeIdentifier('Type', 'Term', factType, data[0]):factTypeIdentifier
-			{['Term', factTypeIdentifier, 'Type', data]}:identifier
+			IsFactTypeIdentifier(['Term', data[0], 'Type'], factType):identifier
+			{identifier.push(data)}
 			// Create the var so we can bind to it.
 			EmbedVar(identifier, data)
 			Bind(identifier, bindings):bind
@@ -400,7 +415,6 @@ export ometa SBVRParser <: SBVRLibs {
 		DisableCommas(upcoming || this.disableCommas)
 
 		(	SimpleJunction(ruleName, args):result
-			{this.ruleVarsCount}:origRuleVarsCount
 			(	// We only need to check for a comma branch if we have an upcoming comma junction
 				?upcoming
 				(	addComma(true)
@@ -412,8 +426,7 @@ export ometa SBVRParser <: SBVRLibs {
 				JunctionType:type
 				Junction(ruleName, args, true):junctioned
 				-> [type, result].concat(commaSeparated).concat([junctioned])
-			|	{this.ruleVarsCount = origRuleVarsCount}
-				-> result
+			|	-> result
 			)
 		)?:result
 
@@ -431,6 +444,7 @@ export ometa SBVRParser <: SBVRLibs {
 		StartRule
 		spaces
 		&(toEOL):ruleText
+		{this.ruleVars = {}}
 		{this.ruleVarsCount = 0}
 		Modifier:mod
 		Junction('RuleBody', [[], []]):ruleLF
@@ -523,6 +537,7 @@ export ometa SBVRParser <: SBVRLibs {
 	AttrDefinition =
 		(	addThe?
 			// The following section is copied from RuleBody, should really be sorted properly.
+			{this.ruleVars = {}}
 			{this.ruleVarsCount = 0}
 			TermEntity:termEntity
 			EOLTerminator
@@ -550,6 +565,7 @@ export ometa SBVRParser <: SBVRLibs {
 		matchForAny('seq', this.branches.AttrGuidanceType),
 	AttrNecessity =
 		(	&(toEOL):ruleText
+			{this.ruleVars = {}}
 			{this.ruleVarsCount = 0}
 			RuleBody([], []):lf
 			EOLTerminator
@@ -687,22 +703,30 @@ SBVRParser._AddIdentifier = function(identifierType, identifier, baseSynonym) {
 };
 
 // Returns the base synonym for this identifier.
-SBVRParser.BaseSynonym = function(vocabulary, identifierType, identifier) {
+SBVRParser.BaseSynonym = function(identifier) {
+	var identifierType = identifier[0],
+		identifierName = identifier[1],
+		vocabulary = identifier[2];
 	var identifiers = this.vocabularies[vocabulary][identifierType];
-	if(identifiers.hasOwnProperty(identifier)) {
-		return identifiers[identifier];
+	if(identifiers.hasOwnProperty(identifierName)) {
+		identifierName = identifiers[identifierName];
 	}
-	identifier = identifier.singularize();
-	this._pred(identifiers.hasOwnProperty(identifier));
-	return identifiers[identifier];
+	else {
+		identifierName = identifierName.singularize();
+		this._pred(identifiers.hasOwnProperty(identifierName));
+		identifierName = identifiers[identifierName];
+	}
+	return [identifierType, identifierName, vocabulary];
 };
 
 // Checks that the identifier is valid in this point of the fact type and returns the identifier as it is found in the fact type.
-SBVRParser.IsFactTypeIdentifier = function(vocabulary, identifierType, factTypeSoFar, identifier) {
-	identifier = this.BaseSynonym(vocabulary, identifierType, identifier);
+SBVRParser.IsFactTypeIdentifier = function(identifier, factTypeSoFar) {
+	var identifierType = identifier[0],
+		vocabulary = identifier[2],
+		baseIdentifier = this.BaseSynonym(identifier);
 	var identifiers = this.branches[identifierType].call(this, factTypeSoFar, vocabulary);
-	this._pred(identifiers.indexOf(identifier) !== -1);
-	return identifier;
+	this._pred(identifiers.indexOf(baseIdentifier[1]) !== -1);
+	return baseIdentifier;
 };
 
 SBVRParser.IsVerb = function(factTypeSoFar, verb) {

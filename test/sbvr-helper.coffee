@@ -23,6 +23,11 @@ factTypeBody = (factType) ->
 
 exports.vocabulary = (vocab) -> ['Vocabulary', vocab, ['Attributes']]
 exports.term = (term, vocab = 'Default') -> ['Term', term, vocab, ['Attributes']]
+exports.numberedTerms = (term, amount) ->
+	return _.times amount, (num) ->
+		numberedTerm = _.clone(term)
+		numberedTerm[3] = ['Number', num]
+		return numberedTerm
 exports.verb = (verb, negated = false) -> ['Verb', verb, negated]
 exports.factType = factType = (factType...) ->
 	[	'FactType'
@@ -61,7 +66,10 @@ exports.toSE = toSE = (lf, currentVocab) ->
 				lf[1]
 			when 'Term'
 				if lf[3]? and lf[3][0] isnt 'Attributes'
-					recursiveSE(lf[3])
+					if _.isArray(lf[3]) and lf[3][0] is 'Number'
+						"#{lf[1]}#{lf[3][1]}"
+					else
+						recursiveSE(lf[3])
 				else if lf[2] != currentVocab
 					lf[1] + ' (' + lf[2] + ')'
 				else
@@ -159,7 +167,6 @@ parseEmbeddedData = (embeddedData) ->
 
 createParser = (currentVocab = 'Default') ->
 	currentVocabSE = _.partialRight(toSE, currentVocab)
-	num = -1
 	closedProjection = (args, identifier, binding) ->
 		try
 			{ lf, se } = junction(ruleBody, args, [], [], identifier, binding)
@@ -170,28 +177,47 @@ createParser = (currentVocab = 'Default') ->
 			se: 'that ' + se
 		}
 
-	resolveIdentifier = (identifier) ->
-		strippedIdentifier = stripAttributes(identifier)
-		# Only increment the num and generate LF if there is no embedded data.
-		if !strippedIdentifier[3]?
-			num++
-			lf = [
-				'Variable'
-				[	'Number'
-					num
+	resolveIdentifier = do ->
+		num = -1
+		knownNums = {}
+		return (identifier) ->
+			strippedIdentifier = stripAttributes(identifier)
+			# Only increment the num and generate LF if there is no embedded data.
+			if !strippedIdentifier[3]?
+				num++
+				data = num
+				lf = [
+					'Variable'
+					[	'Number'
+						num
+					]
+					strippedIdentifier
 				]
-				strippedIdentifier
-			]
-		return {
-			identifier
-			se: currentVocabSE(identifier)
-			binding: [
-				'RoleBinding'
-				strippedIdentifier
-				strippedIdentifier[3] ? num
-			]
-			lf
-		}
+			else if strippedIdentifier[3][0] is 'Number'
+				key = strippedIdentifier[1] + '|' + strippedIdentifier[2] + '|' + strippedIdentifier[3][1]
+				if !knownNums[key]?
+					num++
+					knownNums[key] = num
+				data = knownNums[key]
+				lf = [
+					'Variable'
+					[	'Number'
+						data
+					]
+					strippedIdentifier
+				]
+			else
+				data = strippedIdentifier[3]
+			return {
+				identifier
+				se: currentVocabSE(identifier)
+				binding: [
+					'RoleBinding'
+					strippedIdentifier
+					data
+				]
+				lf
+			}
 
 	resolveTerm = (arr) ->
 		identifier =
