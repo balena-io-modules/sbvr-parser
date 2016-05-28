@@ -18,7 +18,7 @@ factTypeBody = (factType) ->
 			# Ignore any unknown fact type parts
 			null
 	# Remove the nulls
-	.filter()
+	.compact()
 	.value()
 
 exports.vocabulary = (vocab) -> ['Vocabulary', vocab, ['Attributes']]
