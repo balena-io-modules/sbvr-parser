@@ -2,33 +2,46 @@ _ = require 'lodash'
 
 stripAttributes = (x) -> _.reject(x, 0: 'Attributes')
 
+factTypeBody = (factType) ->
+	_(factType)
+	# Standardise the fact type parts
+	.map (factTypePart) ->
+		if _.isNumber(factTypePart) or _.isString(factTypePart)
+			# Parse numbers/strings to the correct term array.
+			parseEmbeddedData(factTypePart)
+		else if factTypePart[0] is 'Term'
+			# Strip attributes from terms
+			stripAttributes(factTypePart)
+		else if factTypePart[0] is 'Verb'
+			factTypePart
+		else
+			# Ignore any unknown fact type parts
+			null
+	# Remove the nulls
+	.compact()
+	.value()
+
 exports.vocabulary = (vocab) -> ['Vocabulary', vocab, ['Attributes']]
 exports.term = (term, vocab = 'Default') -> ['Term', term, vocab, ['Attributes']]
+exports.numberedTerms = (term, amount) ->
+	return _.times amount, (num) ->
+		numberedTerm = _.clone(term)
+		numberedTerm[3] = ['Number', num]
+		return numberedTerm
 exports.verb = (verb, negated = false) -> ['Verb', verb, negated]
 exports.factType = factType = (factType...) ->
-	['FactType'].concat(
-		_(factType)
-		# Standardise the fact type parts
-		.map (factTypePart) ->
-			if _.isNumber(factTypePart) or _.isString(factTypePart)
-				# Parse numbers/strings to the correct term array.
-				parseEmbeddedData(factTypePart)
-			else if factTypePart[0] is 'Term'
-				# Strip attributes from terms
-				stripAttributes(factTypePart)
-			else if factTypePart[0] is 'Verb'
-				factTypePart
-			else
-				# Ignore any unknown fact type parts
-				null
-		# Remove the nulls
-		.filter()
-		.value()
-	).concat([['Attributes']])
+	[	'FactType'
+		factTypeBody(factType)...
+		['Attributes']
+	]
 exports.conceptType = (term) -> ['ConceptType', stripAttributes(term)]
 exports.referenceScheme = (term) -> ['ReferenceScheme', stripAttributes(term)]
 exports.termForm = (term) -> ['TermForm', stripAttributes(term)]
 exports.synonym = (term) -> ['Synonym', stripAttributes(term)]
+exports.synonymousForm = (factType...) ->
+	[	'SynonymousForm'
+		factTypeBody(factType)
+	]
 
 exports.note = (note) -> ['Note', note]
 exports.definitionEnum = (options...) -> ['Definition', ['Enum'].concat(parseEmbeddedData(option)[3] for option in options)]
@@ -46,8 +59,6 @@ exports.definition = (variable) ->
 exports.getLineType = (lf) -> lf[0].replace(/([A-Z])/g, ' $1').trim()
 
 exports.toSE = toSE = (lf, currentVocab) ->
-	if currentVocab is 0
-		throw new Error()
 	recursiveSE = _.partial(toSE, _, currentVocab)
 	if _.isArray lf
 		switch lf[0]
@@ -55,7 +66,10 @@ exports.toSE = toSE = (lf, currentVocab) ->
 				lf[1]
 			when 'Term'
 				if lf[3]? and lf[3][0] isnt 'Attributes'
-					recursiveSE(lf[3])
+					if _.isArray(lf[3]) and lf[3][0] is 'Number'
+						"#{lf[1]}#{lf[3][1]}"
+					else
+						recursiveSE(lf[3])
 				else if lf[2] != currentVocab
 					lf[1] + ' (' + lf[2] + ')'
 				else
@@ -76,6 +90,8 @@ exports.toSE = toSE = (lf, currentVocab) ->
 					_.map(lf[1][1...], recursiveSE).join(' or ')
 				else
 					lf
+			when 'SynonymousForm'
+				_.map(lf[1], recursiveSE).join(' ').trim()
 			when 'Text'
 				'"' + lf[1] + '"'
 			when 'Integer'
@@ -151,7 +167,6 @@ parseEmbeddedData = (embeddedData) ->
 
 createParser = (currentVocab = 'Default') ->
 	currentVocabSE = _.partialRight(toSE, currentVocab)
-	num = -1
 	closedProjection = (args, identifier, binding) ->
 		try
 			{ lf, se } = junction(ruleBody, args, [], [], identifier, binding)
@@ -162,28 +177,47 @@ createParser = (currentVocab = 'Default') ->
 			se: 'that ' + se
 		}
 
-	resolveIdentifier = (identifier) ->
-		strippedIdentifier = stripAttributes(identifier)
-		# Only increment the num and generate LF if there is no embedded data.
-		if !strippedIdentifier[3]?
-			num++
-			lf = [
-				'Variable'
-				[	'Number'
-					num
+	resolveIdentifier = do ->
+		num = -1
+		knownNums = {}
+		return (identifier) ->
+			strippedIdentifier = stripAttributes(identifier)
+			# Only increment the num and generate LF if there is no embedded data.
+			if !strippedIdentifier[3]?
+				num++
+				data = num
+				lf = [
+					'Variable'
+					[	'Number'
+						num
+					]
+					strippedIdentifier
 				]
-				strippedIdentifier
-			]
-		return {
-			identifier
-			se: currentVocabSE(identifier)
-			binding: [
-				'RoleBinding'
-				strippedIdentifier
-				strippedIdentifier[3] ? num
-			]
-			lf
-		}
+			else if strippedIdentifier[3][0] is 'Number'
+				key = strippedIdentifier[1] + '|' + strippedIdentifier[2] + '|' + strippedIdentifier[3][1]
+				if !knownNums[key]?
+					num++
+					knownNums[key] = num
+				data = knownNums[key]
+				lf = [
+					'Variable'
+					[	'Number'
+						data
+					]
+					strippedIdentifier
+				]
+			else
+				data = strippedIdentifier[3]
+			return {
+				identifier
+				se: currentVocabSE(identifier)
+				binding: [
+					'RoleBinding'
+					strippedIdentifier
+					data
+				]
+				lf
+			}
 
 	resolveTerm = (arr) ->
 		identifier =

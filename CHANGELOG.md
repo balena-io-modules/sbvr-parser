@@ -1,3 +1,8 @@
+* Fixed generated logical formulation for rules with numbered terms.
+* Added a rule testing usage of a synonymous form.
+* Added a test for a synonymous form attribute.
+* Added a test for a non-primitive concept type to the pilots model.
+
 v0.0.22
 
 * Test improvements

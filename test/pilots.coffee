@@ -1,6 +1,6 @@
 typeVocab = require('fs').readFileSync(require.resolve('@resin/sbvr-types/Type.sbvr'))
 test = require('./test')(typeVocab)
-{ term, verb, factType, conceptType, referenceScheme, necessity, rule, customRule, definition, _or, _and, _nestedOr, _nestedAnd } = require('./sbvr-helper')
+{ term, numberedTerms, verb, factType, conceptType, referenceScheme, synonymousForm, necessity, rule, customRule, definition, _or, _and, _nestedOr, _nestedAnd } = require('./sbvr-helper')
 
 shortTextType = term 'Short Text', 'Type'
 integerType = term 'Integer', 'Type'
@@ -8,6 +8,7 @@ lengthType = term 'Length', 'Type'
 
 name = term 'name'
 yearsOfExperience = term 'years of experience'
+person = term 'person'
 pilot = term 'pilot'
 veteranPilot = term 'veteran pilot'
 plane = term 'plane'
@@ -21,8 +22,12 @@ describe 'pilots', ->
 	test yearsOfExperience
 	# 	Concept Type: Integer (Type)
 	test conceptType integerType
+	# Term:      person
+	test person
 	# Term:      pilot
 	test pilot
+	# 	Concept Type: person
+	test conceptType person
 	# 	Reference Scheme: name
 	test referenceScheme name
 	# Term:      plane
@@ -43,6 +48,8 @@ describe 'pilots', ->
 	test necessity 'each', plane, verb('has'), ['exactly', 'one'], name
 	# Fact type: pilot can fly plane
 	test factType pilot, verb('can fly'), plane
+	# 	Synonymous Form: plane can be flown by pilot
+	test synonymousForm plane, verb('can be flown by'), pilot
 	# Fact type: pilot is experienced
 	test factType pilot, verb('is experienced')
 	# Term: veteran pilot
@@ -71,6 +78,9 @@ describe 'pilots', ->
 
 	# Rule:       It is necessary that each pilot has a years of experience that is greater than 0
 	test rule 'Necessity', 'each', pilot, verb('has'), 'a', [yearsOfExperience, verb('is greater than'), 0]
+
+	# Rule:       It is necessary that each plane can be flown by at least 1 pilot
+	test rule 'Necessity', 'each', plane, verb('can be flown by'), ['at least', 1], pilot
 
 	# -- OR
 
@@ -226,7 +236,7 @@ describe 'pilots', ->
 			)
 		], verb('has'), 'a', [yearsOfExperience, verb('is greater than'), 5]
 
-	# # Rule:       It is necessary that each pilot that is experienced, can fly at least 3 planes, and can fly at most 10 planes or has a name that has a length (Type) that is greater than 10, has a years of experience that is greater than 5
+	# Rule:       It is necessary that each pilot that is experienced, can fly at least 3 planes, and can fly at most 10 planes or has a name that has a length (Type) that is greater than 20, has a years of experience that is greater than 5
 	test rule 'Necessity', 'each',
 		[pilot,
 			_and(
@@ -278,7 +288,7 @@ describe 'pilots', ->
 			)
 		], verb('has'), 'a', [yearsOfExperience, verb('is greater than'), 5]
 
-	# Rule:       It is necessary that each pilot that is experienced, can fly at most 10 planes or has a name that has a length (Type) that is greater than 10, and can fly at least 3 planes, has a years of experience that is greater than 5
+	# Rule:       It is necessary that each pilot that is experienced, can fly at most 10 planes or has a name that has a length (Type) that is greater than 20, and can fly at least 3 planes, has a years of experience that is greater than 5
 	test rule 'Necessity', 'each',
 		[pilot,
 			_and(
@@ -329,3 +339,15 @@ describe 'pilots', ->
 				[verb('can fly'), ['at least', 3], plane]
 			)
 		], verb('has'), 'a', [yearsOfExperience, verb('is greater than'), 5]
+
+	pilots = numberedTerms(pilot, 2)
+	planes = numberedTerms(plane, 2)
+	# Rule:       It is necessary that each pilot0 that can fly a plane0, can fly a plane1 that can be flown by a pilot1 that can fly a plane0
+	test rule 'Necessity', 'each',
+		[pilots[0], verb('can fly'), 'a', planes[0]]
+		verb('can fly'), 'a', [
+			planes[1]
+			verb('can be flown by'), 'a', [
+				pilots[1], verb('can fly'), 'a', planes[0]
+			]
+		]
