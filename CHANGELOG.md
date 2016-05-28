@@ -1,3 +1,5 @@
+v0.0.23
+
 * Fixed generated logical formulation for rules with numbered terms.
 * Added a rule testing usage of a synonymous form.
 * Added a test for a synonymous form attribute.

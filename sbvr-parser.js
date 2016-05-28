@@ -36,9 +36,21 @@
             });
             return this._pred(eol);
         },
+        IdentifierKey: function(identifier) {
+            var $elf = this, _fromIdx = this.input.idx, index;
+            index = this._or(function() {
+                this._pred(_.isArray(identifier[3]));
+                this._pred("Number" == identifier[3][0]);
+                return identifier[3][1];
+            }, function() {
+                return "";
+            });
+            return identifier[1] + "|" + identifier[2] + "|" + index;
+        },
         Bind: function(identifier, bindings) {
-            var $elf = this, _fromIdx = this.input.idx, binding, varNumber;
-            varNumber = this.ruleVars[identifier];
+            var $elf = this, _fromIdx = this.input.idx, binding, identifierKey, varNumber;
+            identifierKey = this._applyWithArgs("IdentifierKey", identifier);
+            varNumber = this.ruleVars[identifierKey];
             this._pred(null != varNumber);
             binding = [ "RoleBinding", identifier, varNumber ];
             this._opt(function() {
@@ -272,7 +284,7 @@
             return identifier;
         },
         FindIdentifierNest: function(identifierType, factTypeSoFar, identifierSoFar) {
-            var $elf = this, _fromIdx = this.input.idx, factTypeIdentifier, identifierSoFar, part, vocabulary;
+            var $elf = this, _fromIdx = this.input.idx, identifierSoFar, part, vocabulary;
             part = this._apply("IdentifierPart");
             identifierSoFar = this._or(function() {
                 this._pred(identifierSoFar);
@@ -289,8 +301,7 @@
                 }, function() {
                     return this.currentVocabulary;
                 });
-                factTypeIdentifier = this._applyWithArgs("IsFactTypeIdentifier", vocabulary, identifierType, factTypeSoFar, identifierSoFar);
-                return [ identifierType, factTypeIdentifier, vocabulary ];
+                return this._applyWithArgs("IsFactTypeIdentifier", [ identifierType, identifierSoFar, vocabulary ], factTypeSoFar);
             });
         },
         FindVocabulary: function(identifier) {
@@ -478,13 +489,21 @@
             return this._applyWithArgs("Keyword", ",");
         },
         CreateVar: function(identifier) {
-            var $elf = this, _fromIdx = this.input.idx, varNumber;
-            varNumber = this.ruleVars[identifier] = this.ruleVarsCount++;
+            var $elf = this, _fromIdx = this.input.idx, identifierKey, varNumber;
+            identifierKey = this._applyWithArgs("IdentifierKey", identifier);
+            varNumber = this._or(function() {
+                this._pred("|" !== identifierKey.slice(-1));
+                this._pred(this.ruleVars[identifierKey]);
+                return this.ruleVars[identifierKey];
+            }, function() {
+                return this.ruleVars[identifierKey] = this.ruleVarsCount++;
+            });
             return [ "Variable", [ "Number", varNumber ], identifier ];
         },
         EmbedVar: function(identifier, data) {
-            var $elf = this, _fromIdx = this.input.idx;
-            return this.ruleVars[identifier] = data;
+            var $elf = this, _fromIdx = this.input.idx, identifierKey;
+            identifierKey = this._applyWithArgs("IdentifierKey", identifier);
+            return this.ruleVars[identifierKey] = data;
         },
         IsAtomicFormulation: function(factType, bindings) {
             var $elf = this, _fromIdx = this.input.idx, realFactType;
@@ -520,7 +539,7 @@
             };
         },
         RuleBody: function(factType, bindings, parentIdentifier, parentBind) {
-            var $elf = this, _fromIdx = this.input.idx, bind, data, factTypeIdentifier, identifier, lf, quant, termEntity;
+            var $elf = this, _fromIdx = this.input.idx, bind, data, identifier, lf, quant, termEntity;
             this._or(function() {
                 quant = this._apply("Quantifier");
                 termEntity = this._applyWithArgs("TermEntity", factType, bindings);
@@ -537,8 +556,8 @@
                 return factType.push(identifier);
             }, function() {
                 data = this._apply("Value");
-                factTypeIdentifier = this._applyWithArgs("IsFactTypeIdentifier", "Type", "Term", factType, data[0]);
-                identifier = [ "Term", factTypeIdentifier, "Type", data ];
+                identifier = this._applyWithArgs("IsFactTypeIdentifier", [ "Term", data[0], "Type" ], factType);
+                identifier.push(data);
                 this._applyWithArgs("EmbedVar", identifier, data);
                 bind = this._applyWithArgs("Bind", identifier, bindings);
                 bind[2] = data;
@@ -661,12 +680,11 @@
             });
         },
         Junction: function(ruleName, args) {
-            var $elf = this, _fromIdx = this.input.idx, commaSeparated, junctioned, origRuleVarsCount, result, type, upcoming;
+            var $elf = this, _fromIdx = this.input.idx, commaSeparated, junctioned, result, type, upcoming;
             upcoming = this._apply("UpcomingCommaJunction");
             this._applyWithArgs("DisableCommas", upcoming || this.disableCommas);
             result = this._opt(function() {
                 result = this._applyWithArgs("SimpleJunction", ruleName, args);
-                origRuleVarsCount = this.ruleVarsCount;
                 return this._or(function() {
                     this._pred(upcoming);
                     commaSeparated = this._many(function() {
@@ -678,7 +696,6 @@
                     junctioned = this._applyWithArgs("Junction", ruleName, args, !0);
                     return [ type, result ].concat(commaSeparated).concat([ junctioned ]);
                 }, function() {
-                    this.ruleVarsCount = origRuleVarsCount;
                     return result;
                 });
             });
@@ -702,6 +719,7 @@
             ruleText = this._lookahead(function() {
                 return this._apply("toEOL");
             });
+            this.ruleVars = {};
             this.ruleVarsCount = 0;
             mod = this._apply("Modifier");
             ruleLF = this._applyWithArgs("Junction", "RuleBody", [ [], [] ]);
@@ -817,6 +835,7 @@
                 this._opt(function() {
                     return this._apply("addThe");
                 });
+                this.ruleVars = {};
                 this.ruleVarsCount = 0;
                 termEntity = this._apply("TermEntity");
                 this._apply("EOLTerminator");
@@ -857,6 +876,7 @@
                 ruleText = this._lookahead(function() {
                     return this._apply("toEOL");
                 });
+                this.ruleVars = {};
                 this.ruleVarsCount = 0;
                 lf = this._applyWithArgs("RuleBody", [], []);
                 this._apply("EOLTerminator");
@@ -1006,18 +1026,19 @@
         this.longestIdentifier[identifierType] = Math.max(identifier.length, identifier.pluralize().length, this.longestIdentifier[identifierType]);
         return "Vocabulary" === identifierType ? [ identifierType, identifier ] : [ identifierType, identifier, this.currentVocabulary ];
     };
-    SBVRParser.BaseSynonym = function(vocabulary, identifierType, identifier) {
-        var identifiers = this.vocabularies[vocabulary][identifierType];
-        if (identifiers.hasOwnProperty(identifier)) return identifiers[identifier];
-        identifier = identifier.singularize();
-        this._pred(identifiers.hasOwnProperty(identifier));
-        return identifiers[identifier];
+    SBVRParser.BaseSynonym = function(identifier) {
+        var identifierType = identifier[0], identifierName = identifier[1], vocabulary = identifier[2], identifiers = this.vocabularies[vocabulary][identifierType];
+        if (identifiers.hasOwnProperty(identifierName)) identifierName = identifiers[identifierName]; else {
+            identifierName = identifierName.singularize();
+            this._pred(identifiers.hasOwnProperty(identifierName));
+            identifierName = identifiers[identifierName];
+        }
+        return [ identifierType, identifierName, vocabulary ];
     };
-    SBVRParser.IsFactTypeIdentifier = function(vocabulary, identifierType, factTypeSoFar, identifier) {
-        identifier = this.BaseSynonym(vocabulary, identifierType, identifier);
-        var identifiers = this.branches[identifierType].call(this, factTypeSoFar, vocabulary);
-        this._pred(-1 !== identifiers.indexOf(identifier));
-        return identifier;
+    SBVRParser.IsFactTypeIdentifier = function(identifier, factTypeSoFar) {
+        var identifierType = identifier[0], vocabulary = identifier[2], baseIdentifier = this.BaseSynonym(identifier), identifiers = this.branches[identifierType].call(this, factTypeSoFar, vocabulary);
+        this._pred(-1 !== identifiers.indexOf(baseIdentifier[1]));
+        return baseIdentifier;
     };
     SBVRParser.IsVerb = function(factTypeSoFar, verb) {
         verb = [ "Verb", verb ];
