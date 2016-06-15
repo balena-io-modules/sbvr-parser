@@ -1,8 +1,7 @@
 typeVocab = require('fs').readFileSync(require.resolve('@resin/sbvr-types/Type.sbvr'))
 test = require('./test')(typeVocab)
 _ = require 'lodash'
-{ vocabulary, term, verb, factType, conceptType, referenceScheme, vocabNecessity, vocabRule } = require('./sbvr-helper')
-rule = _.partial(vocabRule, 'Auth')
+{ vocabulary, term, verb, factType, conceptType, referenceScheme, vocabNecessity } = require('./sbvr-helper')
 necessity = _.partial(vocabNecessity, 'Auth')
 
 shortTextType = term 'Short Text', 'Type'

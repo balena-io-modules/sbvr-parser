@@ -244,10 +244,6 @@ createParser = (currentVocab = 'Default') ->
 		identifier = parseEmbeddedData(embeddedData)
 		return resolveIdentifier(identifier)
 
-	resolveName = (name) ->
-		# TODO: Actually do something and match the return of resolveTerm and resolveEmbeddedData
-		return name
-
 	resolveVerb = (verb) ->
 		# TODO: Actually do some proper checks
 		if verb?
