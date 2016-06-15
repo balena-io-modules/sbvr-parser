@@ -1,14 +1,11 @@
 test = require('./test')()
 expect = require('chai').expect
-{ term, verb, factType, conceptType, termForm, referenceScheme, necessity, rule, conceptType, note, definitionEnum, synonym } = require './sbvr-helper'
-
-has = verb 'has'
+{ term, verb, factType, conceptType, conceptType, definitionEnum, synonym } = require './sbvr-helper'
 
 person = term 'person'
 homoSapiens = term 'homo sapiens'
 educationalInstitution = term 'educational institution'
 age = term 'age'
-student = term 'student'
 
 describe 'students', ->
 	# T: person
