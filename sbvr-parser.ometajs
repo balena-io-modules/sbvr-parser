@@ -515,8 +515,19 @@ export ometa SBVRParser <: SBVRLibs {
 		// A concept type has to be a term (cannot be a name)
 		Term:term
 		-> function(currentLine) {
-			var identifier = currentLine.slice(0, 3),
-				identifierName = identifier[1],
+			var identifier;
+			if (currentLine[0] === 'FactType') {
+				var attributes = _.last(currentLine),
+					termForm = _.find(attributes, [0, 'TermForm'])
+				if (termForm) {
+					identifier = termForm[1];
+				} else {
+					throw new Error('Cannot have a concept type for a fact type that does not have a term-form.');
+				}
+			} else {
+				identifier = currentLine.slice(0, 3);
+			}
+			var identifierName = identifier[1],
 				identifierVocab = identifier[2];
 			// Only allow one instance of Concept Type: attribute.
 			if($elf.vocabularies[identifierVocab]['ConceptTypes'].hasOwnProperty(identifier)) {
