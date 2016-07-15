@@ -1,3 +1,5 @@
+* Added support for concept type on term form fact types.
+
 v0.0.23
 
 * Fixed generated logical formulation for rules with numbered terms.
