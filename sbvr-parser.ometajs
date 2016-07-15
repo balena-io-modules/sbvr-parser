@@ -494,7 +494,7 @@ export ometa SBVRParser <: SBVRLibs {
 			return func().concat([['Attributes']]);
 		},
 	NewAttribute =
-		{this.lines[this.lines.length-1]}:currentLine
+		{_.last(this.lines)}:currentLine
 		AllowedAttrs(currentLine[0]):attrName
 		{attrName.replace(/ /g, '')}:attrName
 		spaces
@@ -502,7 +502,7 @@ export ometa SBVRParser <: SBVRLibs {
 		-> function() {
 			var lastLine = $elf.lines.pop(),
 				attrVal = _.isFunction(attrValOrFunc) ? attrValOrFunc(lastLine) : attrValOrFunc;
-			lastLine[lastLine.length-1].push([attrName, attrVal]);
+			_.last(lastLine).push([attrName, attrVal]);
 			return lastLine;
 		},
 
@@ -531,12 +531,12 @@ export ometa SBVRParser <: SBVRLibs {
 				identifierVocab = identifier[2];
 			// Only allow one instance of Concept Type: attribute.
 			if($elf.vocabularies[identifierVocab]['ConceptTypes'].hasOwnProperty(identifier)) {
-				throw 'Two concept type attributes';
+				throw new Error('Two concept type attributes');
 			}
 			if(identifier[0] !== 'FactType') {
 				// Do not allow a term to have itself as its concept type.
 				if($elf.IdentifiersEqual(identifier, term)) {
-					throw 'A term cannot have itself as its concept type';
+					throw new Error('A term cannot have itself as its concept type');
 				}
 				var termName = term[1],
 					termVocab = term[2];
@@ -590,7 +590,7 @@ export ometa SBVRParser <: SBVRLibs {
 		|	toSBVREOL
 		),
 	AttrSynonym =
-		{this.lines[this.lines.length-1]}:currentLine
+		{_.last(this.lines)}:currentLine
 		AddIdentifier(currentLine[0], currentLine[1]),
 	AttrSynonymousForm =
 		{[]}:factType
@@ -1007,7 +1007,7 @@ SBVRParser.AddCustomAttribute = function(attributeName, attachedTo) {
 		this.allowedAttrLists[attachedTo].push(attributeName);
 	}
 	else {
-		throw 'Unknown attachment';
+		throw new Error('Unknown attachment');
 	}
 };
 
