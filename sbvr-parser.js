@@ -794,14 +794,14 @@
         },
         NewAttribute: function() {
             var $elf = this, _fromIdx = this.input.idx, attrName, attrValOrFunc, currentLine;
-            currentLine = this.lines[this.lines.length - 1];
+            currentLine = _.last(this.lines);
             attrName = this._applyWithArgs("AllowedAttrs", currentLine[0]);
             attrName = attrName.replace(/ /g, "");
             this._apply("spaces");
             attrValOrFunc = this._applyWithArgs("ApplyFirstExisting", [ "Attr" + attrName, "DefaultAttr" ]);
             return function() {
                 var lastLine = $elf.lines.pop(), attrVal = _.isFunction(attrValOrFunc) ? attrValOrFunc(lastLine) : attrValOrFunc;
-                lastLine[lastLine.length - 1].push([ attrName, attrVal ]);
+                _.last(lastLine).push([ attrName, attrVal ]);
                 return lastLine;
             };
         },
@@ -818,10 +818,16 @@
             var $elf = this, _fromIdx = this.input.idx, term;
             term = this._apply("Term");
             return function(currentLine) {
-                var identifier = currentLine.slice(0, 3), identifierName = identifier[1], identifierVocab = identifier[2];
-                if ($elf.vocabularies[identifierVocab].ConceptTypes.hasOwnProperty(identifier)) throw "Two concept type attributes";
+                var identifier;
+                if ("FactType" === currentLine[0]) {
+                    var attributes = _.last(currentLine), termForm = _.find(attributes, [ 0, "TermForm" ]);
+                    if (!termForm) throw new Error("Cannot have a concept type for a fact type that does not have a term-form.");
+                    identifier = termForm[1];
+                } else identifier = currentLine.slice(0, 3);
+                var identifierName = identifier[1], identifierVocab = identifier[2];
+                if ($elf.vocabularies[identifierVocab].ConceptTypes.hasOwnProperty(identifier)) throw new Error("Two concept type attributes");
                 if ("FactType" !== identifier[0]) {
-                    if ($elf.IdentifiersEqual(identifier, term)) throw "A term cannot have itself as its concept type";
+                    if ($elf.IdentifiersEqual(identifier, term)) throw new Error("A term cannot have itself as its concept type");
                     var termName = term[1], termVocab = term[2];
                     $elf.vocabularies[identifierVocab].ConceptTypes[identifier] = term;
                     $elf.vocabularies[termVocab].IdentifierChildren[termName].push(identifier.slice(1));
@@ -897,7 +903,7 @@
         },
         AttrSynonym: function() {
             var $elf = this, _fromIdx = this.input.idx, currentLine;
-            currentLine = this.lines[this.lines.length - 1];
+            currentLine = _.last(this.lines);
             return this._applyWithArgs("AddIdentifier", currentLine[0], currentLine[1]);
         },
         AttrSynonymousForm: function() {
@@ -1162,7 +1168,7 @@
     };
     SBVRParser.AddCustomAttribute = function(attributeName, attachedTo) {
         if (null == attachedTo) for (attachedTo in this.allowedAttrLists) this.allowedAttrLists.hasOwnProperty(attachedTo) && this.allowedAttrLists[attachedTo].push(attributeName); else {
-            if (!this.allowedAttrLists.hasOwnProperty(attachedTo)) throw "Unknown attachment";
+            if (!this.allowedAttrLists.hasOwnProperty(attachedTo)) throw new Error("Unknown attachment");
             this.allowedAttrLists[attachedTo].push(attributeName);
         }
     };

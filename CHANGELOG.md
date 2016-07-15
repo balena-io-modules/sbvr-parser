@@ -1,3 +1,5 @@
+v0.0.24
+
 * Throw error objects rather than strings.
 * Added support for concept type on term form fact types.
 
