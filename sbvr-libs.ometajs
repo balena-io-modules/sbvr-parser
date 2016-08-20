@@ -50,6 +50,10 @@ SBVRLibs.AddVocabulary = function(vocabulary, baseSynonym) {
 	}
 };
 
+var formatFactType = function(factType) {
+	return _.map(factType, 1).join(' ');
+};
+
 SBVRLibs.AddFactType = function(factType, realFactType) {
 	var mappedFactType = [],
 		matchingFactTypes = _.isEqual(factType, realFactType);
@@ -65,14 +69,23 @@ SBVRLibs.AddFactType = function(factType, realFactType) {
 			continue;
 		}
 		// Otherwise we have to map based upon matching indentifiers + instance numbers
+		var mappingFound = false;
 		for(var j = 0; j < factType.length; j++) {
 			var factTypePart = factType[j];
 			if(factTypePart[0] !== 'Verb' // Not a verb
 				&& this.IdentifiersEqual(realFactTypePart, factTypePart) // The term/name matches
 				&& realFactTypePart.length === factTypePart.length // And they have the same length (so both have/do not have an instance number
 				&& (realFactTypePart.length < 4 || realFactTypePart[3][1] === factTypePart[3][1])) { // And they have no instance number, or the instance number matches.
+				if(mappingFound) {
+					// If we find two potential mappings for one term then we can't throw an error.
+					throw new Error('Ambiguous use of fact type "' + formatFactType(factType) + '", please add explicit numbering')
+				}
+				mappingFound = true;
 				mappedFactType[i][3] = j;
 			}
+		}
+		if(!mappingFound) {
+			throw new Error('Unable to map identifiers for "' + formatFactType(factType) + '", please add explicit numbering')
 		}
 	}
 	this._traverseFactType(factType, mappedFactType);

@@ -17,6 +17,7 @@ plane = term 'plane'
 testTerm = term 'test term'
 testTermForm = term 'test term form'
 
+persons = numberedTerms(person, 2)
 pilots = numberedTerms(pilot, 2)
 planes = numberedTerms(plane, 2)
 
@@ -65,6 +66,12 @@ describe 'pilots', ->
 	test synonymousForm pilots[1], verb('was taught by'), pilots[0]
 	# Fact type: person is parent of person
 	test factType person, verb('is parent of'), person
+	# 	Synonymous Form: person was parented by person
+	test synonymousForm(person, verb('was parented by'), person), (e) ->
+		expect(e).to.be.an('error').that.has.a.property('message').that.equals('Ambiguous use of fact type "person was parented by person", please add explicit numbering')
+	# 	Synonymous Form: person0 was parented by person1
+	test synonymousForm(persons[0], verb('was parented by'), persons[1]), (e) ->
+		expect(e).to.be.an('error').that.has.a.property('message').that.equals('Unable to map identifiers for "person was parented by person", please add explicit numbering')
 	# 	Term Form: test term form
 	test termForm testTermForm
 	# 	Concept Type: test term

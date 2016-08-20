@@ -1,3 +1,4 @@
+* Added nice error messages when we have problems with ambiguous fact type identifier usage.
 * Don't try to map when adding a fact type - this fixes problems with incorrect mapping for self-referential fact types.
 * Slight optimisation for adding fact types.
 * Added a test for a self-referential fact type and synonymous form.
