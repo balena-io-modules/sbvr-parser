@@ -55,9 +55,12 @@ SBVRLibs.AddFactType = function(factType, realFactType) {
 	for(var i = 0; i < realFactType.length; i++) {
 		var realFactTypePart = realFactType[i];
 		mappedFactType[i] = realFactTypePart.slice(0, 3);
+		if(realFactTypePart[0] === 'Verb') { // If it's a verb we don't do any mapping
+			continue;
+		}
 		for(var j = 0; j < factType.length; j++) {
 			var factTypePart = factType[j];
-			if(realFactTypePart[0] !== 'Verb' // Not a verb
+			if(factTypePart[0] !== 'Verb' // Not a verb
 				&& this.IdentifiersEqual(realFactTypePart, factTypePart) // The term/name matches
 				&& realFactTypePart.length === factTypePart.length // And they have the same length (so both have/do not have an instance number
 				&& (realFactTypePart.length < 4 || realFactTypePart[3][1] === factTypePart[3][1])) { // And they have no instance number, or the instance number matches.
@@ -96,14 +99,14 @@ SBVRLibs._traverseFactType = function(factType, create) {
 			default:
 				currentFactTypePart = currentFactTypePart.slice(0, 3); // Make sure we only use the first 3 parts for everything else.
 		}
-		
+
 		if(currentLevel.hasOwnProperty(currentFactTypePart) || (create && (currentLevel[currentFactTypePart] = {})) ) {
 			finalLevel = traverseRecurse(remainingFactType[0], remainingFactType.slice(1), currentLevel[currentFactTypePart]);
 			if(finalLevel !== false) {
 				_.assign(finalLevels, finalLevel);
 			}
 		}
-		
+
 		if(!create && (currentFactTypePart[0] === 'Term' || currentFactTypePart[0] === 'Name')) {
 			while( (currentFactTypePart = self.FollowConceptType(currentFactTypePart)) !== false ) {
 				if( currentLevel.hasOwnProperty(currentFactTypePart) ) {

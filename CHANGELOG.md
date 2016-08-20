@@ -1,3 +1,4 @@
+* Slight optimisation for adding fact types.
 * Added a test for a self-referential fact type and synonymous form.
 
 v0.0.24
