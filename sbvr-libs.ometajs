@@ -51,13 +51,20 @@ SBVRLibs.AddVocabulary = function(vocabulary, baseSynonym) {
 };
 
 SBVRLibs.AddFactType = function(factType, realFactType) {
-	var mappedFactType = [];
+	var mappedFactType = [],
+		matchingFactTypes = _.isEqual(factType, realFactType);
 	for(var i = 0; i < realFactType.length; i++) {
 		var realFactTypePart = realFactType[i];
 		mappedFactType[i] = realFactTypePart.slice(0, 3);
 		if(realFactTypePart[0] === 'Verb') { // If it's a verb we don't do any mapping
 			continue;
 		}
+		if(matchingFactTypes) {
+			// If the fact types match then the mapping will always be to themselves
+			mappedFactType[i][3] = i;
+			continue;
+		}
+		// Otherwise we have to map based upon matching indentifiers + instance numbers
 		for(var j = 0; j < factType.length; j++) {
 			var factTypePart = factType[j];
 			if(factTypePart[0] !== 'Verb' // Not a verb

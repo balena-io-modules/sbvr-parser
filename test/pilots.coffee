@@ -1,5 +1,6 @@
 typeVocab = require('fs').readFileSync(require.resolve('@resin/sbvr-types/Type.sbvr'))
 test = require('./test')(typeVocab)
+{ expect } = require 'chai'
 
 { term, numberedTerms, verb, factType, termForm, conceptType, referenceScheme, synonymousForm, necessity, rule, customRule, definition, _or, _and, _nestedOr, _nestedAnd } = require('./sbvr-helper')
 
@@ -62,6 +63,8 @@ describe 'pilots', ->
 	test factType pilots[0], verb('taught'), pilots[1]
 	# 	Synonymous Form: pilot1 was taught by pilot0
 	test synonymousForm pilots[1], verb('was taught by'), pilots[0]
+	# Fact type: person is parent of person
+	test factType person, verb('is parent of'), person
 	# 	Term Form: test term form
 	test termForm testTermForm
 	# 	Concept Type: test term
