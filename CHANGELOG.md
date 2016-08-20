@@ -1,3 +1,5 @@
+* Added a test for a self-referential fact type and synonymous form.
+
 v0.0.24
 
 * Throw error objects rather than strings.

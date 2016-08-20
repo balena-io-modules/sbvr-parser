@@ -16,6 +16,9 @@ plane = term 'plane'
 testTerm = term 'test term'
 testTermForm = term 'test term form'
 
+pilots = numberedTerms(pilot, 2)
+planes = numberedTerms(plane, 2)
+
 describe 'pilots', ->
 	# Term:      name
 	test name
@@ -55,6 +58,10 @@ describe 'pilots', ->
 	test factType pilot, verb('can fly'), plane
 	# 	Synonymous Form: plane can be flown by pilot
 	test synonymousForm plane, verb('can be flown by'), pilot
+	# Fact type: pilot0 taught pilot1
+	test factType pilots[0], verb('taught'), pilots[1]
+	# 	Synonymous Form: pilot1 was taught by pilot0
+	test synonymousForm pilots[1], verb('was taught by'), pilots[0]
 	# 	Term Form: test term form
 	test termForm testTermForm
 	# 	Concept Type: test term
@@ -349,8 +356,6 @@ describe 'pilots', ->
 			)
 		], verb('has'), 'a', [yearsOfExperience, verb('is greater than'), 5]
 
-	pilots = numberedTerms(pilot, 2)
-	planes = numberedTerms(plane, 2)
 	# Rule:       It is necessary that each pilot0 that can fly a plane0, can fly a plane1 that can be flown by a pilot1 that can fly a plane0
 	test rule 'Necessity', 'each',
 		[pilots[0], verb('can fly'), 'a', planes[0]]
