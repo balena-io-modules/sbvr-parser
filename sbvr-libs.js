@@ -31,13 +31,23 @@
         });
         this.vocabularies.hasOwnProperty(vocabulary) || (this.vocabularies[vocabulary] = this.vocabularies[baseSynonym]);
     };
+    var formatFactType = function(factType) {
+        return _.map(factType, 1).join(" ");
+    };
     SBVRLibs.AddFactType = function(factType, realFactType) {
-        for (var mappedFactType = [], i = 0; i < realFactType.length; i++) {
+        for (var mappedFactType = [], matchingFactTypes = _.isEqual(factType, realFactType), i = 0; i < realFactType.length; i++) {
             var realFactTypePart = realFactType[i];
             mappedFactType[i] = realFactTypePart.slice(0, 3);
-            for (var j = 0; j < factType.length; j++) {
-                var factTypePart = factType[j];
-                "Verb" !== realFactTypePart[0] && this.IdentifiersEqual(realFactTypePart, factTypePart) && realFactTypePart.length === factTypePart.length && (realFactTypePart.length < 4 || realFactTypePart[3][1] === factTypePart[3][1]) && (mappedFactType[i][3] = j);
+            if ("Verb" !== realFactTypePart[0]) if (matchingFactTypes) mappedFactType[i][3] = i; else {
+                for (var mappingFound = !1, j = 0; j < factType.length; j++) {
+                    var factTypePart = factType[j];
+                    if ("Verb" !== factTypePart[0] && this.IdentifiersEqual(realFactTypePart, factTypePart) && realFactTypePart.length === factTypePart.length && (realFactTypePart.length < 4 || realFactTypePart[3][1] === factTypePart[3][1])) {
+                        if (mappingFound) throw new Error('Ambiguous use of fact type "' + formatFactType(factType) + '", please add explicit numbering');
+                        mappingFound = !0;
+                        mappedFactType[i][3] = j;
+                    }
+                }
+                if (!mappingFound) throw new Error('Unable to map identifiers for "' + formatFactType(factType) + '", please add explicit numbering');
             }
         }
         this._traverseFactType(factType, mappedFactType);
