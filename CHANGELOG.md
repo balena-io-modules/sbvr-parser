@@ -1,3 +1,7 @@
+v0.0.26
+
+* Added more information to README file.
+
 v0.0.25
 
 * Added nice error messages when we have problems with ambiguous fact type identifier usage.
