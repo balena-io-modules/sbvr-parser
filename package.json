@@ -1,6 +1,6 @@
 {
   "name": "@resin/sbvr-parser",
-  "version": "0.0.25",
+  "version": "0.0.26",
   "description": "SBVR to LF parser.",
   "main": "sbvr-parser.js",
   "scripts": {
