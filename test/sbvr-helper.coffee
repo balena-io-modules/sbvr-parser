@@ -30,9 +30,20 @@ exports.numberedTerms = (term, amount) ->
 		return numberedTerm
 exports.verb = (verb, negated = false) -> ['Verb', verb, negated]
 exports.factType = factType = (factType...) ->
+	factTypeLF = factTypeBody(factType)
+	attributes = ['Attributes']
+	if factTypeLF.length is 3 and factTypeLF[1][1] in ['has', 'is of']
+		synFormLF = _.cloneDeep(factTypeLF)
+		synFormLF.reverse()
+		synFormLF[1][1] =
+			if synFormLF[1][1] is 'has'
+				'is of'
+			else
+				'has'
+		attributes.push(['SynonymousForm', synFormLF])
 	[	'FactType'
-		factTypeBody(factType)...
-		['Attributes']
+		factTypeLF...
+		attributes
 	]
 exports.conceptType = (term) -> ['ConceptType', stripAttributes(term)]
 exports.referenceScheme = (term) -> ['ReferenceScheme', stripAttributes(term)]
