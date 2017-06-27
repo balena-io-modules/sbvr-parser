@@ -751,7 +751,15 @@
             });
             return function() {
                 $elf.AddFactType(factType, factType);
-                return [ "FactType" ].concat(factType).concat([ [ "Attributes" ] ]);
+                var attributes = [ "Attributes" ];
+                if (3 === factType.length && ("has" === factType[1][1] || "is of" === factType[1][1])) {
+                    synFactType = _.cloneDeep(factType);
+                    synFactType.reverse();
+                    "has" === synFactType[1][1] ? synFactType[1][1] = "is of" : synFactType[1][1] = "has";
+                    $elf.AddFactType(synFactType, factType);
+                    attributes.push([ "SynonymousForm", synFactType ]);
+                }
+                return [ "FactType" ].concat(factType).concat([ attributes ]);
             };
         },
         StartVocabulary: function() {

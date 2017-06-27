@@ -11,7 +11,7 @@
     };
     SBVRLibs.ApplyFirstExisting = function(rules, ruleArgs) {
         null == ruleArgs && (ruleArgs = []);
-        for (var i = 0; i < rules.length; i++) if (null != this[rules[i]]) return ruleArgs.length > 0 ? this._applyWithArgs.apply(this, [ rules[i] ].concat(ruleArgs)) : this._apply(rules[i], ruleArgs);
+        for (var i = 0; i < rules.length; i++) if (null != this[rules[i]]) return ruleArgs.length > 0 ? this._applyWithArgs.apply(this, [ rules[i] ].concat(ruleArgs)) : this._apply(rules[i]);
     };
     SBVRLibs.IdentifiersEqual = function(a, b) {
         return a[0] === b[0] && a[1] === b[1] && a[2] === b[2];
@@ -51,12 +51,6 @@
             }
         }
         this._traverseFactType(factType, mappedFactType);
-        if (3 === factType.length && ("has" === factType[1][1] || "is of" === factType[1][1])) {
-            mappedFactType = _.clone(mappedFactType);
-            mappedFactType[0] = mappedFactType[0].slice(0, 3).concat(2);
-            mappedFactType[2] = mappedFactType[2].slice(0, 3).concat(0);
-            "has" === factType[1][1] ? this._traverseFactType([ factType[2], [ "Verb", "is of", factType[1][2] ], factType[0] ], mappedFactType) : "is of" === factType[1][1] && this._traverseFactType([ factType[2], [ "Verb", "has", factType[1][2] ], factType[0] ], mappedFactType);
-        }
     };
     SBVRLibs._traverseFactType = function(factType, create) {
         var $elf = this, traverseRecurse = function(currentFactTypePart, remainingFactType, currentLevel) {
