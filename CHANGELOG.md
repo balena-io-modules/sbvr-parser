@@ -1,3 +1,5 @@
+* Added the automatic `has`/`is of` synonymous forms to the generated LF.
+
 v0.0.26
 
 * Added more information to README file.

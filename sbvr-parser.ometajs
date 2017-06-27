@@ -76,7 +76,7 @@ export ometa SBVRParser <: SBVRLibs {
 			Real
 		|	Integer
 		|	Text,
-	
+
 	toSBVREOL =
 		spaces
 		<	(	spaces
@@ -109,7 +109,7 @@ export ometa SBVRParser <: SBVRLibs {
 		-> function() {
 			return $elf._AddIdentifier(identifierType, identifier, baseSynonym)
 		},
-	
+
 	InformalIdentifier =
 		Identifier(undefined, true),
 	Identifier :factTypeSoFar :noAutoComplete =
@@ -144,7 +144,7 @@ export ometa SBVRParser <: SBVRLibs {
 		|	seq(quote)
 		)
 		-> identifier,
-	
+
 	FindIdentifierNest :identifierType :factTypeSoFar :identifierSoFar =
 		IdentifierPart:part
 		(	?identifierSoFar
@@ -159,7 +159,7 @@ export ometa SBVRParser <: SBVRLibs {
 			):vocabulary
 			IsFactTypeIdentifier([identifierType, identifierSoFar, vocabulary], factTypeSoFar)
 		),
-	
+
 	FindVocabulary :identifier =
 		spaces
 		'('?:bracket
@@ -169,7 +169,7 @@ export ometa SBVRParser <: SBVRLibs {
 		|	seq(')')
 		)
 		-> vocabulary,
-	
+
 	FindVocabularyNest :vocabularySoFar =
 		IdentifierPart:part
 		(	?vocabularySoFar
@@ -189,8 +189,8 @@ export ometa SBVRParser <: SBVRLibs {
 			|	'-'
 			)+
 		>,
-	
-	
+
+
 	addVerb =
 		ClearSuggestions Verb(true),
 	Verb :factTypeSoFar =
@@ -228,10 +228,10 @@ export ometa SBVRParser <: SBVRLibs {
 		spaces
 		~Identifier
 		IdentifierPart,
-	
+
 	JoiningQuantifier =
 		matchForAll('Keyword',["and","at","most"]),
-	
+
 	// Be very careful with anywhere you use quantifier as any in-place modifications of the array will be remembered in memoisation.
 	Quantifier =
 		(	Keyword("each")
@@ -258,7 +258,7 @@ export ometa SBVRParser <: SBVRLibs {
 		(	?(noToken===true) seq(word)
 		|	?(noToken!==true) token(word)
 		),
-	
+
 	addThat =
 		Keyword("that"),
 	addThe =
@@ -349,7 +349,7 @@ export ometa SBVRParser <: SBVRLibs {
 		),
 
 	Modifier =
-		"It" "is" 
+		"It" "is"
 		(	"obligatory"
 			-> ['ObligationFormulation']
 		|	"necessary"
@@ -467,7 +467,20 @@ export ometa SBVRParser <: SBVRLibs {
 		)?
 		-> function() {
 			$elf.AddFactType(factType, factType);
-			return ['FactType'].concat(factType).concat([['Attributes']]);
+			var attributes = ['Attributes'];
+			if(factType.length === 3 && (factType[1][1] === 'has' || factType[1][1] === 'is of')) {
+				synFactType = _.cloneDeep(factType);
+				synFactType.reverse()
+				if(synFactType[1][1] === 'has') {
+					synFactType[1][1] = 'is of'
+				}
+				else {
+					synFactType[1][1] = 'has'
+				}
+				$elf.AddFactType(synFactType, factType);
+				attributes.push(['SynonymousForm', synFactType])
+			}
+			return ['FactType'].concat(factType).concat([attributes]);
 		},
 
 	StartVocabulary =
@@ -623,7 +636,7 @@ export ometa SBVRParser <: SBVRLibs {
 	NewComment =
 		StartComment
 		toEOL,
-	
+
 	EOLTerminator =
 		Terminator?
 		spaces
@@ -782,7 +795,7 @@ SBVRParser.IsFactType = function(factType) {
 	return currentLevel.__valid;
 };
 
-var removeRegex = new RegExp('^(?:' + 
+var removeRegex = new RegExp('^(?:' +
 								[	['Term',''].toString(),
 									['Name',''].toString(),
 									['Verb',''].toString()
@@ -962,7 +975,7 @@ SBVRParser.reset = function() {
 	this.ruleVarsCount = 0;
 	this.lines = ['Model'];
 	this.disableCommas = false;
-	
+
 	// Process the built-in vocabulary,
 	// making use of reusing memoisations,
 	// and returning this.inputHead to the way it was found.
@@ -1017,7 +1030,7 @@ SBVRParser.matchForAny = function(rule, arr) {
 	origInput = this.input,
 	ref = {},
 	result = ref;
-	
+
 	for (var idx = 0; idx < arr.length; idx++) {
 		try {
 			self.input = origInput;
