@@ -3,10 +3,11 @@
         return root[moduleName];
     }, root, root.OMeta);
 }(this, function(require, exports, OMeta) {
-    var LFValidator = require("./lf-validator").LFValidator, LFOptimiser = exports.LFOptimiser = LFValidator._extend({
+    var LFValidator = require("./lf-validator").LFValidator;
+    (exports.LFOptimiser = LFValidator._extend({
         Helped: function() {
             var $elf = this, _fromIdx = this.input.idx;
-            this._pred(this.helped === !0);
+            this._pred(!0 === this.helped);
             return this.helped = !1;
         },
         SetHelped: function() {
@@ -40,7 +41,7 @@
                 this._apply("SetHelped");
                 return [ "ExistentialQuantification", v ].concat(xs);
             }, function() {
-                return LFValidator._superApplyWithArgs(this, "AtLeastNQuantification");
+                return LFValidator._superApply(this, "AtLeastNQuantification");
             });
         },
         NumericalRangeQuantification: function() {
@@ -56,7 +57,7 @@
                 this._apply("SetHelped");
                 return [ "ExactQuantification", [ "Cardinality", i[1] ], v ].concat(xs);
             }, function() {
-                return LFValidator._superApplyWithArgs(this, "NumericalRangeQuantification");
+                return LFValidator._superApply(this, "NumericalRangeQuantification");
             });
         },
         LogicalNegation: function() {
@@ -69,11 +70,10 @@
                 this._apply("SetHelped");
                 return xs;
             }, function() {
-                return LFValidator._superApplyWithArgs(this, "LogicalNegation");
+                return LFValidator._superApply(this, "LogicalNegation");
             });
         }
-    });
-    LFOptimiser.initialize = function() {
+    })).initialize = function() {
         LFValidator.initialize.call(this);
         this._didSomething = !1;
     };

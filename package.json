@@ -14,15 +14,15 @@
   "author": "",
   "license": "BSD",
   "dependencies": {
-    "lodash": "^4.0.0",
-    "ometa-js": "^1.4.1"
+    "lodash": "^4.17.10",
+    "ometa-js": "^1.5.0"
   },
   "devDependencies": {
-    "@resin/sbvr-types": "^1.0.0",
-    "chai": "^3.0.0",
-    "coffee-script": "~1.10.0",
-    "mocha": "^3.0.2",
+    "@resin/sbvr-types": "^1.4.2",
+    "chai": "^4.1.2",
+    "coffee-script": "~1.12.7",
+    "mocha": "^5.1.1",
     "require-npm4-to-publish": "^1.0.0",
-    "resin-lint": "^1.2.2"
+    "resin-lint": "^1.5.7"
   }
 }
