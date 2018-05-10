@@ -19,7 +19,7 @@
     SBVRLibs.FollowConceptType = function(identifier) {
         var conceptTypes = this.vocabularies[identifier[2]].ConceptTypes;
         identifier = identifier.slice(0, 3);
-        return conceptTypes.hasOwnProperty(identifier) ? conceptTypes[identifier] : !1;
+        return !!conceptTypes.hasOwnProperty(identifier) && conceptTypes[identifier];
     };
     SBVRLibs.AddVocabulary = function(vocabulary, baseSynonym) {
         this.currentVocabulary = baseSynonym;
@@ -69,13 +69,13 @@
             }
             if (currentLevel.hasOwnProperty(currentFactTypePart) || create && (currentLevel[currentFactTypePart] = {})) {
                 finalLevel = traverseRecurse(remainingFactType[0], remainingFactType.slice(1), currentLevel[currentFactTypePart]);
-                finalLevel !== !1 && _.assign(finalLevels, finalLevel);
+                !1 !== finalLevel && _.assign(finalLevels, finalLevel);
             }
-            if (!create && ("Term" === currentFactTypePart[0] || "Name" === currentFactTypePart[0])) for (;(currentFactTypePart = $elf.FollowConceptType(currentFactTypePart)) !== !1; ) if (currentLevel.hasOwnProperty(currentFactTypePart)) {
+            if (!create && ("Term" === currentFactTypePart[0] || "Name" === currentFactTypePart[0])) for (;!1 !== (currentFactTypePart = $elf.FollowConceptType(currentFactTypePart)); ) if (currentLevel.hasOwnProperty(currentFactTypePart)) {
                 finalLevel = traverseRecurse(remainingFactType[0], remainingFactType.slice(1), currentLevel[currentFactTypePart]);
-                finalLevel !== !1 && _.assign(finalLevels, finalLevel);
+                !1 !== finalLevel && _.assign(finalLevels, finalLevel);
             }
-            return _.isEmpty(finalLevels) === !0 ? !1 : finalLevels;
+            return !0 !== _.isEmpty(finalLevels) && finalLevels;
         };
         return traverseRecurse(factType[0], factType.slice(1), this.factTypes);
     };

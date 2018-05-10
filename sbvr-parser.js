@@ -399,7 +399,7 @@
                 return this._applyWithArgs("FindVerb", factTypeSoFar, verbSoFar, negated);
             }, function() {
                 this._or(function() {
-                    return this._pred(factTypeSoFar === !0);
+                    return this._pred(!0 === factTypeSoFar);
                 }, function() {
                     return this._applyWithArgs("IsVerb", factTypeSoFar, verbSoFar);
                 });
@@ -464,10 +464,10 @@
         Keyword: function(word, noToken) {
             var $elf = this, _fromIdx = this.input.idx;
             return this._or(function() {
-                this._pred(noToken === !0);
+                this._pred(!0 === noToken);
                 return this._applyWithArgs("seq", word);
             }, function() {
-                this._pred(noToken !== !0);
+                this._pred(!0 !== noToken);
                 return this._applyWithArgs("token", word);
             });
         },
@@ -975,7 +975,7 @@
         space: function() {
             var $elf = this, _fromIdx = this.input.idx;
             return this._or(function() {
-                return SBVRLibs._superApplyWithArgs(this, "space");
+                return SBVRLibs._superApply(this, "space");
             }, function() {
                 return this._apply("NewComment");
             });
@@ -1057,7 +1057,7 @@
     SBVRParser.IsVerb = function(factTypeSoFar, verb) {
         verb = [ "Verb", verb ];
         var currentLevel = this._traverseFactType(factTypeSoFar);
-        this._pred(currentLevel !== !1);
+        this._pred(!1 !== currentLevel);
         if (!currentLevel.hasOwnProperty(verb)) {
             this._pred(currentLevel.hasOwnProperty("__valid"));
             return this.IsVerb([], verb);
@@ -1068,7 +1068,7 @@
     };
     SBVRParser.IsFactType = function(factType) {
         var currentLevel = this._traverseFactType(factType);
-        return currentLevel === !1 ? !1 : currentLevel.__valid;
+        return !1 !== currentLevel && currentLevel.__valid;
     };
     var removeRegex = new RegExp("^(?:" + [ [ "Term", "" ].toString(), [ "Name", "" ].toString(), [ "Verb", "" ].toString() ].join("|") + ")(.*?)(?:,(.*))?$"), defaultAllowedAttrLists = [ "Concept Type:", "Definition:", "Definition (Informal):", "Description:", "Dictionary Basis:", "Example:", "General Concept:", "Namespace URI:", "Necessity:", "Note:", "Possibility:", "Reference Scheme:", "See:", "Source:", "Subject Field:" ];
     defaultAllowedAttrLists = {
@@ -1124,7 +1124,7 @@
                 return getValidFactTypeParts.call(this, vocabulary, "Name", factTypeSoFar);
             },
             Verb: function(factTypeSoFar, vocabulary) {
-                return factTypeSoFar === !0 ? [] : getValidFactTypeParts.call(this, vocabulary, "Verb", factTypeSoFar);
+                return !0 === factTypeSoFar ? [] : getValidFactTypeParts.call(this, vocabulary, "Verb", factTypeSoFar);
             },
             AllowedAttrs: function(termOrFactType) {
                 return this.allowedAttrLists.hasOwnProperty(termOrFactType) ? this.allowedAttrLists[termOrFactType] : null == termOrFactType ? this.allowedAttrLists.Term.concat(this.allowedAttrLists.Name, this.allowedAttrLists.FactType) : [];
@@ -1187,7 +1187,7 @@
                 result = $elf._applyWithArgs.call($elf, rule, arr[idx]);
             } catch (e) {
                 if (!(e instanceof SyntaxError)) throw e;
-            } finally {}
+            }
             if (result !== ref) return result;
         }
         throw this._fail();
