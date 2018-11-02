@@ -18,11 +18,11 @@
     "ometa-js": "^1.5.3"
   },
   "devDependencies": {
-    "@resin/sbvr-types": "^1.4.2",
+    "@resin/sbvr-types": "^2.0.0",
     "chai": "^4.1.2",
     "coffee-script": "~1.12.7",
     "mocha": "^5.2.0",
     "require-npm4-to-publish": "^1.0.0",
-    "resin-lint": "^1.5.7"
+    "resin-lint": "^2.0.1"
   }
 }
