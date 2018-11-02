@@ -8,20 +8,20 @@
     "pretest": "npm run prepublishOnly",
     "test": "mocha",
     "prepublish": "require-npm4-to-publish",
-    "prepublishOnly": "ometajs2js --input sbvr-parser.ometajs --output sbvr-parser.js && node node_modules/ometa-js/bin/ometajs2js --input sbvr-libs.ometajs --output sbvr-libs.js && node node_modules/ometa-js/bin/ometajs2js --input lf-optimiser.ometajs --output lf-optimiser.js && node node_modules/ometa-js/bin/ometajs2js --input lf-validator.ometajs --output lf-validator.js"
+    "prepublishOnly": "ometajs2js --commonjs --input sbvr-parser.ometajs --output sbvr-parser.js && ometajs2js --commonjs --input sbvr-libs.ometajs --output sbvr-libs.js && ometajs2js --commonjs --input lf-optimiser.ometajs --output lf-optimiser.js && ometajs2js --commonjs --input lf-validator.ometajs --output lf-validator.js"
   },
   "repository": "https://github.com/resin-io-modules/sbvr-parser.git",
   "author": "",
   "license": "BSD",
   "dependencies": {
-    "lodash": "^4.17.10",
-    "ometa-js": "^1.5.0"
+    "lodash": "^4.17.11",
+    "ometa-js": "^1.5.3"
   },
   "devDependencies": {
     "@resin/sbvr-types": "^1.4.2",
     "chai": "^4.1.2",
     "coffee-script": "~1.12.7",
-    "mocha": "^5.1.1",
+    "mocha": "^5.2.0",
     "require-npm4-to-publish": "^1.0.0",
     "resin-lint": "^1.5.7"
   }
