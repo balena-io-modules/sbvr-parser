@@ -5,10 +5,10 @@
   "main": "sbvr-parser.js",
   "scripts": {
     "lint": "resin-lint test/",
-    "pretest": "npm run prepublishOnly",
+    "pretest": "npm run prepare",
     "test": "mocha",
     "prepublish": "require-npm4-to-publish",
-    "prepublishOnly": "ometajs2js --commonjs --input sbvr-parser.ometajs --output sbvr-parser.js && ometajs2js --commonjs --input sbvr-libs.ometajs --output sbvr-libs.js && ometajs2js --commonjs --input lf-optimiser.ometajs --output lf-optimiser.js && ometajs2js --commonjs --input lf-validator.ometajs --output lf-validator.js"
+    "prepare": "ometajs2js --commonjs --input sbvr-parser.ometajs --output sbvr-parser.js && ometajs2js --commonjs --input sbvr-libs.ometajs --output sbvr-libs.js && ometajs2js --commonjs --input lf-optimiser.ometajs --output lf-optimiser.js && ometajs2js --commonjs --input lf-validator.ometajs --output lf-validator.js"
   },
   "repository": "https://github.com/resin-io-modules/sbvr-parser.git",
   "author": "",
