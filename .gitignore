@@ -1,2 +1,6 @@
 node_modules
 *.swp
+/sbvr-parser.js
+/lf-optimiser.js
+/lf-validator.js
+/sbvr-libs.js
