@@ -1,0 +1,115 @@
+- commits:
+  - author: Pagan Gazzard
+    body: ""
+    footers:
+      change-type: patch
+    hash: f9e23c48af837a1378b7171b5c407b8042a88f85
+    subject: Add npmignore so that built files get published correctly
+  date: "2018-11-03T05:57:13Z"
+  version: 0.2.1
+- commits:
+  - author: Pagan Gazzard
+    body: ""
+    footers:
+      change-type: minor
+    hash: 3e9799a430fd9e581d77b990ea19123560cd9086
+    subject: Switch to generating commonjs format
+  - author: Pagan Gazzard
+    body: ""
+    footers:
+      change-type: minor
+    hash: f5c9b7491006bed321dc5813db3344bade8e57d5
+    subject: Switch to using a prepare script so npm git installs can work
+  - author: Pagan Gazzard
+    body: ""
+    hash: fdc8451a4d76df92a07020140e228c5d9a85b25a
+    subject: Update dev dependencies
+  date: "2018-11-03T05:29:14Z"
+  version: 0.2.0
+- commits:
+  - author: Pagan Gazzard
+    body: ""
+    footers:
+      change-type: patch
+    hash: 81bc299264941615878f1f6c6bb029896c6b9ee6
+    subject: Update dependencies
+  date: "2018-05-10T00:28:52Z"
+  version: 0.1.4
+- commits:
+  - author: Pagan Gazzard
+    body: ""
+    footers:
+      change-type: patch
+    hash: c6b7c43b1cca263076c6dc6684cb7dbb795beff2
+    subject: Require npm 4+ to publish, to avoid issues with publishing
+  date: "2018-05-10T00:06:42Z"
+  version: 0.1.3
+- commits:
+  - author: Pagan Gazzard
+    body: ""
+    footers:
+      change-type: patch
+    hash: 92f7e37314d00c476d2a5d7c2da40809d653dfa3
+    subject: Add circleci tests and auto-publishing
+  date: "2018-04-30T09:26:25Z"
+  version: 0.1.2
+- commits:
+  - author: Giovanni Garufi
+    body: ""
+    footers:
+      change-type: patch
+    hash: dcead668505011a133aae775813861a604dfd604
+    subject: Added versionist
+  date: "2017-09-25T06:47:43Z"
+  version: 0.1.1
+- commits:
+  - author: Pagan Gazzard
+    body: This means that any users do not have to handle this themselves and can
+      just take the LF as-is
+    hash: 6d2569f41d011b0c6dfedc4be0106e2a6bd864f2
+    subject: Add the automatic `has`/`is of` synonymous forms to the generated LF.
+  - author: Lucian Buzzo
+    body: ""
+    hash: eec81e7122cec20f916fc2f317c26d172131d850
+    subject: 0.0.26
+  date: "2017-06-27T15:38:03Z"
+  version: 0.1.0
+- commits:
+  - author: Lucian Buzzo
+    body: ""
+    hash: 61ffb727e3488abde22aba658e5fd7f06b66645f
+    subject: '[issue #4] Expand README'
+  date: "2017-02-21T08:02:57Z"
+  version: 0.0.26
+- commits:
+  - author: Pagan Gazzard
+    body: ""
+    hash: fe664eb4124f28e2c9fb85a598d7f2add537c9fd
+    subject: Add a test for a self-referential fact type and synonymous form.
+  - author: Pagan Gazzard
+    body: ""
+    hash: b6b651f7ab771cf38448cb77722aa87e07ae3106
+    subject: Slight optimisation for adding fact types.
+  - author: Pagan Gazzard
+    body: ""
+    hash: b9bf6f50877b3dd438709113611c462bf3a9aa1b
+    subject: Don't try to map when adding a fact type - this fixes problems with incorrect
+      mapping for self-referential fact types.
+  - author: Pagan Gazzard
+    body: ""
+    hash: c9666f31f1e4aa34b5fa1e83d636a1efc186910b
+    subject: Add nice error messages when we have problems with ambiguous fact type
+      identifier usage.
+  date: "2016-08-26T10:54:11Z"
+  version: 0.0.25
+- commits:
+  - author: Pagan Gazzard
+    body: ""
+    hash: 3199d7d4ca7775d4dce7cea9041c3a2e6b094416
+    subject: Add support for concept type on term form fact types.
+  - author: Pagan Gazzard
+    body: ""
+    hash: 1c9e11d72efe2a1b16bc4f5bb41a70ef045fcc6d
+    subject: Throw error objects rather than strings
+  date: "2016-07-15T13:10:55Z"
+  version: 0.0.24
