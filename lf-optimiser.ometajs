@@ -37,6 +37,17 @@ export ometa LFOptimiser <: LFValidator {
 			['LogicalNegation' trans:xs] SetHelped
 			-> xs
 		|	^LogicalNegation
+	,
+
+	ExactQuantification =
+			"Cardinality":i
+			"Variable":v
+			trans*:xs
+			?(i[1][1] === 0)
+			SetHelped
+			// Exactly 0 is equivalent to not exists
+			-> ['LogicalNegation', ['ExistentialQuantification', v].concat(xs)]
+		|	^ExactQuantification
 }
 
 LFOptimiser.initialize = function() {
