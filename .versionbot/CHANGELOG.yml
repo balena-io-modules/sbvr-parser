@@ -1,4 +1,14 @@
 - commits:
+    - subject: Optimise exactly 0 to not exists
+      hash: dcb0cd00b8b4b08486e49d18e2b69e61162ae952
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 0.2.3
+  date: 2019-06-04T21:07:20.967Z
+- commits:
     - subject: Add .versionbot/CHANGELOG.yml for downstream changelogs
       hash: 45c5843b204def5a727b8ba8dfafb2a2347f50f3
       body: ''
