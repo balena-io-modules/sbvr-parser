@@ -232,11 +232,7 @@ export ometa SBVRParser <: SBVRLibs {
 		|	(	?(factTypeSoFar===true)
 			|	IsVerb(factTypeSoFar, verbSoFar)
 			)
-			{['Verb', verbSoFar]}:verb
-			(	?negated
-				{verb.push(true)}
-			|	{verb.push(false)}
-			)
+			{['Verb', verbSoFar, negated === true]}:verb
 			-> verb
 		)
 	,
@@ -300,9 +296,20 @@ export ometa SBVRParser <: SBVRLibs {
 		-> ['AtomicFormulation'].concat([['FactType'].concat(factType)], bindings),
 
 	ClosedProjection :identifier :bind =
-		addThat
-		(	Junction('VerbContinuation', [[identifier], [bind]])
-		|	Junction('RuleBody', [[], [], identifier, bind])
+		(	addThat
+			(	Junction('VerbContinuation', [[identifier], [bind]])
+			|	Junction('RuleBody', [[], [], identifier, bind])
+			)
+		|	// Check for 'that is of' -> 'of'
+			Keyword('of')
+			{[identifier]}:factType
+			{'is of'}:verb
+			IsVerb(factType, verb)
+			{factType.push(['Verb', verb, false])}
+			{[bind]}:bindings
+			(	Junction('RuleBody', [factType, bindings])
+			|	IsAtomicFormulation(factType, bindings)
+			)
 		),
 
 	TermEntity :factType :bindings =
