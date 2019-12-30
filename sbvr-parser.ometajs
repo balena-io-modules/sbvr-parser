@@ -141,7 +141,7 @@ export ometa SBVRParser <: SBVRLibs {
 		'\''?:quote
 		FindIdentifierNest(identifierType, factTypeSoFar):identifier
 		(	?(!quote)
-		|	seq(quote)
+		|	'\''
 		)
 		-> identifier,
 
@@ -166,7 +166,7 @@ export ometa SBVRParser <: SBVRLibs {
 		FindVocabularyNest:vocabulary
 		?(!identifier || this.vocabularies[vocabulary]['IdentifierChildren'].hasOwnProperty(identifier))
 		(	?(!bracket)
-		|	seq(')')
+		|	')'
 		)
 		-> vocabulary,
 
@@ -194,8 +194,15 @@ export ometa SBVRParser <: SBVRLibs {
 	addVerb =
 		ClearSuggestions Verb(true),
 	Verb :factTypeSoFar =
-		FindVerb(factTypeSoFar),
-	FindVerb :factTypeSoFar :verbSoFar :negated =
+		spaces
+		'['?:bracket
+		FindVerb(factTypeSoFar, bracket):verb
+		(	?(!bracket)
+		|	spaces
+			']'
+		)
+		-> verb,
+	FindVerb :factTypeSoFar :bracketed :verbSoFar :negated =
 		(	?(factTypeSoFar && !verbSoFar)
 			(	Keyword("isn't")
 			|	Keyword("aren't")
@@ -203,7 +210,15 @@ export ometa SBVRParser <: SBVRLibs {
 			{'is'}:verbSoFar
 			{true}:negated
 		)?
-		VerbPart:part
+
+		spaces
+		(	?bracketed
+			// If we're bracketed then we ignore checking for
+			// identifiers so they can be included in the verb
+		|	~Identifier
+		)
+		IdentifierPart:part
+
 		(	?verbSoFar
 			-> (verbSoFar + ' ' + part)
 		|	-> this._verbForm(part)
@@ -213,7 +228,7 @@ export ometa SBVRParser <: SBVRLibs {
 			Keyword('not')
 			{true}:negated
 		)?
-		(	FindVerb(factTypeSoFar, verbSoFar, negated)
+		(	FindVerb(factTypeSoFar, bracketed, verbSoFar, negated)
 		|	(	?(factTypeSoFar===true)
 			|	IsVerb(factTypeSoFar, verbSoFar)
 			)
@@ -223,11 +238,8 @@ export ometa SBVRParser <: SBVRLibs {
 			|	{verb.push(false)}
 			)
 			-> verb
-		),
-	VerbPart =
-		spaces
-		~Identifier
-		IdentifierPart,
+		)
+	,
 
 	JoiningQuantifier =
 		matchForAll('Keyword',["and","at","most"]),
