@@ -1,4 +1,14 @@
 - commits:
+    - subject: Add support for `a given` as a universal quantification
+      hash: 2946841869fd9424786ae70c6c2d28948f624179
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 0.2.5
+  date: 2019-12-30T17:43:37.528Z
+- commits:
     - subject: 'Allow including terms as part of a verb by using `[]` brackets'
       hash: 40129b411ba8b2357c03ac2815e0182f806c3531
       body: ''
