@@ -1,4 +1,14 @@
 - commits:
+    - subject: 'Allow including terms as part of a verb by using `[]` brackets'
+      hash: 40129b411ba8b2357c03ac2815e0182f806c3531
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 0.2.4
+  date: 2019-12-27T16:53:42.051Z
+- commits:
     - subject: Optimise exactly 0 to not exists
       hash: dcb0cd00b8b4b08486e49d18e2b69e61162ae952
       body: ''
