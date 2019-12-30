@@ -110,6 +110,9 @@ describe 'pilots', ->
 	# Rule:       It is necessary that each plane can be flown by at least 1 pilot
 	test rule 'Necessity', 'each', plane, verb('can be flown by'), ['at least', 1], pilot
 
+	# Rule:       It is necessary that a given plane can be flown by at least 1 pilot
+	test rule 'Necessity', 'a given', plane, verb('can be flown by'), ['at least', 1], pilot
+
 	# -- OR
 
 	# Rule:       It is necessary that each pilot that is experienced, can fly at least 2 planes or has a years of experience that is greater than 5

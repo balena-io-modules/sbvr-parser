@@ -246,7 +246,7 @@ export ometa SBVRParser <: SBVRLibs {
 
 	// Be very careful with anywhere you use quantifier as any in-place modifications of the array will be remembered in memoisation.
 	Quantifier =
-		(	Keyword("each")
+		(	matchForAny('Keyword',["each","a given"])
 			-> ['UniversalQuantification']
 		|	matchForAny('Keyword',["a","an","some"])
 			-> ['ExistentialQuantification']
@@ -957,6 +957,7 @@ SBVRParser.reset = function() {
 		Quantifier: [
 			'each',
 			'a',
+			'a given',
 			'an',
 			'some',
 			'at most',
