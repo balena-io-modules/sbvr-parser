@@ -136,7 +136,7 @@ resolveQuantifier = (quantifier) ->
 			]
 	lf =
 		switch quantifier
-			when 'each'
+			when 'each', 'a given'
 				['UniversalQuantification']
 			when 'a', 'an', 'some'
 				['ExistentialQuantification']
