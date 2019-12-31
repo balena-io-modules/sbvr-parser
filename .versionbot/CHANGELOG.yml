@@ -1,4 +1,14 @@
 - commits:
+    - subject: Add support for using `of` instead of `that is of`
+      hash: 15466b993e738e16bb20d597460f673c438c6c93
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 0.2.6
+  date: 2019-12-30T18:37:48.690Z
+- commits:
     - subject: Add support for `a given` as a universal quantification
       hash: 2946841869fd9424786ae70c6c2d28948f624179
       body: ''
