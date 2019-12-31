@@ -366,9 +366,13 @@ exports.customRule = (structuredEnglish, formulationType, args...) ->
 	return lf
 
 exports.vocabRule = vocabRule = (vocab, formulationType, args...) ->
+	if _.isObject(args[0]) and args[0].se?
+		manualSE = args.shift()
 	formulationType += 'Formulation'
 	parser = createParser(vocab)
 	{ lf, se } = parser.junction(parser.ruleBody, args)
+	if manualSE?
+		{ se } = manualSE
 	return [
 		'Rule'
 		[	formulationType

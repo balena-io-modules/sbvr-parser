@@ -56,6 +56,13 @@ describe 'pilots', ->
 	test factType plane, verb('has'), name
 	# 	Necessity: each plane has exactly one name
 	test necessity 'each', plane, verb('has'), ['exactly', 'one'], name
+	# 	Necessity: each name that is of a plane has a length (Type) that is greater than 1
+	test necessity 'each', [name, verb('is of'), 'a', plane], verb('has'), 'a', [lengthType, verb('is greater than'), 1]
+	# 	Necessity: each name of a plane has a length (Type) that is greater than 1
+	test necessity(
+		{ se: 'each name of a plane has a Length (Type) that is greater than 1' },
+		'each', [name, verb('is of'), 'a', plane], verb('has'), 'a', [lengthType, verb('is greater than'), 1]
+	)
 	# Fact type: pilot can fly plane
 	test factType pilot, verb('can fly'), plane
 	# 	Synonymous Form: plane can be flown by pilot
