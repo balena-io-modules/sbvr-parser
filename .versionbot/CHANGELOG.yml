@@ -1,4 +1,14 @@
 - commits:
+    - subject: Reduce lodash usage
+      hash: 275276c0c0a49a2ce638666c404d4a23495a01ff
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 0.2.8
+  date: 2020-04-27T15:12:07.898Z
+- commits:
     - subject: Add CODEOWNERS
       hash: e9931f0bad2fc7b74366fcf1359642714e3d8cbe
       body: ''
