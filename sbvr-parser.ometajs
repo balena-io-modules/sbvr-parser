@@ -20,7 +20,7 @@ export ometa SBVRParser <: SBVRLibs {
 		)*
 		?eol,
 	IdentifierKey :identifier =
-		(	?_.isArray(identifier[3])
+		(	?Array.isArray(identifier[3])
 			?(identifier[3][0] == 'Number')
 			-> identifier[3][1]
 		|	-> ''
@@ -533,7 +533,7 @@ export ometa SBVRParser <: SBVRLibs {
 		ApplyFirstExisting(['Attr' + attrName, 'DefaultAttr']):attrValOrFunc
 		-> function() {
 			var lastLine = $elf.lines.pop(),
-				attrVal = _.isFunction(attrValOrFunc) ? attrValOrFunc(lastLine) : attrValOrFunc;
+				attrVal = typeof attrValOrFunc === 'function' ? attrValOrFunc(lastLine) : attrValOrFunc;
 			_.last(lastLine).push([attrName, attrVal]);
 			return lastLine;
 		},
@@ -875,7 +875,7 @@ function getValidFactTypeParts(vocabulary, identifierType, factTypeSoFar) {
 		else {
 			identifiers = vocabularies[vocabulary][identifierType];
 		}
-		return _.keys(identifiers);
+		return Object.keys(identifiers);
 	}
 	var factTypePart,
 		currentLevel = this._traverseFactType(factTypeSoFar),
@@ -907,7 +907,7 @@ function getValidFactTypeParts(vocabulary, identifierType, factTypeSoFar) {
 			}
 		}
 	}
-	return _.keys(factTypeParts);
+	return Object.keys(factTypeParts);
 }
 SBVRParser.reset = function() {
 	SBVRLibs.initialize.call(this);
@@ -919,7 +919,7 @@ SBVRParser.reset = function() {
 		StartFactType: ['Fact type: '],
 		StartRule: ['Rule:      '],
 		Vocabulary: function(factTypeSoFar) {
-			return _.keys(this.vocabularies);
+			return Object.keys(this.vocabularies);
 		},
 		Term: function(factTypeSoFar, vocabulary) {
 			return getValidFactTypeParts.call(this, vocabulary, 'Term', factTypeSoFar);
