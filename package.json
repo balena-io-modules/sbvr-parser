@@ -4,9 +4,11 @@
   "description": "SBVR to LF parser.",
   "main": "sbvr-parser.js",
   "scripts": {
-    "lint": "balena-lint test/",
+    "lint": "balena-lint -e js --typescript test/",
+    "lint-fix": "balena-lint -e js --typescript --fix test/",
     "pretest": "npm run prepare",
     "test": "mocha",
+    "posttest": "npm run lint",
     "prepublish": "require-npm4-to-publish",
     "prepare": "ometajs2js --commonjs --input sbvr-parser.ometajs --output sbvr-parser.js && ometajs2js --commonjs --input sbvr-libs.ometajs --output sbvr-libs.js && ometajs2js --commonjs --input lf-optimiser.ometajs --output lf-optimiser.js && ometajs2js --commonjs --input lf-validator.ometajs --output lf-validator.js"
   },
@@ -21,7 +23,6 @@
     "@balena/lint": "^5.0.4",
     "@balena/sbvr-types": "^3.0.0",
     "chai": "^4.1.2",
-    "coffee-script": "~1.12.7",
     "mocha": "^6.2.2",
     "require-npm4-to-publish": "^1.0.0"
   }

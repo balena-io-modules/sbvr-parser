@@ -1,6 +1,5 @@
 --reporter spec
 --recursive
---require coffee-script/register
 --bail
 --timeout 5000
-test/*.coffee
+test/
