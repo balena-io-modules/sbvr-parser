@@ -1,5 +1,5 @@
 {
-  "name": "@resin/sbvr-parser",
+  "name": "@balena/sbvr-parser",
   "version": "0.2.11",
   "description": "SBVR to LF parser.",
   "main": "sbvr-parser.js",
