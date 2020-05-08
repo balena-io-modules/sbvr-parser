@@ -1,4 +1,4 @@
-typeVocab = require('fs').readFileSync(require.resolve('@resin/sbvr-types/Type.sbvr'))
+typeVocab = require('fs').readFileSync(require.resolve('@balena/sbvr-types/Type.sbvr'))
 test = require('./test')(typeVocab)
 _ = require 'lodash'
 { vocabulary, term, verb, factType, conceptType, referenceScheme, vocabNecessity } = require('./sbvr-helper')
