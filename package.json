@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "@balena/lint": "^5.0.4",
-    "@resin/sbvr-types": "^2.0.3",
+    "@balena/sbvr-types": "^3.0.0",
     "chai": "^4.1.2",
     "coffee-script": "~1.12.7",
     "mocha": "^6.2.2",
