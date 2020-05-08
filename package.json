@@ -4,13 +4,13 @@
   "description": "SBVR to LF parser.",
   "main": "sbvr-parser.js",
   "scripts": {
-    "lint": "resin-lint test/",
+    "lint": "balena-lint test/",
     "pretest": "npm run prepare",
     "test": "mocha",
     "prepublish": "require-npm4-to-publish",
     "prepare": "ometajs2js --commonjs --input sbvr-parser.ometajs --output sbvr-parser.js && ometajs2js --commonjs --input sbvr-libs.ometajs --output sbvr-libs.js && ometajs2js --commonjs --input lf-optimiser.ometajs --output lf-optimiser.js && ometajs2js --commonjs --input lf-validator.ometajs --output lf-validator.js"
   },
-  "repository": "https://github.com/resin-io-modules/sbvr-parser.git",
+  "repository": "https://github.com/balena-io-modules/sbvr-parser.git",
   "author": "",
   "license": "BSD",
   "dependencies": {
@@ -18,11 +18,11 @@
     "ometa-js": "^1.5.3"
   },
   "devDependencies": {
+    "@balena/lint": "^5.0.4",
     "@resin/sbvr-types": "^2.0.3",
     "chai": "^4.1.2",
     "coffee-script": "~1.12.7",
     "mocha": "^6.2.2",
-    "require-npm4-to-publish": "^1.0.0",
-    "resin-lint": "^2.0.1"
+    "require-npm4-to-publish": "^1.0.0"
   }
 }
