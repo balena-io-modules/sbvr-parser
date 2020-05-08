@@ -1,3 +1,4 @@
+# coffeelint:disable=max_line_length
 typeVocab = require('fs').readFileSync(require.resolve('@resin/sbvr-types/Type.sbvr'))
 test = require('./test')(typeVocab)
 { expect } = require 'chai'
@@ -68,7 +69,7 @@ describe 'pilots', ->
 	# 	Synonymous Form: plane can be flown by pilot
 	test synonymousForm plane, verb('can be flown by'), pilot
 	# Fact type: pilot [can teach pilots]
-	test { se: 'pilot [can teach pilots]', lf: factType pilot, verb('can teach pilots')}
+	test { se: 'pilot [can teach pilots]', lf: factType pilot, verb('can teach pilots') }
 	# Fact type: pilot0 taught pilot1
 	test factType pilots[0], verb('taught'), pilots[1]
 	# 	Synonymous Form: pilot1 was taught by pilot0
