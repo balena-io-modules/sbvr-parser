@@ -1,4 +1,21 @@
 - commits:
+    - subject: 'CI: Add nodejs 14 to the test matrix'
+      hash: b532a53263ba8c853851ba524d62d2c2862e976f
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+    - subject: 'CI: Remove circleci publishing in favor of balenaCI'
+      hash: 899c978e14b686681a40ff46ce992b432974d257
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 0.2.11
+  date: 2020-05-08T12:59:18.046Z
+- commits:
     - subject: Update to to @balena/sbvr-types
       hash: 5092a2ed3c12c286661ec75dc7901adc5e5debba
       body: ''
