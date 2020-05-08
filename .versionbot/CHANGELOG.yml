@@ -1,4 +1,21 @@
 - commits:
+    - subject: Drop support for node 6/8
+      hash: fc61a212d5918a552ef6bbf8698413d096953429
+      body: ''
+      footer:
+        Change-type: major
+        change-type: major
+      author: Pagan Gazzard
+    - subject: Rename to @balena/sbvr-parser
+      hash: f7c3e6b15c907a25661f02ab54046f9f7faa64b5
+      body: ''
+      footer:
+        Change-type: major
+        change-type: major
+      author: Pagan Gazzard
+  version: 1.0.0
+  date: 2020-05-08T16:38:08.563Z
+- commits:
     - subject: 'CI: Add nodejs 14 to the test matrix'
       hash: b532a53263ba8c853851ba524d62d2c2862e976f
       body: ''
