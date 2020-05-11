@@ -23,7 +23,7 @@
     "@balena/lint": "^5.0.4",
     "@balena/sbvr-types": "^3.0.0",
     "chai": "^4.1.2",
-    "mocha": "^6.2.2",
+    "mocha": "^7.1.2",
     "require-npm4-to-publish": "^1.0.0"
   }
 }
