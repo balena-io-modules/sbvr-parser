@@ -1,4 +1,14 @@
 - commits:
+    - subject: Update to mocha 7.x
+      hash: f9b2009c28f50a0635738a2c49d1be17491a05b3
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 1.0.1
+  date: 2020-05-11T14:06:40.102Z
+- commits:
     - subject: Convert coffeescript tests to javascript
       hash: 4e4a14476fb29242dbcd278cf079738900fdb0c8
       body: ''
