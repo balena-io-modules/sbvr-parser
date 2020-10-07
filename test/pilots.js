@@ -79,6 +79,14 @@ describe('pilots', function () {
 			yearsOfExperience,
 		),
 	);
+	// 	Necessity: each pilot has a years of experience that is greater than -1.
+	test(
+		necessity('each', pilot, verb('has'), 'a', [
+			yearsOfExperience,
+			verb('is greater than'),
+			-1,
+		]),
+	);
 	// Fact Type: plane has name
 	test(factType(plane, verb('has'), name));
 	// 	Necessity: each plane has exactly one name

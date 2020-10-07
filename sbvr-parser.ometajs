@@ -52,7 +52,8 @@ export ometa SBVRParser <: SBVRLibs {
 
 	Real =
 		spaces
-		<	digit+
+		<	'-'?
+			digit+
 			'.'
 			digit+
 		>:n
@@ -60,7 +61,9 @@ export ometa SBVRParser <: SBVRLibs {
 
 	Integer =
 		spaces
-		<digit+>:n
+		<	'-'?
+			digit+
+		>:n
 		-> ['Integer', Number(n)],
 	Text =
 		spaces
