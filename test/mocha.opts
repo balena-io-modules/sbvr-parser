@@ -1,5 +1,0 @@
---reporter spec
---recursive
---bail
---timeout 5000
-test/
