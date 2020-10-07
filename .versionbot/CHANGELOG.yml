@@ -1,4 +1,14 @@
 - commits:
+    - subject: Add support for negative numbers for embedded data
+      hash: a5d4f168e66ee209b673f7b20bfc4eb7e2ad657a
+      body: ''
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: Pagan Gazzard
+  version: 1.1.0
+  date: 2020-10-07T12:26:21.195Z
+- commits:
     - subject: Update to mocha 7.x
       hash: f9b2009c28f50a0635738a2c49d1be17491a05b3
       body: ''
