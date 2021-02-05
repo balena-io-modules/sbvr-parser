@@ -108,7 +108,7 @@ export ometa LFValidator <: SBVRLibs {
 	DefaultAttr :tableID =
 		anything,
 	AttrConceptType :termOrFactType =
-		[	'Term' 
+		[	'Term'
 			:conceptType
 			:vocab
 		]:term
@@ -129,7 +129,7 @@ export ometa LFValidator <: SBVRLibs {
 	StructuredEnglish
 		:a
 		-> ['StructuredEnglish', a],
-	
+
 	ObligationFormulation
 		trans*:xs
 		-> ['ObligationFormulation'].concat(xs),
@@ -227,8 +227,9 @@ export ometa LFValidator <: SBVRLibs {
 		):identifier
 		(	number
 		|	Value
+		|	"Name"
 		):bindIdentifier
-		-> ['RoleBinding', identifier, bindIdentifier], 
+		-> ['RoleBinding', identifier, bindIdentifier],
 	AtomicFormulation
 		"FactType":f
 		"RoleBinding"*:b
