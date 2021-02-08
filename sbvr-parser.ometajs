@@ -123,7 +123,9 @@ export ometa SBVRParser <: SBVRLibs {
 				Term(factTypeSoFar)
 			|	Name(factTypeSoFar)
 			)
-		|	?(!noAutoComplete)
+		|	// If branch tracking (for autocomplete) is enabled and we haven't explicitly excluded
+			// this branch then run the full Term/Name rules so they get tracked as potential branches
+			?(!noAutoComplete && this._getBranches() !== undefined)
 			(	Term(factTypeSoFar)
 			|	Name(factTypeSoFar)
 			)
