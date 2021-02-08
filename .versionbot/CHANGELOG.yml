@@ -1,4 +1,14 @@
 - commits:
+    - subject: Update dependencies
+      hash: 7b79ecf9de0fac908a4063c90050e8a9879241f9
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 1.2.1
+  date: 2021-02-08T19:44:38.524Z
+- commits:
     - subject: Add support for a `Name` role binding in the lf validator
       hash: 5d84fe2abf2b6a34fa35e9d985443eb71f87a1d9
       body: ''
