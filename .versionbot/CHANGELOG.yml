@@ -1,4 +1,28 @@
 - commits:
+    - subject: Optimize `StartX` rules
+      hash: df251a17063d038e142dc7013c24a84158f33efa
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+    - subject: Optimize `Identifier` when branch tracking is disabled (the default)
+      hash: f32e75c391fc060d6cd6396667e0ed1714a4c105
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+    - subject: Optimize `IdentifierPart` rule
+      hash: 5f390ce4b4317a824acfa13fee7c114ac69ca1ac
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 1.2.2
+  date: 2021-02-08T21:21:29.705Z
+- commits:
     - subject: Update dependencies
       hash: 7b79ecf9de0fac908a4063c90050e8a9879241f9
       body: ''
