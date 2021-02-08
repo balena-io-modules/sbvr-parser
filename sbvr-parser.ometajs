@@ -188,8 +188,9 @@ export ometa SBVRParser <: SBVRLibs {
 
 	IdentifierPart =
 		spaces
-		<	(	letter
-			|	'-'
+		<	(	anything:r
+				// Equivalent to `letter | '-'`
+				?(r >= 'a' && r <= 'z' || r >= 'A' && r <= 'Z' || r === '-')
 			)+
 		>,
 
