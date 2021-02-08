@@ -17,11 +17,11 @@
   "license": "BSD",
   "dependencies": {
     "lodash": "^4.17.20",
-    "ometa-js": "^1.5.3"
+    "ometa-js": "^1.5.4"
   },
   "devDependencies": {
-    "@balena/lint": "^5.4.0",
-    "@balena/sbvr-types": "^3.2.0",
+    "@balena/lint": "^5.4.1",
+    "@balena/sbvr-types": "^3.4.0",
     "chai": "^4.3.0",
     "mocha": "^8.2.1",
     "require-npm4-to-publish": "^1.0.0"
