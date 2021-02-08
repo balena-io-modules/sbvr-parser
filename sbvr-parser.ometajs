@@ -463,8 +463,8 @@ export ometa SBVRParser <: SBVRLibs {
 		-> result,
 
 	StartRule =
-			"R:"
-		|	"Rule:",
+			seq('R:')
+		|	seq('Rule:'),
 	NewRule =
 		StartRule
 		spaces
@@ -479,8 +479,8 @@ export ometa SBVRParser <: SBVRLibs {
 		-> ['Rule', mod, ['StructuredEnglish', ruleText]],
 
 	StartFactType =
-			"F:"
-		|	"Fact type:",
+			seq('F:')
+		|	seq('Fact type:'),
 	NewFactType =
 		StartFactType {[]}:factType
 		(	Identifier:identifier
@@ -509,16 +509,16 @@ export ometa SBVRParser <: SBVRLibs {
 		},
 
 	StartVocabulary =
-		"Vocabulary:"
+		seq('Vocabulary:')
 		-> 'Vocabulary',
 	StartTerm =
-		(	"T:"
-		|	"Term:"
+		(	seq('T:')
+		|	seq('Term:')
 		)
 		-> 'Term',
 	StartName =
-		(	"N:"
-		|	"Name:"
+		(	seq('N:')
+		|	seq('Name:')
 		)
 		-> 'Name',
 	NewIdentifier =
