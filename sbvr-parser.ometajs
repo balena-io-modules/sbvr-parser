@@ -9,6 +9,9 @@ require('./inflection');
 function isEOL(x) {
 	return ['\n', '\r'].includes(x)
 }
+function isSpace(x) {
+	return x.charCodeAt(0) <= 32;
+}
 
 export ometa SBVRParser <: SBVRLibs {
 	EOL =
@@ -17,9 +20,10 @@ export ometa SBVRParser <: SBVRLibs {
 		)+,
 	EOLSpaces =
 		{false}:eol
-		(	EOL
+		(	@<spaces>:c
+			?(c.fromIdx !== c.toIdx)
+		|	EOL
 			{true}:eol
-		|	space
 		)*
 		?eol,
 	IdentifierKey :identifier =
@@ -42,9 +46,15 @@ export ometa SBVRParser <: SBVRLibs {
 		-> binding,
 
 	spaces =
-		(	space:s
-			?(!isEOL(s))
-		)*,
+		matchUntil(function (x) {
+			return !isSpace(x) || isEOL(x)
+		})
+		{	if (this.input.hd === '-') {
+				this._opt(function() {
+					return this._apply("NewComment");
+				})
+			}
+		},
 
 	Number =
 		(	spaces <digit+>:n
