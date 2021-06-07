@@ -1,4 +1,21 @@
 - commits:
+    - subject: Optimize space matching
+      hash: 59e1232f8da68f98c65739d5c80de11d3f613b55
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+    - subject: Optimize EOL checking
+      hash: 4a10ce589ef23f0c8f0d4b463fafa29ba5a9c372
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 1.2.4
+  date: 2021-06-07T19:00:12.236Z
+- commits:
     - subject: Update dependencies
       hash: ff9048144af2c0386b9a88100172c69f756353af
       body: ''
