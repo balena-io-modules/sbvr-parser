@@ -1,4 +1,14 @@
 - commits:
+    - subject: Update dependencies
+      hash: ff9048144af2c0386b9a88100172c69f756353af
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 1.2.3
+  date: 2021-06-07T14:58:20.630Z
+- commits:
     - subject: Optimize `StartX` rules
       hash: df251a17063d038e142dc7013c24a84158f33efa
       body: ''
