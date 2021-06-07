@@ -310,11 +310,11 @@ var createParser = function (currentVocab) {
 				let fnSE;
 				const args = junctionArgs[i];
 				prevJunctioned = junctioned;
-				({ lf: fnLF, se: fnSE, junctioned } = junction(
-					fn,
-					args,
-					..._.cloneDeep(fnArgs),
-				));
+				({
+					lf: fnLF,
+					se: fnSE,
+					junctioned,
+				} = junction(fn, args, ..._.cloneDeep(fnArgs)));
 				if (prevJunctioned && i + 1 < junctionArgs.length) {
 					fnSE = junctionType + ' ' + fnSE;
 				}
@@ -423,9 +423,11 @@ var createParser = function (currentVocab) {
 				);
 				return process.exit();
 			} else {
-				let { identifier, se: identifierSE, binding } = resolveEmbeddedData(
-					args[0],
-				);
+				let {
+					identifier,
+					se: identifierSE,
+					binding,
+				} = resolveEmbeddedData(args[0]);
 				factTypeSoFar.push(identifier);
 				bindings.push(binding);
 				let { lf, se } = junction(

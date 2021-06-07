@@ -4,8 +4,8 @@
   "description": "SBVR to LF parser.",
   "main": "sbvr-parser.js",
   "scripts": {
-    "lint": "balena-lint -e js --typescript test/",
-    "lint-fix": "balena-lint -e js --typescript --fix test/",
+    "lint": "balena-lint -e js test/",
+    "lint-fix": "balena-lint -e js --fix test/",
     "pretest": "npm run prepare",
     "test": "mocha",
     "posttest": "npm run lint",
@@ -16,14 +16,14 @@
   "author": "",
   "license": "BSD",
   "dependencies": {
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "ometa-js": "^1.5.4"
   },
   "devDependencies": {
-    "@balena/lint": "^5.4.1",
-    "@balena/sbvr-types": "^3.4.0",
-    "chai": "^4.3.0",
-    "mocha": "^8.2.1",
+    "@balena/lint": "^6.1.1",
+    "@balena/sbvr-types": "^3.4.3",
+    "chai": "^4.3.4",
+    "mocha": "^8.4.0",
     "require-npm4-to-publish": "^1.0.0"
   },
   "mocha": {
