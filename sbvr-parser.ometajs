@@ -6,17 +6,24 @@ var SBVRLibs = require('./sbvr-libs').SBVRLibs,
 	_ = require('lodash');
 require('./inflection');
 
+function isEOL(x) {
+	return ['\n', '\r'].includes(x)
+}
+function isSpace(x) {
+	return x.charCodeAt(0) <= 32;
+}
+
 export ometa SBVRParser <: SBVRLibs {
 	EOL =
-		(	'\n'
-		|	'\r'
-			'\n'?
-		),
+		(	anything:x
+			?(isEOL(x))
+		)+,
 	EOLSpaces =
 		{false}:eol
-		(	EOL
+		(	@<spaces>:c
+			?(c.fromIdx !== c.toIdx)
+		|	EOL
 			{true}:eol
-		|	space
 		)*
 		?eol,
 	IdentifierKey :identifier =
@@ -39,9 +46,15 @@ export ometa SBVRParser <: SBVRLibs {
 		-> binding,
 
 	spaces =
-		(	~EOL
-			space
-		)*,
+		matchUntil(function (x) {
+			return !isSpace(x) || isEOL(x)
+		})
+		{	if (this.input.hd === '-') {
+				this._opt(function() {
+					return this._apply("NewComment");
+				})
+			}
+		},
 
 	Number =
 		(	spaces <digit+>:n
@@ -92,10 +105,7 @@ export ometa SBVRParser <: SBVRLibs {
 			)*
 		>,
 	toEOL =
-		<	(	~EOL
-				anything
-			)*
-		>,
+		<matchUntil(isEOL)>,
 
 	token :x =
 		spaces seq(x):s
@@ -418,9 +428,9 @@ export ometa SBVRParser <: SBVRLibs {
 		),
 	// This checks if there's an upcoming comma junction by looking for an Oxford/serial comma.
 	UpcomingCommaJunction =
-		&(	(	~EOL
-				~SerialCommaCheck
-				anything
+		&(	(	~SerialCommaCheck
+				anything:x
+				?(!isEOL(x))
 			)*
 			SerialCommaCheck
 			-> true
@@ -1078,6 +1088,13 @@ SBVRParser.matchForAll = function(rule, arr) {
 	for (var idx = 0; idx < arr.length; idx++) {
 		this._applyWithArgs.call(this, rule, arr[idx]);
 	}
+};
+SBVRParser.matchUntil = function(fn) {
+	try {
+		while (!fn(this.input.head())) {
+			this.input = this.input.tail();
+		}
+	} catch (e) {}
 };
 //TODO: This is a bit of a hack for case insensitivity, a better solution needs to be implemented in future.
 SBVRParser.exactly = function(wanted) {
