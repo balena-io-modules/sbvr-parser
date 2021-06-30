@@ -1,4 +1,18 @@
 - commits:
+    - subject: Delete CODEOWNERS
+      hash: d26be5bb58b10118fc49c04509ce4e0b0746e962
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+        See: >-
+          https://www.flowdock.com/app/rulemotion/pub/threads/trLcZFnSX9fLZn4LiaIv4xuBbah
+        see: >-
+          https://www.flowdock.com/app/rulemotion/pub/threads/trLcZFnSX9fLZn4LiaIv4xuBbah
+      author: Thodoris Greasidis
+  version: 1.2.5
+  date: 2021-06-30T21:23:54.448Z
+- commits:
     - subject: Optimize space matching
       hash: 59e1232f8da68f98c65739d5c80de11d3f613b55
       body: ''
