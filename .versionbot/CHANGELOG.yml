@@ -1,4 +1,21 @@
 - commits:
+    - subject: Add support for more forms of negation in rules
+      hash: 6d6e3690668b6b64deefcde68f3ebe5f731577ce
+      body: ''
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: Pagan Gazzard
+    - subject: Do not check for negated verbs when declaring fact types
+      hash: e1fd4b0245993e0704a866f783dfc9bd98743ebb
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 1.3.0
+  date: 2021-12-16T16:54:01.160Z
+- commits:
     - subject: Delete CODEOWNERS
       hash: d26be5bb58b10118fc49c04509ce4e0b0746e962
       body: ''
