@@ -315,6 +315,24 @@ describe('pilots', function () {
 			),
 		),
 	);
+
+	// Rule:       It is necessary that each pilot that is not experienced, can not fly at least 2 planes or does not have a years of experience that is greater than 5
+	test(
+		rule(
+			'Necessity',
+			'each',
+			[pilot, verb('is experienced', true)],
+			_or(
+				[verb('can fly', true), ['at least', 2], plane],
+				[
+					verb('has', true),
+					'a',
+					[yearsOfExperience, verb('is greater than'), 5],
+				],
+			),
+		),
+	);
+
 	// Rule:       It is necessary that each pilot that is experienced or can fly at least 2 planes, has a years of experience that is greater than 5
 	test(
 		rule(

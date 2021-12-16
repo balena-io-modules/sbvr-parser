@@ -13,6 +13,14 @@ function isSpace(x) {
 	return x.charCodeAt(0) <= 32;
 }
 
+var negatableVerbs = ['is', 'are', 'has', 'have', 'can', 'could', 'may', 'might', 'must', 'should', 'shall', 'will'];
+var negatedVerbs = negatableVerbs.map(function (verb) {
+	if (verb === 'will') {
+		return "won't";
+	}
+	return verb + "n't"
+})
+
 export ometa SBVRParser <: SBVRLibs {
 	EOL =
 		(	anything:x
@@ -220,10 +228,12 @@ export ometa SBVRParser <: SBVRLibs {
 		-> verb,
 	FindVerb :factTypeSoFar :bracketed :verbSoFar :negated =
 		(	?(factTypeSoFar !== true && !verbSoFar)
-			(	Keyword("isn't")
-			|	Keyword("aren't")
+			(	Keyword('does not')
+			|	Keyword('doesn\'t')
+			|	matchForAny('Keyword', negatedVerbs, true):index
+				// Use the non-negated form for the verb
+				{this._verbForm(negatableVerbs[index])}:verbSoFar
 			)
-			{'is'}:verbSoFar
 			{true}:negated
 		)?
 
@@ -239,13 +249,13 @@ export ometa SBVRParser <: SBVRLibs {
 			-> (verbSoFar + ' ' + part)
 		|	-> this._verbForm(part)
 		):verbSoFar
-		(	?(factTypeSoFar !== true && verbSoFar === 'is')
+		(	?(factTypeSoFar !== true && negatableVerbs.includes(verbSoFar))
 			spaces
 			Keyword('not')
 			{true}:negated
 		)?
 		(	FindVerb(factTypeSoFar, bracketed, verbSoFar, negated)
-		|	(	?(factTypeSoFar===true)
+		|	(	?(factTypeSoFar === true)
 			|	IsVerb(factTypeSoFar, verbSoFar)
 			)
 			{['Verb', verbSoFar, negated === true]}:verb
@@ -1061,7 +1071,7 @@ SBVRParser.AddCustomAttribute = function(attributeName, attachedTo) {
 };
 
 /** **/
-SBVRParser.matchForAny = function(rule, arr) {
+SBVRParser.matchForAny = function(rule, arr, returnIndex) {
 	var self = this,
 	origInput = this.input,
 	ref = {},
@@ -1079,6 +1089,9 @@ SBVRParser.matchForAny = function(rule, arr) {
 		}
 
 		if (result !== ref) {
+			if (returnIndex) {
+				return idx;
+			}
 			return result;
 		}
 	}

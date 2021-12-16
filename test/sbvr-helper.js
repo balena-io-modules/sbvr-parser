@@ -101,7 +101,11 @@ const toSE = function (lf, currentVocab) {
 				}
 			case 'Verb':
 				if (lf[2]) {
-					return lf[1].replace('is', 'is not');
+					let verb = lf[1].replace('is', 'is not').replace('can', 'can not');
+					if (verb === lf[1]) {
+						return `does not ${verb}`;
+					}
+					return verb;
 				} else {
 					return lf[1];
 				}
