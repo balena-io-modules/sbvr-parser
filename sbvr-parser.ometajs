@@ -219,7 +219,7 @@ export ometa SBVRParser <: SBVRLibs {
 		)
 		-> verb,
 	FindVerb :factTypeSoFar :bracketed :verbSoFar :negated =
-		(	?(factTypeSoFar && !verbSoFar)
+		(	?(factTypeSoFar !== true && !verbSoFar)
 			(	Keyword("isn't")
 			|	Keyword("aren't")
 			)
@@ -239,7 +239,7 @@ export ometa SBVRParser <: SBVRLibs {
 			-> (verbSoFar + ' ' + part)
 		|	-> this._verbForm(part)
 		):verbSoFar
-		(	?(factTypeSoFar && verbSoFar === 'is')
+		(	?(factTypeSoFar !== true && verbSoFar === 'is')
 			spaces
 			Keyword('not')
 			{true}:negated
