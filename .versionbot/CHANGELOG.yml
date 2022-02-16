@@ -1,14 +1,28 @@
 - commits:
+    - subject: Addind ReferenceType
+      hash: aa064c2f1f0d40d4fd07da53fe0b6f0e4a692e07
+      body: |
+        Reference type is needed to realise informative references
+      footer:
+        Change-type: minor
+        change-type: minor
+        Signed-off-by: Harald Fischer <harald@balena.io>
+        signed-off-by: Harald Fischer <harald@balena.io>
+      author: Harald Fischer
+  version: 1.4.0
+  title: "'Attribute ReferenceType'"
+  date: 2022-02-16T13:52:05.386Z
+- commits:
     - subject: Add support for more forms of negation in rules
       hash: 6d6e3690668b6b64deefcde68f3ebe5f731577ce
-      body: ''
+      body: ""
       footer:
         Change-type: minor
         change-type: minor
       author: Pagan Gazzard
     - subject: Do not check for negated verbs when declaring fact types
       hash: e1fd4b0245993e0704a866f783dfc9bd98743ebb
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -18,28 +32,26 @@
 - commits:
     - subject: Delete CODEOWNERS
       hash: d26be5bb58b10118fc49c04509ce4e0b0746e962
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
-        See: >-
-          https://www.flowdock.com/app/rulemotion/pub/threads/trLcZFnSX9fLZn4LiaIv4xuBbah
-        see: >-
-          https://www.flowdock.com/app/rulemotion/pub/threads/trLcZFnSX9fLZn4LiaIv4xuBbah
+        See: https://www.flowdock.com/app/rulemotion/pub/threads/trLcZFnSX9fLZn4LiaIv4xuBbah
+        see: https://www.flowdock.com/app/rulemotion/pub/threads/trLcZFnSX9fLZn4LiaIv4xuBbah
       author: Thodoris Greasidis
   version: 1.2.5
   date: 2021-06-30T21:23:54.448Z
 - commits:
     - subject: Optimize space matching
       hash: 59e1232f8da68f98c65739d5c80de11d3f613b55
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
       author: Pagan Gazzard
     - subject: Optimize EOL checking
       hash: 4a10ce589ef23f0c8f0d4b463fafa29ba5a9c372
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -49,7 +61,7 @@
 - commits:
     - subject: Update dependencies
       hash: ff9048144af2c0386b9a88100172c69f756353af
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -59,21 +71,21 @@
 - commits:
     - subject: Optimize `StartX` rules
       hash: df251a17063d038e142dc7013c24a84158f33efa
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
       author: Pagan Gazzard
     - subject: Optimize `Identifier` when branch tracking is disabled (the default)
       hash: f32e75c391fc060d6cd6396667e0ed1714a4c105
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
       author: Pagan Gazzard
     - subject: Optimize `IdentifierPart` rule
       hash: 5f390ce4b4317a824acfa13fee7c114ac69ca1ac
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -83,7 +95,7 @@
 - commits:
     - subject: Update dependencies
       hash: 7b79ecf9de0fac908a4063c90050e8a9879241f9
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -93,7 +105,7 @@
 - commits:
     - subject: Add support for a `Name` role binding in the lf validator
       hash: 5d84fe2abf2b6a34fa35e9d985443eb71f87a1d9
-      body: ''
+      body: ""
       footer:
         Change-type: minor
         change-type: minor
@@ -103,7 +115,7 @@
 - commits:
     - subject: Update dependencies
       hash: 5739ec4e6a5da71bfcfe1cb6a9b5c3e13dc1f56e
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -113,7 +125,7 @@
 - commits:
     - subject: Add support for negative numbers for embedded data
       hash: a5d4f168e66ee209b673f7b20bfc4eb7e2ad657a
-      body: ''
+      body: ""
       footer:
         Change-type: minor
         change-type: minor
@@ -123,7 +135,7 @@
 - commits:
     - subject: Update to mocha 7.x
       hash: f9b2009c28f50a0635738a2c49d1be17491a05b3
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -133,21 +145,21 @@
 - commits:
     - subject: Convert coffeescript tests to javascript
       hash: 4e4a14476fb29242dbcd278cf079738900fdb0c8
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
       author: Pagan Gazzard
     - subject: Drop support for node 6/8
       hash: fc61a212d5918a552ef6bbf8698413d096953429
-      body: ''
+      body: ""
       footer:
         Change-type: major
         change-type: major
       author: Pagan Gazzard
     - subject: Rename to @balena/sbvr-parser
       hash: f7c3e6b15c907a25661f02ab54046f9f7faa64b5
-      body: ''
+      body: ""
       footer:
         Change-type: major
         change-type: major
@@ -155,16 +167,16 @@
   version: 1.0.0
   date: 2020-05-08T18:44:57.766Z
 - commits:
-    - subject: 'CI: Add nodejs 14 to the test matrix'
+    - subject: "CI: Add nodejs 14 to the test matrix"
       hash: b532a53263ba8c853851ba524d62d2c2862e976f
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
       author: Pagan Gazzard
-    - subject: 'CI: Remove circleci publishing in favor of balenaCI'
+    - subject: "CI: Remove circleci publishing in favor of balenaCI"
       hash: 899c978e14b686681a40ff46ce992b432974d257
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -174,7 +186,7 @@
 - commits:
     - subject: Update to to @balena/sbvr-types
       hash: 5092a2ed3c12c286661ec75dc7901adc5e5debba
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -184,7 +196,7 @@
 - commits:
     - subject: Update to @balena/lint 5.x
       hash: 7df67c7d823941cb513227b18a06af273fb71e64
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -194,7 +206,7 @@
 - commits:
     - subject: Reduce lodash usage
       hash: 275276c0c0a49a2ce638666c404d4a23495a01ff
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -204,7 +216,7 @@
 - commits:
     - subject: Add CODEOWNERS
       hash: e9931f0bad2fc7b74366fcf1359642714e3d8cbe
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -214,7 +226,7 @@
 - commits:
     - subject: Add support for using `of` instead of `that is of`
       hash: 15466b993e738e16bb20d597460f673c438c6c93
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -224,7 +236,7 @@
 - commits:
     - subject: Add support for `a given` as a universal quantification
       hash: 2946841869fd9424786ae70c6c2d28948f624179
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -232,9 +244,9 @@
   version: 0.2.5
   date: 2019-12-30T17:43:37.528Z
 - commits:
-    - subject: 'Allow including terms as part of a verb by using `[]` brackets'
+    - subject: Allow including terms as part of a verb by using `[]` brackets
       hash: 40129b411ba8b2357c03ac2815e0182f806c3531
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -244,7 +256,7 @@
 - commits:
     - subject: Optimise exactly 0 to not exists
       hash: dcb0cd00b8b4b08486e49d18e2b69e61162ae952
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -254,7 +266,7 @@
 - commits:
     - subject: Add .versionbot/CHANGELOG.yml for downstream changelogs
       hash: 45c5843b204def5a727b8ba8dfafb2a2347f50f3
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -263,119 +275,116 @@
   date: 2019-05-08T14:23:57.847Z
 - commits:
     - author: Pagan Gazzard
-      body: ''
+      body: ""
       footers:
         change-type: patch
       hash: f9e23c48af837a1378b7171b5c407b8042a88f85
       subject: Add npmignore so that built files get published correctly
-  date: '2018-11-03T05:57:13Z'
+  date: 2018-11-03T05:57:13Z
   version: 0.2.1
 - commits:
     - author: Pagan Gazzard
-      body: ''
+      body: ""
       footers:
         change-type: minor
       hash: 3e9799a430fd9e581d77b990ea19123560cd9086
       subject: Switch to generating commonjs format
     - author: Pagan Gazzard
-      body: ''
+      body: ""
       footers:
         change-type: minor
       hash: f5c9b7491006bed321dc5813db3344bade8e57d5
       subject: Switch to using a prepare script so npm git installs can work
     - author: Pagan Gazzard
-      body: ''
+      body: ""
       hash: fdc8451a4d76df92a07020140e228c5d9a85b25a
       subject: Update dev dependencies
-  date: '2018-11-03T05:29:14Z'
+  date: 2018-11-03T05:29:14Z
   version: 0.2.0
 - commits:
     - author: Pagan Gazzard
-      body: ''
+      body: ""
       footers:
         change-type: patch
       hash: 81bc299264941615878f1f6c6bb029896c6b9ee6
       subject: Update dependencies
-  date: '2018-05-10T00:28:52Z'
+  date: 2018-05-10T00:28:52Z
   version: 0.1.4
 - commits:
     - author: Pagan Gazzard
-      body: ''
+      body: ""
       footers:
         change-type: patch
       hash: c6b7c43b1cca263076c6dc6684cb7dbb795beff2
-      subject: 'Require npm 4+ to publish, to avoid issues with publishing'
-  date: '2018-05-10T00:06:42Z'
+      subject: Require npm 4+ to publish, to avoid issues with publishing
+  date: 2018-05-10T00:06:42Z
   version: 0.1.3
 - commits:
     - author: Pagan Gazzard
-      body: ''
+      body: ""
       footers:
         change-type: patch
       hash: 92f7e37314d00c476d2a5d7c2da40809d653dfa3
       subject: Add circleci tests and auto-publishing
-  date: '2018-04-30T09:26:25Z'
+  date: 2018-04-30T09:26:25Z
   version: 0.1.2
 - commits:
     - author: Giovanni Garufi
-      body: ''
+      body: ""
       footers:
         change-type: patch
       hash: dcead668505011a133aae775813861a604dfd604
       subject: Added versionist
-  date: '2017-09-25T06:47:43Z'
+  date: 2017-09-25T06:47:43Z
   version: 0.1.1
 - commits:
     - author: Pagan Gazzard
-      body: >-
-        This means that any users do not have to handle this themselves and can
+      body: This means that any users do not have to handle this themselves and can
         just take the LF as-is
       hash: 6d2569f41d011b0c6dfedc4be0106e2a6bd864f2
       subject: Add the automatic `has`/`is of` synonymous forms to the generated LF.
     - author: Lucian Buzzo
-      body: ''
+      body: ""
       hash: eec81e7122cec20f916fc2f317c26d172131d850
       subject: 0.0.26
-  date: '2017-06-27T15:38:03Z'
+  date: 2017-06-27T15:38:03Z
   version: 0.1.0
 - commits:
     - author: Lucian Buzzo
-      body: ''
+      body: ""
       hash: 61ffb727e3488abde22aba658e5fd7f06b66645f
-      subject: '[issue #4] Expand README'
-  date: '2017-02-21T08:02:57Z'
+      subject: "[issue #4] Expand README"
+  date: 2017-02-21T08:02:57Z
   version: 0.0.26
 - commits:
     - author: Pagan Gazzard
-      body: ''
+      body: ""
       hash: fe664eb4124f28e2c9fb85a598d7f2add537c9fd
       subject: Add a test for a self-referential fact type and synonymous form.
     - author: Pagan Gazzard
-      body: ''
+      body: ""
       hash: b6b651f7ab771cf38448cb77722aa87e07ae3106
       subject: Slight optimisation for adding fact types.
     - author: Pagan Gazzard
-      body: ''
+      body: ""
       hash: b9bf6f50877b3dd438709113611c462bf3a9aa1b
-      subject: >-
-        Don't try to map when adding a fact type - this fixes problems with
+      subject: Don't try to map when adding a fact type - this fixes problems with
         incorrect mapping for self-referential fact types.
     - author: Pagan Gazzard
-      body: ''
+      body: ""
       hash: c9666f31f1e4aa34b5fa1e83d636a1efc186910b
-      subject: >-
-        Add nice error messages when we have problems with ambiguous fact type
+      subject: Add nice error messages when we have problems with ambiguous fact type
         identifier usage.
-  date: '2016-08-26T10:54:11Z'
+  date: 2016-08-26T10:54:11Z
   version: 0.0.25
 - commits:
     - author: Pagan Gazzard
-      body: ''
+      body: ""
       hash: 3199d7d4ca7775d4dce7cea9041c3a2e6b094416
       subject: Add support for concept type on term form fact types.
     - author: Pagan Gazzard
-      body: ''
+      body: ""
       hash: 1c9e11d72efe2a1b16bc4f5bb41a70ef045fcc6d
       subject: Throw error objects rather than strings
-  date: '2016-07-15T13:10:55Z'
+  date: 2016-07-15T13:10:55Z
   version: 0.0.24
