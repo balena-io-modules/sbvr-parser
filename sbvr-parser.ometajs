@@ -675,6 +675,9 @@ export ometa SBVRParser <: SBVRLibs {
 		}
 		return term;
 	},
+	AttrReferenceType =
+			seq('informative')
+		|	seq('strict'),
 
 	StartComment =
 		seq('--'),
@@ -873,7 +876,8 @@ defaultAllowedAttrLists = {
 	].concat(defaultAllowedAttrLists),
 	FactType: [
 		'Synonymous Form:',
-		'Term Form:'
+		'Term Form:',
+		'Reference Type:'
 	].concat(defaultAllowedAttrLists),
 	Rule: [
 		'Rule Name:',

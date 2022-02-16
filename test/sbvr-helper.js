@@ -62,6 +62,7 @@ exports.factType = factType;
 exports.conceptType = (term) => ['ConceptType', stripAttributes(term)];
 exports.referenceScheme = (term) => ['ReferenceScheme', stripAttributes(term)];
 exports.termForm = (term) => ['TermForm', stripAttributes(term)];
+exports.referenceType = (type) => ['ReferenceType', type];
 exports.synonym = (term) => ['Synonym', stripAttributes(term)];
 exports.synonymousForm = (...fType) => ['SynonymousForm', factTypeBody(fType)];
 
