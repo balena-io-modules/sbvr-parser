@@ -1,4 +1,15 @@
 - commits:
+    - subject: Add support for term form synonyms
+      hash: 56ef9ba61d10d08b16fdd2a9891316af989fb09e
+      body: ""
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: Pagan Gazzard
+  version: 1.5.0
+  title: "'Add support for term form synonyms'"
+  date: 2022-04-08T12:08:14.492Z
+- commits:
     - subject: Update dependencies
       hash: 28e057c3c2329b9a3e76dcc136632eab7e271f48
       body: ""
