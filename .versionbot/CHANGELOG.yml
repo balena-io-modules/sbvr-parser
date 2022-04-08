@@ -1,4 +1,22 @@
 - commits:
+    - subject: Update dependencies
+      hash: 28e057c3c2329b9a3e76dcc136632eab7e271f48
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+    - subject: Remove circleci
+      hash: cd8d96dc294daa11873cee5d723ecb816e015089
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 1.4.1
+  title: "'Remove circleci/update deps'"
+  date: 2022-04-08T11:53:36.217Z
+- commits:
     - subject: Addind ReferenceType
       hash: aa064c2f1f0d40d4fd07da53fe0b6f0e4a692e07
       body: |
