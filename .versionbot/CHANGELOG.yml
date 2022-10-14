@@ -1,4 +1,15 @@
 - commits:
+    - subject: Switch from balenaCI to flowzone
+      hash: 21d465c883e0bd4841b19606076060401b49758b
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 1.4.2
+  title: ""
+  date: 2022-10-14T16:24:15.591Z
+- commits:
     - subject: Update dependencies
       hash: 28e057c3c2329b9a3e76dcc136632eab7e271f48
       body: ""
