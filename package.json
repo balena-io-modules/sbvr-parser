@@ -20,7 +20,7 @@
     "ometa-js": "^1.5.4"
   },
   "devDependencies": {
-    "@balena/lint": "^6.2.1",
+    "@balena/lint": "^7.0.0",
     "@balena/sbvr-types": "^3.4.15",
     "chai": "^4.3.7",
     "mocha": "^10.1.0",
