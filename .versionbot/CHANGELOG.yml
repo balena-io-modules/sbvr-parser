@@ -1,4 +1,18 @@
 - commits:
+    - subject: Updated `@balena/sbvr-types`
+      hash: a6c901c8c3b624dabaf282d0229276be8a9ea320
+      body: |
+        Update @balena/sbvr-types from 3.4.15 to 7.0.1
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Harald Fischer <harald@balena.io>
+        signed-off-by: Harald Fischer <harald@balena.io>
+      author: Harald Fischer
+  version: 1.4.4
+  title: ""
+  date: 2024-03-05T12:54:23.843Z
+- commits:
     - subject: Update dependencies
       hash: b684c615822ea97db0a898dc2dd82bf7a1282d3f
       body: |
