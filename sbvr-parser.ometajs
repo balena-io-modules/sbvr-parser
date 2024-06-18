@@ -3,8 +3,8 @@
 //Specification: http://www.omg.org/spec/SBVR/1.0/
 
 var SBVRLibs = require('./sbvr-libs').SBVRLibs,
-	_ = require('lodash');
-require('./inflection');
+	_ = require('lodash'),
+	inflection = require('inflection');
 
 function isEOL(x) {
 	return ['\n', '\r'].includes(x)
@@ -765,7 +765,7 @@ SBVRParser._AddIdentifier = function(identifierType, identifier, baseSynonym) {
 		vocabulary[identifierType][identifier] = baseSynonym;
 	}
 	// Check for longest identifier between current and pluralised form, as the plural form may well be (and often is) longer.
-	this.longestIdentifier[identifierType] = Math.max(identifier.length, identifier.pluralize().length, this.longestIdentifier[identifierType]);
+	this.longestIdentifier[identifierType] = Math.max(identifier.length, inflection.pluralize(identifier).length, this.longestIdentifier[identifierType]);
 	if(identifierType === 'Vocabulary') {
 		return [identifierType, identifier];
 	}
@@ -784,7 +784,7 @@ SBVRParser.BaseSynonym = function(identifier) {
 		identifierName = identifiers[identifierName];
 	}
 	else {
-		identifierName = identifierName.singularize();
+		identifierName = inflection.singularize(identifierName);
 		this._pred(identifiers.hasOwnProperty(identifierName));
 		identifierName = identifiers[identifierName];
 	}
