@@ -16,6 +16,7 @@
   "author": "",
   "license": "BSD",
   "dependencies": {
+    "inflection": "^3.0.0",
     "lodash": "^4.17.21",
     "ometa-js": "^1.5.4"
   },
