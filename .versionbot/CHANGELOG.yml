@@ -1,4 +1,15 @@
 - commits:
+    - subject: Switch to an inflection library from npm which does not monkey patch
+      hash: 2082369825fc80acb549793e4cc1cd35c77850d4
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 1.4.5
+  title: ""
+  date: 2024-06-18T21:23:34.689Z
+- commits:
     - subject: Updated `@balena/sbvr-types`
       hash: a6c901c8c3b624dabaf282d0229276be8a9ea320
       body: |
