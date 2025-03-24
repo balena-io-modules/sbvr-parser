@@ -1,4 +1,16 @@
 - commits:
+    - subject: Update dependency @balena/sbvr-types to v9
+      hash: 4adc65de4803853bcabc2f58c29dceca1db7b19c
+      body: |
+        Update @balena/sbvr-types from 8.0.0 to 9.2.0
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+  version: 1.4.8
+  title: ""
+  date: 2025-03-24T23:34:24.420Z
+- commits:
     - subject: Update chai to v5
       hash: 84c5e0761fd4fec6bd2f9b2dac27dbca958bcd32
       body: ""
