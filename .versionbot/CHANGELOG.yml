@@ -1,4 +1,15 @@
 - commits:
+    - subject: Update chai to v5
+      hash: 84c5e0761fd4fec6bd2f9b2dac27dbca958bcd32
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: joshbwlng
+  version: 1.4.7
+  title: ""
+  date: 2025-03-24T09:04:32.576Z
+- commits:
     - subject: Update dependency @balena/sbvr-types to v8
       hash: cf8795b08f30806b5500508dcab3623c5d444928
       body: |
