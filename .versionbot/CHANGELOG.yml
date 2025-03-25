@@ -1,4 +1,16 @@
 - commits:
+    - subject: Update dependency mocha to v11
+      hash: 2942f2c5888f58699908bd29cd484dd7df0c3b9e
+      body: |
+        Update mocha from 10.8.2 to 11.1.0
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+  version: 1.4.9
+  title: ""
+  date: 2025-03-25T00:03:51.476Z
+- commits:
     - subject: Update dependency @balena/sbvr-types to v9
       hash: 4adc65de4803853bcabc2f58c29dceca1db7b19c
       body: |
