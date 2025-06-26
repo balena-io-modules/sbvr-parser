@@ -1,4 +1,15 @@
 - commits:
+    - subject: Allow using single value Definitions
+      hash: ed36e9f54a6e99347010a88e27c877f136ddfe4a
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Thodoris Greasidis
+  version: 1.4.10
+  title: ""
+  date: 2025-06-26T13:22:09.508Z
+- commits:
     - subject: Update dependency mocha to v11
       hash: 2942f2c5888f58699908bd29cd484dd7df0c3b9e
       body: |
