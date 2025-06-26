@@ -42,6 +42,7 @@ const description = term('description');
 const keyword = term('keyword');
 const departureDate = term('departure date');
 const availability = term('availability');
+const currency = term('currency');
 const singlePrice = term('single price');
 const doublePrice = term('double price');
 const airFee = term('air fee');
@@ -348,6 +349,14 @@ describe('vforvacation', function () {
 	test(conceptType(shortTextType));
 	// 	Definition: "no data" or "none" or "low" or "medium" or "high"
 	test(definitionEnum('no data', 'none', 'low', 'medium', 'high'));
+
+	// Term:      currency
+	test(currency);
+	// 	Concept Type: Short Text (Type)
+	test(conceptType(shortTextType));
+	// On purpose using only a single value
+	// 	Definition: "euro"
+	test(definitionEnum('euro'));
 
 	// Term:      single price
 	test(singlePrice);
