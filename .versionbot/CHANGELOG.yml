@@ -1,4 +1,16 @@
 - commits:
+    - subject: Update dependency @balena/sbvr-types to v10
+      hash: 550aa8f3885357550e9a1cdc3668f71c22f17540
+      body: |
+        Update @balena/sbvr-types from 9.2.6 to 10.1.0
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+  version: 1.4.11
+  title: ""
+  date: 2025-07-08T02:29:13.076Z
+- commits:
     - subject: Allow using single value Definitions
       hash: ed36e9f54a6e99347010a88e27c877f136ddfe4a
       body: ""
