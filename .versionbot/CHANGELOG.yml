@@ -1,4 +1,16 @@
 - commits:
+    - subject: Update dependency @balena/sbvr-types to v11
+      hash: c4efe5a3ea98ba824a0fce85ed48ef298fd94d1c
+      body: |
+        Update @balena/sbvr-types from 10.1.0 to 11.0.0
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+  version: 1.4.12
+  title: ""
+  date: 2025-07-15T23:26:25.926Z
+- commits:
     - subject: Update dependency @balena/sbvr-types to v10
       hash: 550aa8f3885357550e9a1cdc3668f71c22f17540
       body: |
