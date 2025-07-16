@@ -676,6 +676,15 @@ export ometa SBVRParser <: SBVRLibs {
 		}
 		return term;
 	},
+	AttrTermFormSynonym =
+		{_.last(this.lines)}:factType
+		{_.last(factType)}:attrs
+		{_.findLast(attrs, {0: 'TermForm'})}:termForm
+		(	?(!termForm)
+			{throw new Error('Term form synonyms require a term form first')}
+		)?
+		AddIdentifier(termForm[1][0], termForm[1][1]),
+		
 	AttrReferenceType =
 			seq('informative')
 		|	seq('strict'),
@@ -878,6 +887,7 @@ defaultAllowedAttrLists = {
 	FactType: [
 		'Synonymous Form:',
 		'Term Form:',
+		'Term Form Synonym:',
 		'Reference Type:'
 	].concat(defaultAllowedAttrLists),
 	Rule: [
