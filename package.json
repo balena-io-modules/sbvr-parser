@@ -1,6 +1,6 @@
 {
   "name": "@balena/sbvr-parser",
-  "version": "1.4.12",
+  "version": "1.4.13",
   "description": "SBVR to LF parser.",
   "main": "sbvr-parser.js",
   "scripts": {
@@ -35,6 +35,6 @@
     "_": "test"
   },
   "versionist": {
-    "publishedAt": "2025-07-15T23:26:26.006Z"
+    "publishedAt": "2025-09-03T01:57:57.219Z"
   }
 }
