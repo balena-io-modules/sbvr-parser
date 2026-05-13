@@ -7,7 +7,7 @@ var SBVRLibs = require('./sbvr-libs').SBVRLibs,
 	inflection = require('inflection');
 
 function isEOL(x) {
-	return ['\n', '\r'].includes(x)
+	return x === '\n' || x === '\r';
 }
 function isSpace(x) {
 	return x.charCodeAt(0) <= 32;
