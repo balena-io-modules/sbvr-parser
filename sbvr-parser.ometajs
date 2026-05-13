@@ -1072,25 +1072,18 @@ SBVRParser.AddCustomAttribute = function(attributeName, attachedTo) {
 SBVRParser.matchForAny = function(rule, arr, returnIndex) {
 	var self = this,
 	origInput = this.input,
-	ref = {},
-	result = ref;
+	result;
 
 	for (var idx = 0; idx < arr.length; idx++) {
 		try {
 			self.input = origInput;
 			result = self._applyWithArgs.call(self, rule, arr[idx]);
+			return returnIndex ? idx : result;
 		}
 		catch (e) {
 			if (!(e instanceof SyntaxError)) {
 				throw e;
 			}
-		}
-
-		if (result !== ref) {
-			if (returnIndex) {
-				return idx;
-			}
-			return result;
 		}
 	}
 	throw this._fail();
