@@ -886,20 +886,8 @@ defaultAllowedAttrLists = {
 function getValidFactTypeParts(vocabulary, identifierType, factTypeSoFar) {
 	var vocabularies = this.vocabularies;
 	if(factTypeSoFar == null || factTypeSoFar.length === 0) {
-		var identifiers;
-		if(vocabulary == null) {
-			identifiers = vocabularies[this.currentVocabulary][identifierType];
-			// identifiers = {};
-			// for(vocabulary in vocabularies) {
-				// if(vocabularies.hasOwnProperty(vocabulary)) {
-					// _.assign(identifiers, vocabularies[vocabulary][identifierType]);
-				// }
-			// }
-		}
-		else {
-			identifiers = vocabularies[vocabulary][identifierType];
-		}
-		return Object.keys(identifiers);
+		vocabulary = vocabulary == null ? this.currentVocabulary : vocabulary;
+		return Object.keys(vocabularies[vocabulary][identifierType]);
 	}
 	var factTypePart,
 		currentLevel = this._traverseFactType(factTypeSoFar),
