@@ -37,7 +37,7 @@ export ometa LFValidator <: SBVRLibs {
 			|	"Name"
 			):identifier
 			"Verb":verb
-			{factType.concat([identifier, verb])}:factType
+			{factType.push(identifier, verb)}
 		)*
 		(	(	"Term"
 			|	"Name"
