@@ -1077,7 +1077,7 @@ SBVRParser.matchForAny = function(rule, arr, returnIndex) {
 	for (var idx = 0; idx < arr.length; idx++) {
 		try {
 			self.input = origInput;
-			result = self._applyWithArgs.call(self, rule, arr[idx]);
+			result = self._applyWithArgs(rule, arr[idx]);
 			return returnIndex ? idx : result;
 		}
 		catch (e) {
@@ -1090,7 +1090,7 @@ SBVRParser.matchForAny = function(rule, arr, returnIndex) {
 };
 SBVRParser.matchForAll = function(rule, arr) {
 	for (var idx = 0; idx < arr.length; idx++) {
-		this._applyWithArgs.call(this, rule, arr[idx]);
+		this._applyWithArgs(rule, arr[idx]);
 	}
 };
 SBVRParser.matchUntil = function(fn) {
