@@ -1,4 +1,57 @@
 - commits:
+    - subject: Simplify getting the identifiers in `getValidFactTypeParts`
+      hash: 1a4a42181e598347b9565f9af36d63a9643af2f1
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+    - subject: Avoid unnecessary `.call` usage
+      hash: 87a9b538b325a0af708c25cb75432d0a6c4832de
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+    - subject: Simplify `matchForAny`
+      hash: c9ffde0f8ff7dc038f4cc4342ed77b754997c418
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+    - subject: Avoid `.includes` when unnecessary
+      hash: 882502f338e15e5017ebbc12979134ee0dd94461
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+    - subject: Reduce array slices in `traverseRecurse`
+      hash: ccf2d526afa1d2ea25db13fce266bbe016104022
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+    - subject: Avoid unnecessary cloning
+      hash: fa3d47eb8116774cade3fa4d4718273a98234554
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+    - subject: Revert flowzone pinning to master
+      hash: 33659e09a541fadd5e05e08e04a6775e92907fbf
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Kyle Harding
+  version: 1.4.30
+  title: ""
+  date: 2026-05-14T15:30:55.001Z
+- commits:
     - subject: Update product-os/flowzone digest to 8ea01d3
       hash: 94aa44ecec4a4bb3f96c9492431f204230380815
       body: |
