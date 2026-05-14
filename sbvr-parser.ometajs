@@ -7,7 +7,7 @@ var SBVRLibs = require('./sbvr-libs').SBVRLibs,
 	inflection = require('inflection');
 
 function isEOL(x) {
-	return ['\n', '\r'].includes(x)
+	return x === '\n' || x === '\r';
 }
 function isSpace(x) {
 	return x.charCodeAt(0) <= 32;
@@ -494,9 +494,8 @@ export ometa SBVRParser <: SBVRLibs {
 		Modifier:mod
 		Junction('RuleBody', [[], []]):ruleLF
 		EOLTerminator
-		{_.cloneDeep(mod)}:mod
-		{mod.length === 2 ? (mod[1][1] = ruleLF) : (mod[1] = ruleLF)}
-		-> ['Rule', mod, ['StructuredEnglish', ruleText]],
+		{[mod[0], mod.length === 2 ? [mod[1][0], ruleLF] : ruleLF]}:ruleMod
+		-> ['Rule', ruleMod, ['StructuredEnglish', ruleText]],
 
 	StartFactType =
 			seq('F:')
@@ -514,14 +513,8 @@ export ometa SBVRParser <: SBVRLibs {
 			$elf.AddFactType(factType, factType);
 			var attributes = ['Attributes'];
 			if(factType.length === 3 && (factType[1][1] === 'has' || factType[1][1] === 'is of')) {
-				synFactType = _.cloneDeep(factType);
-				synFactType.reverse()
-				if(synFactType[1][1] === 'has') {
-					synFactType[1][1] = 'is of'
-				}
-				else {
-					synFactType[1][1] = 'has'
-				}
+				var synVerb = factType[1][1] === 'has' ? 'is of' : 'has',
+					synFactType = [factType[2], ['Verb', synVerb, factType[1][2]], factType[0]];
 				$elf.AddFactType(synFactType, factType);
 				attributes.push(['SynonymousForm', synFactType])
 			}
@@ -893,20 +886,8 @@ defaultAllowedAttrLists = {
 function getValidFactTypeParts(vocabulary, identifierType, factTypeSoFar) {
 	var vocabularies = this.vocabularies;
 	if(factTypeSoFar == null || factTypeSoFar.length === 0) {
-		var identifiers;
-		if(vocabulary == null) {
-			identifiers = vocabularies[this.currentVocabulary][identifierType];
-			// identifiers = {};
-			// for(vocabulary in vocabularies) {
-				// if(vocabularies.hasOwnProperty(vocabulary)) {
-					// _.assign(identifiers, vocabularies[vocabulary][identifierType]);
-				// }
-			// }
-		}
-		else {
-			identifiers = vocabularies[vocabulary][identifierType];
-		}
-		return Object.keys(identifiers);
+		vocabulary = vocabulary == null ? this.currentVocabulary : vocabulary;
+		return Object.keys(vocabularies[vocabulary][identifierType]);
 	}
 	var factTypePart,
 		currentLevel = this._traverseFactType(factTypeSoFar),
@@ -1079,32 +1060,25 @@ SBVRParser.AddCustomAttribute = function(attributeName, attachedTo) {
 SBVRParser.matchForAny = function(rule, arr, returnIndex) {
 	var self = this,
 	origInput = this.input,
-	ref = {},
-	result = ref;
+	result;
 
 	for (var idx = 0; idx < arr.length; idx++) {
 		try {
 			self.input = origInput;
-			result = self._applyWithArgs.call(self, rule, arr[idx]);
+			result = self._applyWithArgs(rule, arr[idx]);
+			return returnIndex ? idx : result;
 		}
 		catch (e) {
 			if (!(e instanceof SyntaxError)) {
 				throw e;
 			}
 		}
-
-		if (result !== ref) {
-			if (returnIndex) {
-				return idx;
-			}
-			return result;
-		}
 	}
 	throw this._fail();
 };
 SBVRParser.matchForAll = function(rule, arr) {
 	for (var idx = 0; idx < arr.length; idx++) {
-		this._applyWithArgs.call(this, rule, arr[idx]);
+		this._applyWithArgs(rule, arr[idx]);
 	}
 };
 SBVRParser.matchUntil = function(fn) {

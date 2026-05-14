@@ -95,14 +95,15 @@ SBVRLibs.AddFactType = function(factType, realFactType) {
 
 SBVRLibs._traverseFactType = function(factType, create) {
 	var self = this,
-		traverseRecurse = function(currentFactTypePart, remainingFactType, currentLevel) {
+		traverseRecurse = function(currentFactType, currentLevel) {
+		var currentFactTypePart = currentFactType[0];
 		if(currentFactTypePart == null) {
 			if(create) {
 				currentLevel.__valid = create;
 			}
 			return currentLevel;
 		}
-		var finalLevel, finalLevels = {};
+		var finalLevel, finalLevels = {}, remainingFactType = currentFactType.slice(1);
 		switch(currentFactTypePart[0]) {
 			case 'Verb':
 				currentFactTypePart = currentFactTypePart.slice(0, 2); // Make sure we only use the first 2 parts for verbs.
@@ -112,7 +113,7 @@ SBVRLibs._traverseFactType = function(factType, create) {
 		}
 
 		if(currentLevel.hasOwnProperty(currentFactTypePart) || (create && (currentLevel[currentFactTypePart] = {})) ) {
-			finalLevel = traverseRecurse(remainingFactType[0], remainingFactType.slice(1), currentLevel[currentFactTypePart]);
+			finalLevel = traverseRecurse(remainingFactType, currentLevel[currentFactTypePart]);
 			if(finalLevel !== false) {
 				Object.assign(finalLevels, finalLevel);
 			}
@@ -122,7 +123,7 @@ SBVRLibs._traverseFactType = function(factType, create) {
 			while( (currentFactTypePart = self.FollowConceptType(currentFactTypePart)) !== false ) {
 				if( currentLevel.hasOwnProperty(currentFactTypePart) ) {
 					// We use recursion so here we go down each branch until we find the suitable one, or run out of branches.
-					finalLevel = traverseRecurse(remainingFactType[0], remainingFactType.slice(1), currentLevel[currentFactTypePart]);
+					finalLevel = traverseRecurse(remainingFactType, currentLevel[currentFactTypePart]);
 					if(finalLevel !== false) {
 						Object.assign(finalLevels, finalLevel);
 					}
@@ -131,5 +132,5 @@ SBVRLibs._traverseFactType = function(factType, create) {
 		}
 		return _.isEmpty(finalLevels) === true ? false : finalLevels;
 	};
-	return traverseRecurse(factType[0], factType.slice(1), this.factTypes);
+	return traverseRecurse(factType, this.factTypes);
 };
