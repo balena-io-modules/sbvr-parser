@@ -1,4 +1,16 @@
 - commits:
+    - subject: Pin dependencies
+      hash: 122adfb17139904fde901444b7200201684005b0
+      body: |
+        Update chai
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+  version: 1.4.31
+  title: ""
+  date: 2026-05-16T00:25:39.496Z
+- commits:
     - subject: Simplify getting the identifiers in `getValidFactTypeParts`
       hash: 1a4a42181e598347b9565f9af36d63a9643af2f1
       body: ""
