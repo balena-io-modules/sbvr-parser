@@ -283,8 +283,9 @@ export ometa SBVRParser <: SBVRLibs {
 				-> ['NumericalRangeQuantification', ['MinimumCardinality', n], ['MaximumCardinality', m]]
 			|	-> ['AtLeastNQuantification', ['MinimumCardinality', n]]
 			)
-		|	matchForAll('Keyword',["more","than"]) Number:n {++n[1]}
-			-> ['AtLeastNQuantification', ['MinimumCardinality', n]]
+		|	matchForAll('Keyword',["more","than"]) Number:n
+			// `Number` is memoized, so create a new number to avoid polluting the cache.
+			-> ['AtLeastNQuantification', ['MinimumCardinality', ['Number', n[1] + 1]]]
 		|	Keyword("exactly") Number:n
 			-> ['ExactQuantification', ['Cardinality', n]]
 		|	Keyword("no")
