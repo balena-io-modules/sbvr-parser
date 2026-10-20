@@ -1,4 +1,20 @@
 - commits:
+    - subject: Only swallow match failures in `matchUntil`
+      hash: f32593b6ba6d0a212941af4a8edff5d34ed17852
+      body: >
+        `matchUntil` caught every error in order to stop at the end of the
+        input, which
+
+        would also hide any real error, such as a bug in the predicate it is
+        given.
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 1.4.33
+  title: ""
+  date: 2026-10-20T05:22:26.075Z
+- commits:
     - subject: Update dependency mocha to v11.7.6
       hash: f182a3762d5718c9a38e23340324a38140457925
       body: |
