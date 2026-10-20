@@ -1086,7 +1086,13 @@ SBVRParser.matchUntil = function(fn) {
 		while (!fn(this.input.head())) {
 			this.input = this.input.tail();
 		}
-	} catch (e) {}
+	} catch (e) {
+		// Reaching the end of the input is a match failure, which just means there is nothing more to
+		// match, but anything else is a real error.
+		if (!(e instanceof SyntaxError)) {
+			throw e;
+		}
+	}
 };
 //TODO: This is a bit of a hack for case insensitivity, a better solution needs to be implemented in future.
 SBVRParser.exactly = function(wanted) {
