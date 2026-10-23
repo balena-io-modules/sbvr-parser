@@ -310,7 +310,8 @@ export ometa SBVRParser <: SBVRLibs {
 		IdentifierKey(identifier):identifierKey
 		(	// If the identifierKey ends with a | (ie it has no index), then we always want to create a new var.
 			?(identifierKey.slice(-1) !== '|')
-			?this.ruleVars[identifierKey]
+			// Otherwise reuse the existing var.
+			?(this.ruleVars[identifierKey] != null)
 			-> this.ruleVars[identifierKey]
 		|	{this.ruleVars[identifierKey] = this.ruleVarsCount++}
 		):varNumber
