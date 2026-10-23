@@ -1,4 +1,22 @@
 - commits:
+    - subject: Skip from comma to comma in `UpcomingCommaJunction`
+      hash: 573e0410e71c690286a4c418959dec3c1f3b7179
+      body: >
+        The lookahead tried (and failed) `SerialCommaCheck` at every character
+        up to
+
+        the end of the line, each time it was used. It can only match at a
+        comma, so
+
+        use `matchUntil` to skip to each comma (or the end of the line) instead.
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 1.4.34
+  title: ""
+  date: 2026-10-23T05:52:16.919Z
+- commits:
     - subject: Only swallow match failures in `matchUntil`
       hash: f32593b6ba6d0a212941af4a8edff5d34ed17852
       body: >
