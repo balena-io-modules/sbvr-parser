@@ -12,6 +12,9 @@ function isEOL(x) {
 function isSpace(x) {
 	return x.charCodeAt(0) <= 32;
 }
+function isCommaOrEOL(x) {
+	return x === ',' || isEOL(x);
+}
 
 var negatableVerbs = ['is', 'are', 'has', 'have', 'can', 'could', 'may', 'might', 'must', 'should', 'shall', 'will'];
 var negatedVerbs = negatableVerbs.map(function (verb) {
@@ -438,10 +441,13 @@ export ometa SBVRParser <: SBVRLibs {
 		),
 	// This checks if there's an upcoming comma junction by looking for an Oxford/serial comma.
 	UpcomingCommaJunction =
-		&(	(	~SerialCommaCheck
-				anything:x
-				?(!isEOL(x))
+		// A serial comma check can only match at a comma, so we skip from comma to comma (stopping
+		// at the end of the line) rather than trying it at every character.
+		&(	(	matchUntil(isCommaOrEOL)
+				~SerialCommaCheck
+				','
 			)*
+			matchUntil(isCommaOrEOL)
 			SerialCommaCheck
 			-> true
 		|	-> false
