@@ -1,4 +1,15 @@
 - commits:
+    - subject: Add basic typings
+      hash: 9f47d6bd2562144fe468293e94578a8468afce5b
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 1.4.35
+  title: ""
+  date: 2026-10-30T16:42:17.639Z
+- commits:
     - subject: Skip from comma to comma in `UpcomingCommaJunction`
       hash: 573e0410e71c690286a4c418959dec3c1f3b7179
       body: >
