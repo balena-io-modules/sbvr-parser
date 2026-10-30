@@ -3,6 +3,7 @@
   "version": "1.4.34",
   "description": "SBVR to LF parser.",
   "main": "sbvr-parser.js",
+  "types": "sbvr-parser.d.ts",
   "scripts": {
     "lint": "balena-lint -e js test/",
     "lint-fix": "balena-lint -e js --fix test/",
