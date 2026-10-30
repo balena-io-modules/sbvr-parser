@@ -1,4 +1,15 @@
 - commits:
+    - subject: Improve typings
+      hash: 13aff19ee9860dec367b4c6f7264dfc9c94b5b80
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 1.4.36
+  title: ""
+  date: 2026-10-30T17:33:34.263Z
+- commits:
     - subject: Add basic typings
       hash: 9f47d6bd2562144fe468293e94578a8468afce5b
       body: ""
