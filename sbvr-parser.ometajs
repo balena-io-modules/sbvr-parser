@@ -16,6 +16,31 @@ function isCommaOrEOL(x) {
 	return x === ',' || isEOL(x);
 }
 
+// `inflection.singularize` is a pure function but an expensive one (it tries a long list of
+// regexes), and identifier lookups call it with the same candidate strings many times over,
+// so we cache the results. Parsing is synchronous, so the cache is cleared in a microtask
+// once the current parse has finished, so that it does not keep using memory in long-running
+// processes that only parse at start-up. It is also cleared if it gets large, to keep its
+// memory bounded during a parse.
+var singularCache = new Map();
+function clearSingularCache() {
+	singularCache.clear();
+}
+function singularize(word) {
+	var singular = singularCache.get(word);
+	if (singular === undefined) {
+		if (singularCache.size === 0) {
+			Promise.resolve().then(clearSingularCache);
+		}
+		else if (singularCache.size >= 50000) {
+			singularCache.clear();
+		}
+		singular = inflection.singularize(word);
+		singularCache.set(word, singular);
+	}
+	return singular;
+}
+
 var negatableVerbs = ['is', 'are', 'has', 'have', 'can', 'could', 'may', 'might', 'must', 'should', 'shall', 'will'];
 var negatedVerbs = negatableVerbs.map(function (verb) {
 	if (verb === 'will') {
@@ -784,7 +809,7 @@ SBVRParser.BaseSynonym = function(identifier) {
 		identifierName = identifiers[identifierName];
 	}
 	else {
-		identifierName = inflection.singularize(identifierName);
+		identifierName = singularize(identifierName);
 		this._pred(identifiers.hasOwnProperty(identifierName));
 		identifierName = identifiers[identifierName];
 	}
