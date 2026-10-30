@@ -1,5 +1,8 @@
-export type LFModel = Array<LFModel | string>;
-
+/**
+ * SBVR Logical Formulation, eg
+ * `['Verb', 'has', false]` or `['RoleBinding', ['Term', 'pilot', 'Vocab'], 0]`
+ */
+export type LFModel = Array<LFModel | string | number | boolean>;
 export type OMetaError = Error & {
 	OMeta: {
 		idx?: number;
