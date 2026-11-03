@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+const { describe } = require('mocha');
 const test = require('./test')();
 const { expect } = require('chai');
 const {

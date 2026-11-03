@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+const { describe, it } = require('mocha');
 const { expect } = require('chai');
 const { SBVRParser } = require('../sbvr-parser');
 
