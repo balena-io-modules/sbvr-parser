@@ -1,4 +1,23 @@
 - commits:
+    - subject: Cache `inflection.singularize` results
+      hash: 4b605a6514b714ff7295c4f5d24294c940c85f22
+      body: >
+        Identifier lookups call `singularize` for every candidate run of words
+        that
+
+        is not itself an identifier, with the same candidates again and again,
+        and
+
+        each call tries a long list of regexes. It is a pure function, so cache
+        it.
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 1.4.41
+  title: ""
+  date: 2026-11-03T14:36:06.627Z
+- commits:
     - subject: Update @balena/lint to 11.x
       hash: e89372fc13a2d14ac1f5536a2f453abbc52812fc
       body: ""
