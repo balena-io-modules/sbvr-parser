@@ -1,4 +1,16 @@
 - commits:
+    - subject: Update dependency flowzonify to v0.4.23
+      hash: bce55ca74d47a11176aaacff20e18d5e481f537a
+      body: |
+        Update flowzonify from 0.0.0 to 0.4.23
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+  version: 1.4.38
+  title: ""
+  date: 2026-11-03T00:07:30.635Z
+- commits:
     - subject: Update dependency @balena/sbvr-types to v12
       hash: b71f41d036bbec8e5408f1cfb717c9558ec60f91
       body: |
