@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+const { describe } = require('mocha');
 const typeVocab = require('fs').readFileSync(
 	require.resolve('@balena/sbvr-types/Type.sbvr'),
 );

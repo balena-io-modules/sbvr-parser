@@ -1,0 +1,13 @@
+{
+	"compilerOptions": {
+		"module": "Node18",
+		"target": "es2023",
+		"strict": true,
+		"allowJs": true,
+		"skipLibCheck": true,
+		"types": [
+			"mocha"
+		]
+	},
+	"include": ["test/**/*"]
+}

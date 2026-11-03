@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+const { describe, it } = require('mocha');
 const _ = require('lodash');
 
 const { expect } = require('chai');
@@ -5,9 +7,8 @@ const { toSE, getLineType } = require('./sbvr-helper');
 const { LFOptimiser } = require('../lf-optimiser');
 
 module.exports = function (builtInVocab) {
-	if (builtInVocab == null) {
-		builtInVocab = false;
-	}
+	builtInVocab ??= false;
+
 	const SBVRParser = require('../sbvr-parser').SBVRParser.createInstance();
 	SBVRParser.enableReusingMemoizations(SBVRParser._sideEffectingRules);
 
@@ -19,7 +20,7 @@ module.exports = function (builtInVocab) {
 	let lfSoFar = SBVRParser.matchAll(seSoFar, 'Process');
 	let currentVocab = 'Default';
 
-	const runExpectation = function (describe, input, expectation) {
+	const runExpectation = function (describeFn, input, expectation) {
 		let lf;
 		let text;
 		let type;
@@ -72,6 +73,7 @@ module.exports = function (builtInVocab) {
 
 	const ret = runExpectation.bind(null, describe);
 	ret.skip = runExpectation.bind(null, describe.skip);
+	// eslint-disable-next-line no-only-tests/no-only-tests
 	ret.only = runExpectation.bind(null, describe.only);
 	return ret;
 };

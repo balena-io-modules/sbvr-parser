@@ -1,9 +1,4 @@
-/*
- * decaffeinate suggestions:
- * DS104: Avoid inline assignments
- * DS205: Consider reworking code to avoid use of IIFEs
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
+/* eslint-disable @typescript-eslint/no-require-imports */
 const _ = require('lodash');
 
 const stripAttributes = (x) => _.reject(x, { 0: 'Attributes' });
@@ -30,9 +25,7 @@ const factTypeBody = (fType) =>
 
 exports.vocabulary = (vocab) => ['Vocabulary', vocab, ['Attributes']];
 exports.term = function (term, vocab) {
-	if (vocab == null) {
-		vocab = 'Default';
-	}
+	vocab ??= 'Default';
 	return ['Term', term, vocab, ['Attributes']];
 };
 exports.numberedTerms = (term, amount) =>
@@ -42,9 +35,7 @@ exports.numberedTerms = (term, amount) =>
 		return numberedTerm;
 	});
 exports.verb = function (verb, negated) {
-	if (negated == null) {
-		negated = false;
-	}
+	negated ??= false;
 	return ['Verb', verb, negated];
 };
 const factType = function (...fType) {
@@ -102,7 +93,7 @@ const toSE = function (lf, currentVocab) {
 				}
 			case 'Verb':
 				if (lf[2]) {
-					let verb = lf[1].replace('is', 'is not').replace('can', 'can not');
+					const verb = lf[1].replace('is', 'is not').replace('can', 'can not');
 					if (verb === lf[1]) {
 						return `does not ${verb}`;
 					}
@@ -182,9 +173,9 @@ const resolveQuantifier = function (quantifier) {
 	};
 };
 
-var parseEmbeddedData = function (embeddedData) {
+const parseEmbeddedData = function (embeddedData) {
 	if (_.isNumber(embeddedData)) {
-		if (embeddedData === parseInt(embeddedData, 0)) {
+		if (embeddedData === parseInt(embeddedData, 10)) {
 			return ['Term', 'Integer', 'Type', ['Integer', embeddedData]];
 		} else {
 			return ['Term', 'Real', 'Type', ['Real', embeddedData]];
@@ -196,17 +187,16 @@ var parseEmbeddedData = function (embeddedData) {
 	}
 };
 
-var createParser = function (currentVocab) {
-	if (currentVocab == null) {
-		currentVocab = 'Default';
-	}
+const createParser = function (currentVocab) {
+	currentVocab ??= 'Default';
+
 	const currentVocabSE = _.partialRight(toSE, currentVocab);
 	const closedProjection = function (args, identifier, binding) {
 		let lf;
 		let se;
 		try {
 			({ lf, se } = junction(ruleBody, args, [], [], identifier, binding));
-		} catch (error) {
+		} catch {
 			({ lf, se } = junction(verbContinuation, args, [identifier], [binding]));
 		}
 		return {
@@ -298,12 +288,12 @@ var createParser = function (currentVocab) {
 		Disjunction: 'or',
 		Conjunction: 'and',
 	};
-	var junction = function (fn, junctionStruct, ...fnArgs) {
+	const junction = function (fn, junctionStruct, ...fnArgs) {
 		let maybeJunction = junctionStruct;
 		while (maybeJunction.length === 1 && _.isArray(maybeJunction[0])) {
 			maybeJunction = maybeJunction[0];
 		}
-		if (junctionTypes.hasOwnProperty(maybeJunction[0])) {
+		if (Object.hasOwn(junctionTypes, maybeJunction[0])) {
 			let junctioned;
 			let prevJunctioned;
 			const lf = [maybeJunction[0]];
@@ -340,7 +330,7 @@ var createParser = function (currentVocab) {
 		}
 	};
 
-	var verbContinuation = function (
+	const verbContinuation = function (
 		args,
 		factTypeSoFar,
 		bindings,
@@ -358,7 +348,7 @@ var createParser = function (currentVocab) {
 				lf,
 				se: [currentVocabSE(verb), se].join(' '),
 			};
-		} catch (e) {
+		} catch {
 			// ignore
 		}
 		if (postfixIdentifier != null) {
@@ -369,29 +359,25 @@ var createParser = function (currentVocab) {
 		}
 		lf = [
 			'AtomicFormulation',
-			stripAttributes(factType(...(factTypeSoFar || []))),
+			stripAttributes(factType(...(factTypeSoFar ?? []))),
 		].concat(bindings);
 
 		const left = currentVocabSE(verb);
 		return {
 			lf,
-			se: left != null ? left : '',
+			se: left ?? '',
 		};
 	};
 
-	var ruleBody = function (
+	const ruleBody = function (
 		args,
 		factTypeSoFar,
 		bindings,
 		postfixIdentifier,
 		postfixBinding,
 	) {
-		if (factTypeSoFar == null) {
-			factTypeSoFar = [];
-		}
-		if (bindings == null) {
-			bindings = [];
-		}
+		factTypeSoFar ??= [];
+		bindings ??= [];
 		try {
 			const { lf: quantifierLF, se: quantifierSE } = resolveQuantifier(args[0]);
 			let {
@@ -403,7 +389,7 @@ var createParser = function (currentVocab) {
 			} = resolveTerm(args[1]);
 			factTypeSoFar.push(identifier);
 			bindings.push(binding);
-			let { lf, se } = junction(
+			const { lf, se } = junction(
 				verbContinuation,
 				args.slice(2),
 				factTypeSoFar,
@@ -428,14 +414,14 @@ var createParser = function (currentVocab) {
 				);
 				return process.exit();
 			} else {
-				let {
+				const {
 					identifier,
 					se: identifierSE,
 					binding,
 				} = resolveEmbeddedData(args[0]);
 				factTypeSoFar.push(identifier);
 				bindings.push(binding);
-				let { lf, se } = junction(
+				const { lf, se } = junction(
 					verbContinuation,
 					args.slice(1),
 					factTypeSoFar,
@@ -492,7 +478,7 @@ const rule = _.partial(vocabRule, 'Default');
 exports.rule = rule;
 exports.necessity = _.partial(vocabNecessity, 'Default');
 
-var nestedPairs = function (type, pairs) {
+const nestedPairs = function (type, pairs) {
 	if (pairs.length === 1) {
 		return pairs[0];
 	}

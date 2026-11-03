@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+const { describe } = require('mocha');
 const typeVocab = require('fs').readFileSync(
 	require.resolve('@balena/sbvr-types/Type.sbvr'),
 );
@@ -6,18 +8,15 @@ const { expect } = require('chai');
 
 const {
 	term,
-	termForm,
 	verb,
 	factType,
 	necessity,
 	referenceType,
-	note,
 } = require('./sbvr-helper');
 
 const testTerm = term('term');
 const termHistory = term('term history');
 const termHistoryBeta = term('term history beta');
-const testTermForm = term('term form');
 
 describe('terms', function () {
 	test(testTerm);
