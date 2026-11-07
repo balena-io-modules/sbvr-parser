@@ -1,4 +1,16 @@
 - commits:
+    - subject: Pin dependency @types/mocha to 10.0.10
+      hash: 412f838db77b08b8506b1a9951ed3732ed4e26a4
+      body: |
+        Update @types/mocha
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+  version: 1.4.42
+  title: ""
+  date: 2026-11-07T01:13:31.462Z
+- commits:
     - subject: Cache `inflection.singularize` results
       hash: 4b605a6514b714ff7295c4f5d24294c940c85f22
       body: >
