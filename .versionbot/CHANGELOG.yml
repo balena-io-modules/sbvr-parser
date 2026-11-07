@@ -1,4 +1,16 @@
 - commits:
+    - subject: Update dependency chai to v6.3.0
+      hash: cc5bc82a662b660f6cdceffa2f28242c4305f263
+      body: |
+        Update chai from 6.2.2 to 6.3.0
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+  version: 1.4.43
+  title: ""
+  date: 2026-11-07T02:08:35.355Z
+- commits:
     - subject: Pin dependency @types/mocha to 10.0.10
       hash: 412f838db77b08b8506b1a9951ed3732ed4e26a4
       body: |
