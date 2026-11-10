@@ -1,4 +1,25 @@
 - commits:
+    - subject: Reuse the variable of a numbered term when it is variable 0
+      hash: 85cee229df8c0022a01da6bc823d17619c275004
+      body: >
+        `CreateVar` reused the existing variable for a numbered term (eg
+        `person1`)
+
+        only if its number was truthy, so when the term was the first variable
+        of a
+
+        rule (variable 0) quantifying it again created a new variable instead,
+        unlike
+
+        for any other variable number.
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 1.4.44
+  title: ""
+  date: 2026-11-10T15:10:39.594Z
+- commits:
     - subject: Update dependency chai to v6.3.0
       hash: cc5bc82a662b660f6cdceffa2f28242c4305f263
       body: |
