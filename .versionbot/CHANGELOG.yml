@@ -1,4 +1,25 @@
 - commits:
+    - subject: Do not modify the memoized `Number` result for "more than" quantifiers
+      hash: 35ce2d9845926ac4301b96fda0d3d9b8a36dc037
+      body: >
+        The quantifier incremented the number parsed by the memoized `Number`
+        rule in
+
+        place, so the memoized result no longer matched the input. Nothing
+        currently
+
+        reads that memoized result again, but create a new number instead so
+        that
+
+        nothing can, and add tests for "more than" quantifiers which had none.
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 1.4.45
+  title: ""
+  date: 2026-11-10T15:24:51.325Z
+- commits:
     - subject: Reuse the variable of a numbered term when it is variable 0
       hash: 85cee229df8c0022a01da6bc823d17619c275004
       body: >
