@@ -318,9 +318,9 @@ export ometa SBVRParser <: SBVRLibs {
 		),
 
 	Keyword :word :noToken =
-		(	?(noToken===true) seq(word)
-		|	?(noToken!==true) token(word)
-		),
+		// Choose the rule directly rather than via predicates, as the failing predicate (a thrown
+		// failure) would be most of the cost of a keyword that does not match.
+		-> (noToken === true ? this._applyWithArgs('seq', word) : this._applyWithArgs('token', word)),
 
 	addThat =
 		Keyword("that"),
@@ -1129,10 +1129,26 @@ SBVRParser.matchUntil = function(fn) {
 };
 //TODO: This is a bit of a hack for case insensitivity, a better solution needs to be implemented in future.
 SBVRParser.exactly = function(wanted) {
-	if (wanted.toLowerCase() === this._apply("lowerCaseAnything")) {
+	var got = this.anything();
+	if (wanted === got || wanted.toLowerCase() === got.toLowerCase()) {
 		return wanted;
 	}
 	throw this._fail();
+};
+// Matches the characters of a string case-insensitively in the same way as `exactly`, but without
+// needing a rule application for every character.
+SBVRParser.seq = function(xs) {
+	if (typeof xs !== 'string') {
+		return SBVRLibs.seq.call(this, xs);
+	}
+	for (var idx = 0; idx < xs.length; idx++) {
+		var wanted = xs[idx],
+			got = this.anything();
+		if (wanted !== got && wanted.toLowerCase() !== got.toLowerCase()) {
+			throw this._fail();
+		}
+	}
+	return xs;
 };
 
 // For performance we can use this.
