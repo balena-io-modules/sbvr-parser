@@ -1,4 +1,23 @@
 - commits:
+    - subject: Speed up case-insensitive matching of keywords
+      hash: d859c1e20e4ed1806e57ff7dc23957c334706971
+      body: >
+        - `exactly` no longer needs a memoised `lowerCaseAnything` rule
+        application
+          for every character it compares
+        - `seq` compares the characters of a string itself rather than applying
+          `exactly` for each one
+        - `Keyword` picks `seq` or `token` directly instead of via an `_or`
+        whose
+          first predicate fails for almost every call
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 1.4.46
+  title: ""
+  date: 2026-11-16T03:27:37.576Z
+- commits:
     - subject: Do not modify the memoized `Number` result for "more than" quantifiers
       hash: 35ce2d9845926ac4301b96fda0d3d9b8a36dc037
       body: >
